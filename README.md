@@ -8,16 +8,28 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 
 ## Running the Project
 
-### Setup
-1. Install the required dependencies:
+1. **Clone the repository**:
+```bash
+git clone https://github.com/your-username/categorizing-memos.git
+cd categorizing-memos
+
+2. **Install the dependencies**:
 ```bash
 pip install -r requirements.txt
-```
+
+3. **Prepare the data**:
+Place the inflow and outflow data (`ucsd-inflows.pqt`, `ucsd-outflows.pqt`) in the `data/` directory. This data contains the transactions we will use for memo categorization.
+
+4. **Run the data pipeline**:
+To run the entire pipeline, use the following command:
+
+```bash
+python run.py
 
 ### File Structure
 
 ```
-├── data                            <- .gitignore (hidden from repo)
+├── data                            <- .gitignore (data not tracked in the repository)
 │   ├──ucsd-inflows.pqt             <- Inflow data (money getting put into bank)
 │   └──ucsd-outflows.pqt            <- Outflow data (money getting out of bank)
 │   
@@ -28,9 +40,9 @@ pip install -r requirements.txt
 │   └──model_params.json
 │
 │
-├── notebooks                       <- jupyter notebooks used for data analysis
+├── notebooks                         <- jupyter notebooks used for data analysis
 │   ├──hillary_data_exploration.ipynb <- Hillary Chang's Data Analysis Notebook         
-│   ├──kevin_data_exploration.ipynb <- Kevin Wong's Data Analysis Notebook         
+│   ├──kevin_data_exploration.ipynb   <- Kevin Wong's Data Analysis Notebook         
 │
 ├── res  
 │   └──predicted_result.csv     <- predicted model results
@@ -47,3 +59,6 @@ pip install -r requirements.txt
 │
 └── requirements.txt            <- all required packages 
 ```
+
+## Conclusion
+The goal of this project is to categorize vendor memos accurately and efficiently. We have implemented a data pipeline to process inflow and outflow data, create meaningful features, and train a machine learning model to achieve this. Further optimization and improvements can be made as the project progresses.

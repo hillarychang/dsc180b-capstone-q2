@@ -17,7 +17,7 @@ pip install -r requirements.txt
 ### File Structure
 
 ```
-├── data
+├── data                            <- .gitignore (hidden from repo)
 │   ├──ucsd-inflows.pqt             <- Inflow data (money getting put into bank)
 │   └──ucsd-outflows.pqt            <- Outflow data (money getting out of bank)
 │   

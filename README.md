@@ -29,8 +29,8 @@ pip install -r requirements.txt
 │
 │
 ├── notebooks                       <- jupyter notebooks used for data analysis
+│   ├──hillary_data_exploration.ipynb <- Hillary Chang's Data Analysis Notebook         
 │   ├──kevin_data_exploration.ipynb <- Kevin Wong's Data Analysis Notebook         
-│  
 │
 ├── res  
 │   └──predicted_result.csv     <- predicted model results

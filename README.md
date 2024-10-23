@@ -1,4 +1,4 @@
-# DSC180A Capstone Q1
+# DSC180A Capstone Q1: Categorizing Memo
 
 **Group 1:** Kevin Wong, Kurumi Kaneko, Hillary Chang, Jevan Chahal
 

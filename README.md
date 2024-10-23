@@ -9,22 +9,24 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 ## Running the Project
 
 1. **Clone the repository**:
-```bash
-git clone https://github.com/your-username/categorizing-memos.git
-cd categorizing-memos
+    ```bash
+    git clone https://github.com/your-username/categorizing-memos.git
+    cd categorizing-memos
+    ```
 
 2. **Install the dependencies**:
-```bash
-pip install -r requirements.txt
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-3. **Prepare the data**:
-Place the inflow and outflow data (`ucsd-inflows.pqt`, `ucsd-outflows.pqt`) in the `data/` directory. This data contains the transactions we will use for memo categorization.
+3. **Prepare the data**:  
+    Place the inflow and outflow data (`ucsd-inflows.pqt`, `ucsd-outflows.pqt`) in the `data/` directory. This data contains the transactions we will use for memo categorization.
 
-4. **Run the data pipeline**:
-To run the entire pipeline, use the following command:
-
-```bash
-python run.py
+4. **Run the data pipeline**:  
+    To run the entire pipeline, use the following command:
+    ```bash
+    python run.py
+    ```
 
 ### File Structure
 

@@ -63,4 +63,4 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 ```
 
 ## Conclusion
-The goal of this project is to categorize vendor memos accurately and efficiently. We have implemented a data pipeline to process inflow and outflow data, create meaningful features, and train a machine learning model to achieve this. Further optimization and improvements can be made as the project progresses.
+The goal of this project for Quarter 1 is to categorize vendor memos. Next, we will be implementing a data pipeline to process inflow and outflow data, create features, and train a machine learning model to achieve this.

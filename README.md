@@ -13,46 +13,36 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 ```bash
 pip install -r requirements.txt
 
-## File Structure
+### File Structure
 
 ```
-
 ├── data
 │   ├──ucsd-inflows.pqt   <- Inflow data (money getting put into bank)
 │   └──ucsd-outflows.pqt  <- Outflow data (money getting out of bank)
 │   
 │                     
-├── model             <- best model saved in pickle file   
-│   └──xgb_reg.pkl 
+├── config             <- parameters for model (currently all dummy files)
+│   ├──data_params.json     
+│   ├──feature_params.json
+│   └──model_params.json
 │
 │
-├── plots                          <- plots created using bokeh, plotly, matplotlib, and seaborn
-│   ├──demographics          
-│   ├──descriptive_statistics     
-│   ├──food
-│   ├──heritability
-│   ├──mode_prediction
-│   ├──physical_activity
-│   ├──sleep
-│   └──Visualization.pdf
+├── notebooks                   <- jupyter notebooks used for data analysis
+│   ├──kevin_data_exploration.ipynb <- Kevin Wong's Data Analysis Notebook         
+│  
 │
 ├── res  
 │   └──predicted_result.csv     <- predicted model results
 │
 │
-├── src                             <- src files to create the plots and train models
-│   ├──all_visualization.ipynb      <- Contains visualization of all the analysis in a single .ipynb file
-│   ├──demographics_sleep.ipynb     
-│   ├──descriptive_stats.ipynb
-│   ├──exercise_food.ipynb
-│   ├──heritability.ipynb
-│   ├──model.ipynb
-│   └──model.py                 <- Contains model processing, transformation, normalization, training, and testing  in a single .py file 
-│   
+├── src         <- src files for the creation of features, model training, and more (currently all dummy files)
+│   ├──etl.py         
+│   ├──features.py
+│   └──model_training.py                  
 │
-├── ECE_143_Final.pdf           <- Final Presentation
+├── README.md                   <- README
 │
-├── readme.md                   <- README
+├── run.py                      <- used to run the entire project
 │
-└── requirement.yaml            <- all required packages 
+└── requirements.txt            <- all required packages 
 ```

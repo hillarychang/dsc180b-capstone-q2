@@ -1,6 +1,6 @@
 # DSC180A Capstone Q1
 
-** Group 1: ** Kevin Wong, Kurumi Kaneko, Hillary Chang, Jevan Chahil
+**Group 1:** Kevin Wong, Kurumi Kaneko, Hillary Chang, Jevan Chahil
 
 ## Overview
 
@@ -18,17 +18,17 @@ pip install -r requirements.txt
 
 ```
 ├── data
-│   ├──ucsd-inflows.pqt   <- Inflow data (money getting put into bank)
-│   └──ucsd-outflows.pqt  <- Outflow data (money getting out of bank)
+│   ├──ucsd-inflows.pqt             <- Inflow data (money getting put into bank)
+│   └──ucsd-outflows.pqt            <- Outflow data (money getting out of bank)
 │   
 │                     
-├── config             <- parameters for model (currently all dummy files)
+├── config                          <- parameters for model (currently all dummy files)
 │   ├──data_params.json     
 │   ├──feature_params.json
 │   └──model_params.json
 │
 │
-├── notebooks                   <- jupyter notebooks used for data analysis
+├── notebooks                       <- jupyter notebooks used for data analysis
 │   ├──kevin_data_exploration.ipynb <- Kevin Wong's Data Analysis Notebook         
 │  
 │

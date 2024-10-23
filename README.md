@@ -1,6 +1,6 @@
 # DSC180A Capstone Q1
 
-**Group 1:** Kevin Wong, Kurumi Kaneko, Hillary Chang, Jevan Chahil
+**Group 1:** Kevin Wong, Kurumi Kaneko, Hillary Chang, Jevan Chahal
 
 ## Overview
 

@@ -12,6 +12,7 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 1. Install the required dependencies:
 ```bash
 pip install -r requirements.txt
+```
 
 ### File Structure
 

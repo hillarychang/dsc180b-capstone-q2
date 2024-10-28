@@ -44,7 +44,8 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 │
 ├── notebooks                         <- jupyter notebooks used for data analysis
 │   ├──hillary_data_exploration.ipynb <- Hillary Chang's Data Analysis Notebook         
-│   ├──kevin_data_exploration.ipynb   <- Kevin Wong's Data Analysis Notebook         
+│   ├──kevin_data_exploration.ipynb   <- Kevin Wong's Data Analysis Notebook
+│   ├──kurumi_data_exploration.ipynb   <- Kurumi Kaneko's Data Analysis Notebook
 │
 ├── res  
 │   └──predicted_result.csv     <- predicted model results

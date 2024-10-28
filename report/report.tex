@@ -1,0 +1,100 @@
+% !TEX TS-program = xelatex
+% !BIB TS-program = bibtex
+\documentclass[12pt,letterpaper]{article}
+\usepackage{style/dsc180reportstyle} % import dsc180reportstyle.sty
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Title and Authors
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{DSC Capstone Q1 Report}
+
+\author{Jevan Chahal\\
+  {\tt j2chahal@ucsd.edu} \\\And
+  Hillary Change \\
+  {\tt hic001@ucsd.edu} \\\And
+  Kurumi Kaneko \\
+  {\tt kskaneko@ucsd.edu} \\\And
+  Kevin Wong \\
+  {\tt kew024@ucsd.edu} \\\And
+  Brian Duke \\
+  {\tt brian.duke@prismdata.com} \\\And
+  Kyle Nero \\
+  {\tt kyle.nero@prismdata.com} \\}
+
+\begin{document}
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Abstract and Links
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{abstract}
+    \textcolor{Black}{
+    The process of capturing what makes a creditor trustworthy or not is especially vital within the confines of bank data, due to the guidelines and ethics of what makes this data usable. Although the quantity of the data is massive, there are only a few available features that are explicitly useful in the confines of machine learning, which calls into question how we should measure customer's trustworthiness towards their creditors. Our methodology details the process of refining bank data into categories using Natural Language Processing, assessing individual's income based on bank data alone, and also measuring their credit worthiness both accurately and efficiently. 
+    }
+\end{abstract}
+
+\begin{center}
+Website: \url{https://abc.github.io/} \\
+Code: \url{https://github.com/hillarychang/dsc180a-capstone}
+\end{center}
+
+\maketoc
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Main Contents
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introduction}
+
+Predicting a customer's credit worthiness is an essential part of bank's usage of data today, due to loan's and credit card's profitability as well as risk. Our model aims to assign a score to each unique bank account holder to determine individual trustworthiness of credit or loans, which we will call the "Blank Score."
+
+To start, using the data given to us from our industry partner, Prism Data, we performed Exploratory Data Analysis, analyzing what patterns could be found within the data. As shown below, some patterns include different amounts, both in total and mean spending in various weeks, days, and months, potentially showing us behaviors that consumers typically took when it comes to purchasing. For instance, we noticed that most purchases occurred on weekdays, while weekends had significantly less purchasing priority.
+
+Additionally, our analysis also focused on when the data was typically sampled, so we could correlate it to the future, and we found that the data that we were given was mostly from 2020-2023, which gave us more confidence. Data looks back and then tries to assume forward, so it's limited in what it can tell you about the world, but by using modern-day data, we can have a better, more advanced understanding of how consumers purchase and decide whether or not they are trustworthy.
+
+\section{Methods}
+
+\section{Results}
+
+\section{Discussion}
+
+\section{Conclusion}
+
+\subsection{Inline Citation Examples}
+
+Citation in text (no parentheses): use \texttt{{\textbackslash}cite\{citekey\}}. 
+For example, \cite{breiman2011}, \cite{devlin2019bert}.
+
+Citation in parentheses: use \texttt{{\textbackslash}citep\{citekey\}}. 
+For example: \citep{vaswani2023attention}, \citep{karras2019stylebased}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Reference / Bibliography
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\makereference
+
+{\color{blue} To edit the contents of the ``References" section, edit \texttt{reference.bib}. Many conference websites format citations in BibTeX that you can copy into \texttt{reference.bib} directly; you can also search for the paper on Google Scholar, click ``Cite", and then click ``BibTeX" (\href{https://scholar.google.com/scholar?hl=en&as_sdt=0%2C23&q=attention+is+all+you+need&btnG=#d=gs_cit&t=1700436667623&u=%2Fscholar%3Fq%3Dinfo%3A5Gohgn6QFikJ%3Ascholar.google.com%2F%26output%3Dcite%26scirp%3D0%26hl%3Den}{here}'s an example).}
+
+\bibliography{reference}
+\bibliographystyle{style/dsc180bibstyle}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Appendix
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\clearpage
+\makeappendix
+
+\subsection{Training Details}
+
+\subsection{Additional Figures}
+
+\subsection{Additional Tables}
+
+
+\end{document}

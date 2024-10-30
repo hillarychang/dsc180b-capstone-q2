@@ -75,6 +75,25 @@ The dataset, provided by Prism Data, consists of detailed transaction records th
 \subsection{Data Cleaning}
 To prepare the memo field for analysis, we first applied a series of cleaning steps to standardize the text. We transformed all text to lowercase for uniformity, removed any extraneous punctuation and symbols, and stripped out dates, state abbreviations, and recurring text that didn’t contribute to transaction categorization (ex., “POS withdrawal”). We also removed placeholder values, such as multiple X’s.
 
+To prepare the dataset for modeling, we began by reviewing a sample of unique transaction memos from each category. This step provided insights into common patterns and inconsistencies, helping us determine the scope and focus of our cleaning tasks.
+
+We then applied several transformations to standardize the data and improve its interpretability:
+
+\begin{enumerate}
+    \item \textbf{Date Removal}: We used regular expressions (RegEx) to locate and remove dates across entries in the memo column, as they did not contribute to the model's predictive goals and added unnecessary complexity. We also removed any extraneous or ambiguous patterns (e.g., “XXXX” entries).
+
+    \item \textbf{Pattern Recognition}: Specific patterns and keywords were identified as indicators of certain transaction categories. For example, "TST" reliably associated with "Food and Beverages," while strings like "APPLE.COM/BILL" were linked to "General Merchandise." We flagged these patterns to automate future classifications and reduce manual intervention.
+
+    \item \textbf{Selective Character Retention}: To preserve potentially valuable information, we retained certain characters such as dots ('.'). This choice allowed us to keep URLs or email addresses within the memo field, which could provide clues to the transaction category.
+
+    \item \textbf{Transaction Labels}: We also identified recurring phrases such as "POS Withdrawal," location-specific markers (e.g., “CA 10/27” for state and date), and labels indicating recurring payments. These were removed for as they did not contribute to the model's predictive goals and added unnecessary complexity.
+
+    \item \textbf{Text Normalization}: All text was converted to lowercase to reduce variability due to case differences.
+\end{enumerate}
+
+By implementing these steps, we improved data consistency and ensured key transactional information was preserved, enhancing our model's ability to accurately predict customer creditworthiness.
+
+
 \subsection{Feature Engineering}
 We applied Term Frequency-Inverse Document Frequency (\texttt{TF-IDF}) to convert the text in the \texttt{memo} field into numerical features. By using unigrams and bigrams, we captured meaningful phrases like \texttt{ATM withdrawal} and \texttt{grocery store}. \texttt{TF-IDF} proved to be highly predictive, assisting in accurately identifying transaction types.
 

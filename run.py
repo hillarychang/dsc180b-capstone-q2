@@ -31,4 +31,5 @@ if __name__ == '__main__':
     
     # Read in and clean the data
     data = pd.read_parquet(file_name)
+    
     cleaned_data = clean_data(data)

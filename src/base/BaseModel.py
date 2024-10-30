@@ -3,7 +3,7 @@ from typing import Dict, Any, Tuple
 import torch
 from torch.utils.data import DataLoader
 import pandas as pd
-from .config import BaseConfig
+from config import BaseConfig
 
 
 class BaseModel(ABC):

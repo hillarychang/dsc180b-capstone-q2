@@ -3,7 +3,7 @@ import json
 import argparse
 import pandas as pd
 from src.etl import get_data
-from src.features import build_features
+from src.features import build_features, add_token
 from src.model_training import train_model
 from src.text_cleaner import clean_text
 
@@ -12,6 +12,13 @@ def clean_data(data):
     Cleans the 'memo' column of the data
     """
     cleaned_df = clean_text(data)
+    return cleaned_df
+
+def add_features(data):
+    """
+    Adds additional features to the 'memo' column of the data
+    """
+    cleaned_df = add_token(data)
     return cleaned_df
 
 def main(targets):

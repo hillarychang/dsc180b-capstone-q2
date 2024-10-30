@@ -31,18 +31,20 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 ### File Structure
 
 ```
-├── data                            <- .gitignore (data not tracked in the repository)
-│   ├──ucsd-inflows.pqt             <- Inflow data (money getting put into bank)
-│   └──ucsd-outflows.pqt            <- Outflow data (money getting out of bank)
-│   
-│                     
 ├── config                          <- parameters for model (currently all dummy files)
 │   ├──data_params.json     
 │   ├──feature_params.json
 │   └──model_params.json
 │
-├── scripts                          <- contains scripts for ease of use
-│   │──text_cleaner.py               <- used to clean the 'memo' column
+│
+├── data                            <- .gitignore (data not tracked in the repository)
+│   ├──ucsd-inflows.pqt             <- Inflow data (money getting put into bank)
+│   └──ucsd-outflows.pqt            <- Outflow data (money getting out of bank)   
+│
+│
+├── models                          <- Model Creation
+│   ├──transformers.py              <- Used to initialize the Transformer Model
+│
 │
 ├── notebooks                         <- jupyter notebooks used for data analysis
 │   ├──hillary_data_exploration.ipynb <- Hillary Chang's Data Analysis Notebook         
@@ -50,21 +52,22 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 │   ├──kurumi_data_exploration.ipynb  <- Kurumi Kaneko's Data Analysis Notebook
 │   └──jevan_week2.ipynb              <- Jevan Chahal's notebook for train/test/split
 │
-├── res  
-│   └──predicted_result.csv     <- predicted model results
 │
+├── report                   <- used to keep the report LaTeX pdf
+│   └──report.tex   
 │
-├── src         <- src files for the creation of features, model training, and more (currently all dummy files)
+├── src                      <- src files for the creation of features, model training, and more
 │   ├──etl.py         
-│   ├──features.py
+│   ├──features.py              <- used to create features
 │   ├──text_cleaner.py          <- used to clean the data 
-│   └──model_training.py                  
+│   └──model_training.py                     
+│
 │
 ├── README.md                   <- README
 │
-├── run.py                      <- used to run the entire project
+├── requirements.txt            <- all required packages
 │
-└── requirements.txt            <- all required packages 
+└── run.py                   <- used to run the model
 ```
 
 ## Conclusion

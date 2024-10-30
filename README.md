@@ -57,7 +57,10 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 │   └──report.tex   
 │
 ├── src                      <- src files for the creation of features, model training, and more
-│   ├──etl.py         
+│   ├──base                <- Baseline Classes
+│   │   ├──config.py       <- Creates a configuration for all models
+│   │   └──model.py        <- Creates a Baseline Model
+│   ├──etl.py         
 │   ├──features.py              <- used to create features
 │   ├──text_cleaner.py          <- used to clean the data 
 │   └──model_training.py                     

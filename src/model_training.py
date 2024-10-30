@@ -5,7 +5,7 @@ import importlib
 from typing import Type
 import logging
 from base.config import BaseConfig
-from base.BaseModel import BaseModel
+from base.model import BaseModel
 import pandas as pd
 
 

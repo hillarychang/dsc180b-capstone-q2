@@ -36,7 +36,6 @@
 \end{abstract}
 
 \begin{center}
-Website: \url{https://abc.github.io/} \\
 Code: \url{https://github.com/hillarychang/dsc180a-capstone}
 \end{center}
 
@@ -48,25 +47,75 @@ Code: \url{https://github.com/hillarychang/dsc180a-capstone}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Introduction}
-
-Predicting a customer's credit worthiness is an essential part of bank's usage of data today, due to loan's and credit card's profitability as well as risk. Our model aims to assign a score to each unique bank account holder to determine individual trustworthiness of credit or loans, which we will call the "Blank Score."
+Predicting a customer’s creditworthiness is an essential task for banks, as it informs decisions relating to the profitability and risks of loans, credit cards, and other financial services. While traditional credit scores are widely used, they often overlook important aspects of customer behavior, especially for individuals with limited credit history. We aim to develop an alternative approach by analyzing transaction data to create a new creditworthiness measure, which we will call the "Blank Score." By examining patterns in spending, income consistency, and transaction types, we hope to create a model that more accurately reflects individual financial reliability.
 
 \subsection{Exploratory Data Analysis}
+We first conducted Exploratory Data Analysis using transaction data given to us from our industry partner, Prism Data. This analysis allowed us to identify different patterns. In specific, we observed notable differences in spending behaviors across various time periods. For instance, we noticed that most purchases occurred on weekdays, while weekends had significantly less purchasing priority, suggesting that consumers prioritize certain purchases during the week. 
 
-To start, using the data given to us from our industry partner, Prism Data, we performed Exploratory Data Analysis, analyzing what patterns could be found within the data. As shown below, some patterns include different amounts, both in total and mean spending in various weeks, days, and months, potentially showing us behaviors that consumers typically took when it comes to purchasing. For instance, we noticed that most purchases occurred on weekdays, while weekends had significantly less purchasing priority.
+We also examined seasonal patterns within the dataset, which spans from 2020 to 2023. Certain months, like April and May, showed increased inflows likely due to tax returns, while December exhibited higher spending, likely due to holiday-related expenses. These patterns indicate regular income and expenditure behaviors that could be relevant for predicting creditworthiness.
 
-Additionally, our analysis also focused on when the data was typically sampled, so we could correlate it to the future, and we found that the data that we were given was mostly from 2020-2023, which gave us more confidence. Data looks back and then tries to assume forward, so it's limited in what it can tell you about the world, but by using modern-day data, we can have a better, more advanced understanding of how consumers purchase and decide whether or not they are trustworthy.
+\subsection{Data Description}
+The dataset, provided by Prism Data, consists of detailed transaction records that include fields such as \texttt{memo}, \texttt{amount}, \texttt{date}, and \texttt{category}.
+\begin{itemize}
+    \item \textbf{\texttt{prism\_consumer\_id} (Quantitative):} Unique identifier for each consumer, used to analyze spending and income patterns per user.
+
+    \item \textbf{\texttt{prism\_account\_id} (Qualitative):} Identifier for each account, distinguishing multiple accounts for a single consumer or across consumers.
+
+    \item \textbf{\texttt{memo} (Qualitative):} Descriptive text providing transaction details, such as "grocery store" or "ATM withdrawal," useful for categorization.
+
+    \item \textbf{\texttt{amount} (Quantitative):} Transaction value, where positive values represent inflows (e.g., deposits) and negative values represent outflows (e.g., payments).
+
+    \item \textbf{\texttt{posted\_date} (Qualitative):} Date each transaction was posted, enabling temporal analysis of spending trends.
+
+    \item \textbf{\texttt{category} (Qualitative):} Pre-assigned transaction type label, such as "food" or "utilities," serving as a basis for categorization.
+\end{itemize}
+
 
 \section{Methods}
+\subsection{Data Cleaning}
+To prepare the memo field for analysis, we first applied a series of cleaning steps to standardize the text. We transformed all text to lowercase for uniformity, removed any extraneous punctuation and symbols, and stripped out dates, state abbreviations, and recurring text that didn’t contribute to transaction categorization (ex., “POS withdrawal”). We also removed placeholder values, such as multiple X’s.
+
+\subsection{Feature Engineering}
+We applied Term Frequency-Inverse Document Frequency (\texttt{TF-IDF}) to convert the text in the \texttt{memo} field into numerical features. By using unigrams and bigrams, we captured meaningful phrases like \texttt{ATM withdrawal} and \texttt{grocery store}. \texttt{TF-IDF} proved to be highly predictive, assisting in accurately identifying transaction types.
+
+\textbf{Date and Amount Features:} We engineered additional features based on transaction dates and amounts:
+\begin{itemize}
+    \item For date features, we created variables such as \texttt{day\_of\_week} and \texttt{day\_of\_month}, adding a flag for the first day of each month.
+    \item For amount features, we flagged transactions ending in \texttt{.00} (referred to as \texttt{A00}), which is commonly seen in ATM withdrawals. This pattern helped distinguish ATM transactions from other transaction types.
+\end{itemize}
+
+\subsection{Model Training}
+\textbf{Logistic Regression:} We first trained a logistic regression model as a baseline.
+
+\textbf{Random Forest:} To capture more complex interactions, we also trained a random forest model.
+
+\subsection{Evaluation Metrics}
+We evaluated our models using accuracy, precision, recall, and a 9x9 confusion matrix to assess categorization performance across different transaction types. 
+
 
 \section{Results}
+\subsection{Model Performance}
+\textbf{Logistic Regression:} The logistic regression model
+
+\textbf{Random Forest:} The random forest model
+
+\subsection{Confusion Matrix and Category-Specific Metrics}
+The confusion matrix revealed that the random forest model accurately classified high-frequency categories but displayed some overlap in rarer ones.
+
+\subsection{Precision and Recall by Category}
+TF-IDF features were the main indicators for categorization, particularly in identifying terms within the \texttt{memo} field. Date and amount features provided additional value for regular and specific transaction types, such as rent payments and ATM withdrawals.
+
 
 \section{Discussion}
+\subsection{Summary of Findings}
 
-\section{Conclusion}
+\subsection{Interpretation of Results}
+
+\subsection{Limitations and Fairness Concerns}
+
+\subsection{Next Steps}
 
 \subsection{Inline Citation Examples}
-
 Citation in text (no parentheses): use \texttt{{\textbackslash}cite\{citekey\}}. 
 For example, \cite{breiman2011}, \cite{devlin2019bert}.
 

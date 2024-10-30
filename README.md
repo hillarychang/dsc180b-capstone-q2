@@ -57,6 +57,7 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 ├── src         <- src files for the creation of features, model training, and more (currently all dummy files)
 │   ├──etl.py         
 │   ├──features.py
+│   ├──text_cleaner.py          <- used to clean the data 
 │   └──model_training.py                  
 │
 ├── README.md                   <- README

@@ -23,15 +23,17 @@ def clean_text(data, column="memo"):
     pd.DataFrame
         A new DataFrame with the cleaned text data.
     """
-
     # Check if data is a DataFrame and contains the specified column
     if not isinstance(data, pd.DataFrame):
         raise TypeError("Input `data` must be a pandas DataFrame.")
     if column not in data.columns:
         raise ValueError(f"Column '{column}' not found in the DataFrame.")
-
+    
     # Make a copy of the data to avoid modifying the original DataFrame
     df = data.copy()
+
+    # Make sure the data that we are doing doesn't have the same memos and categories
+    df = df[df['memo'] != df['category']]
 
     # Define regex patterns
     pattern1 = r"\b(?:CA\s+)?(?:0?[1-9]|1[0-2])[/-](?:0?[1-9]|[12]\d|3[01])(?:/\d{2,4})?\b"  # Dates and optional 'CA'

@@ -7,6 +7,8 @@ import logging
 from base.config import BaseConfig
 from base.model import BaseModel
 import pandas as pd
+import torch
+from transformers import get_linear_schedule_with_warmup
 from text_cleaner import clean_text
 
 
@@ -44,13 +46,29 @@ def get_config_class(model_type: str) -> Type[BaseConfig]:
         raise ValueError(f"Config for model type {model_type} not found: {e}")
 
 
-def train_model(model: BaseModel, train_data: pd.DataFrame, output_dir: Path):
+def train_model(model: BaseModel, data: pd.DataFrame, output_dir: Path):
     """Train the model and save artifacts."""
     logger = logging.getLogger("train_model")
 
     # Prepare data
-    train_loader, val_loader = model.prepare_data(train_data)
+    train_loader, val_loader = model.prepare_data(data)
 
+    learning_rate = float(model.config.learning_rate)
+    weight_decay = float(model.config.weight_decay)
+    warmup_ratio = float(model.config.warmup_ratio)
+
+    total_steps = len(train_loader) * model.config.num_epochs
+    warmup_steps = int(total_steps * warmup_ratio)
+
+    optimizer = torch.optim.AdamW(
+            model.model.parameters(),
+            lr=learning_rate,
+            weight_decay=weight_decay,
+        )
+    
+    scheduler = get_linear_schedule_with_warmup(
+        optimizer, num_warmup_steps=warmup_steps, num_training_steps=total_steps
+    )
 
     # Training loop
     best_metric = float("-inf")
@@ -58,7 +76,7 @@ def train_model(model: BaseModel, train_data: pd.DataFrame, output_dir: Path):
         logger.info(f"Epoch {epoch + 1}/{model.config.num_epochs}")
 
         # Train
-        train_loss = model.train_epoch(train_loader)
+        train_loss = model.train_epoch(train_loader, optimizer, scheduler)
         logger.info(f"Training loss: {train_loss:.4f}")
 
         # Evaluate
@@ -92,16 +110,16 @@ def main():
     logger.info(f"Loaded configuration: {config}")
 
     # Load data
-    train_data = clean_text(pd.read_parquet(args.data))
-    logger.info(f"Loaded {len(train_data)} training examples")
+    data = clean_text(pd.read_parquet(args.data))
+    logger.info(f"Loaded {len(data)} training examples")
 
     # Initialize model
     model_class = get_model_class(config.model_type, config.model_version)
     model = model_class(config)
     logger.info(f"Initialized model: {model.__class__.__name__}")
 
-    # Train model
-    train_model(model, train_data, output_dir)
+    # train model
+    train_model(model, data, output_dir)
 
 
 if __name__ == "__main__":

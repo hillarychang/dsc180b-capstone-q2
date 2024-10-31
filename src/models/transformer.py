@@ -8,16 +8,20 @@ import numpy as np
 from transformers import (
     AutoTokenizer,
     AutoModelForSequenceClassification,
-    get_linear_schedule_with_warmup,
     PreTrainedTokenizer,
 )
+from transformers.utils import logging as transformers_logging
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
 from src.base.config import BaseConfig
 from src.base.model import BaseModel
+import warnings
 
+# Suppress Warnings
+warnings.filterwarnings('ignore', message = '.*_register_pytree_node.*')
+transformers_logging.set_verbosity_warning()
 
 @dataclass
 class TransformerConfig(BaseConfig):
@@ -89,8 +93,9 @@ class TransformerDataset(Dataset):
 
 
 class TransformerModel(BaseModel):
-    """Transformer-based model implementation."""
-
+    """
+    Transformer-based model implementation.
+    """
     def __init__(self, config: TransformerConfig):
         super().__init__(config)
         self.config = config
@@ -99,11 +104,27 @@ class TransformerModel(BaseModel):
         self._initialize_model()
 
     def _initialize_model(self) -> None:
-        """Initialize the transformer model and tokenizer."""
+        """
+        Initialize the transformer model and tokenizer.
+        """
         self.tokenizer = AutoTokenizer.from_pretrained(self.config.model_name)
         self.model = AutoModelForSequenceClassification.from_pretrained(
             self.config.model_name
         )
+
+        # Initialize classification weights
+        if hasattr(self.model, "classifier"):
+            if hasattr(self.model.classifier, "weight"):
+                torch.nn.init.xavier_normal_(self.model.classifier.weight)
+            if hasattr(self.model.classifier, "bias"):
+                torch.nn.init.zeros_(self.model.classifier.bias)
+
+        if hasattr(self.model, "pre_classifier"):
+            if hasattr(self.model.pre_classifier, "weight"):
+                torch.nn.init.xavier_normal_(self.model.pre_classifier.weight)
+            if hasattr(self.model.pre_classifier, "bias"):
+                torch.nn.init.zeros_(self.model.pre_classifier.bias)
+
         self.model.to(self.device)
 
     def prepare_data(self, df: pd.DataFrame) -> Tuple[DataLoader, DataLoader]:
@@ -111,6 +132,14 @@ class TransformerModel(BaseModel):
         # Encode labels
         encoded_labels = self.label_encoder.fit_transform(df[self.config.label_column])
         self.num_labels = len(self.label_encoder.classes_)
+
+        self.model = AutoModelForSequenceClassification.from_pretrained(
+            self.config.model_name,
+            num_labels = self.num_labels
+        )
+        self.model.to(self.device)
+
+        print(f"Total Categories: {self.num_labels}")
 
         # Split data
         train_texts, val_texts, train_labels, val_labels = train_test_split(
@@ -146,13 +175,13 @@ class TransformerModel(BaseModel):
         return train_loader, val_loader
 
     def train_epoch(
-        self, train_loader: DataLoader, optimizer = torch.optim.AdamW
+        self, train_loader: DataLoader, optimizer: Any, scheduler: Any
     ) -> float:
         """Train for one epoch."""
         self.model.train()
         total_loss = 0
 
-        progress_bar = tqdm(train_loader, desc="Training")
+        progress_bar = tqdm(train_loader, desc = "Training", leave = False)
         for batch in progress_bar:
             # Move batch to device
             batch = {k: v.to(self.device) for k, v in batch.items()}
@@ -177,6 +206,7 @@ class TransformerModel(BaseModel):
             )
 
             optimizer.step()
+            scheduler.step()
 
             # Update progress bar
             progress_bar.set_postfix({"loss": loss.item()})
@@ -289,55 +319,3 @@ class TransformerModel(BaseModel):
         model.label_encoder = checkpoint["label_encoder"]
 
         return model
-
-
-# Example usage:
-if __name__ == "__main__":
-    # Create configuration
-    config = TransformerConfig(
-        model_name="distilbert-base-uncased",
-        num_epochs=3,
-        batch_size=32,
-        learning_rate=2e-5,
-        text_column="memo",
-        label_column="category",
-    )
-
-    # Initialize model
-    model = TransformerModel(config)
-
-    # Load sample data
-    df = pd.DataFrame(
-        {"memo": ["sample text 1", "sample text 2"], "category": ["class1", "class2"]}
-    )
-
-    # Prepare data
-    train_loader, val_loader = model.prepare_data(df)
-
-    # Initialize optimizer and scheduler
-    optimizer = torch.optim.AdamW(
-        model.model.parameters(),
-        lr=config.learning_rate,
-        weight_decay=config.weight_decay,
-    )
-
-    total_steps = len(train_loader) * config.num_epochs
-    warmup_steps = int(total_steps * config.warmup_ratio)
-
-    scheduler = get_linear_schedule_with_warmup(
-        optimizer, num_warmup_steps=warmup_steps, num_training_steps=total_steps
-    )
-
-    # Train and evaluate
-    for epoch in range(config.num_epochs):
-        train_loss = model.train_epoch(train_loader, optimizer, scheduler)
-        metrics = model.evaluate(val_loader)
-        print(
-            f"Epoch {epoch + 1}: Loss = {train_loss:.4f}, Accuracy = {metrics['accuracy']:.4f}"
-        )
-
-    # Make prediction
-    result = model.predict("sample prediction text")
-    print(
-        f"Prediction: {result['predicted_label']} (Confidence: {result['confidence']:.4f})"
-    )

@@ -4,3 +4,6 @@ scikit-learn
 transformers
 argparse
 torch
+dataclasses
+typing
+tdqm

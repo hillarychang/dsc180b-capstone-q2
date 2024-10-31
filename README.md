@@ -31,47 +31,58 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 ### File Structure
 
 ```
-├── config                          <- parameters for model (currently all dummy files)
+├── config                               <- parameters for model (currently all dummy files)
 │   ├──data_params.json     
 │   ├──feature_params.json
 │   └──model_params.json
 │
 │
-├── data                            <- .gitignore (data not tracked in the repository)
-│   ├──ucsd-inflows.pqt             <- Inflow data (money getting put into bank)
-│   └──ucsd-outflows.pqt            <- Outflow data (money getting out of bank)   
+├── data                                 <- .gitignore (data not tracked in the repository)
+│   ├──ucsd-inflows.pqt                  <- Inflow data (money getting put into bank)
+│   └──ucsd-outflows.pqt                 <- Outflow data (money getting out of bank)   
 │
 │
-├── models                          <- Model Creation
-│   ├──transformers.py              <- Used to initialize the Transformer Model
+├── models                               <- Model Creation
+│   ├──transformers.py                   <- Used to initialize the Transformer Model
 │
 │
-├── notebooks                         <- jupyter notebooks used for data analysis
-│   ├──hillary_data_exploration.ipynb <- Hillary Chang's Data Analysis Notebook         
-│   ├──kevin_data_exploration.ipynb   <- Kevin Wong's Data Analysis Notebook
-│   ├──kurumi_data_exploration.ipynb  <- Kurumi Kaneko's Data Analysis Notebook
+├── notebooks                            <- jupyter notebooks used for data analysis
+│   ├──hillary_data_exploration.ipynb    <- Hillary Chang's Data Analysis Notebook         
+│   ├──kevin_data_exploration.ipynb      <- Kevin Wong's Data Analysis Notebook
+│   ├──kurumi_data_exploration.ipynb     <- Kurumi Kaneko's Data Analysis Notebook
 │   ├──kurumi_feature_engineering.ipynb  <- Kurumi Kaneko's Notebook for Feature Creation
-│   └──jevan_week2.ipynb              <- Jevan Chahal's notebook for train/test/split
+│   └──jevan_week2.ipynb                 <- Jevan Chahal's notebook for train/test/split
 │
 │
-├── report                   <- used to keep the report LaTeX pdf
+├── report                            <- used to keep the report LaTeX pdf
+│   ├──figure                         <- figures for the report
+│   │   ├──amt_category.png       
+│   │   ├──category_time.png
+│   │   ├──clean_df.jpeg
+│   │   ├──inflow.png
+│   │   ├──nonclean_df.png  
+│   │   └──outflow.png        
 │   └──report.tex   
 │
-├── src                      <- src files for the creation of features, model training, and more
-│   ├──base                <- Baseline Classes
-│   │   ├──config.py       <- Creates a configuration for all models
-│   │   └──model.py        <- Creates a Baseline Model
+├── src                               <- src files for the creation of features, model training, and more
+│   ├──base                           <- Baseline Classes
+│   │   ├──config.py                  <- Creates a configuration for all models
+│   │   └──model.py                   <- Creates a Baseline Model
+│   ├──configs                        <- Used to create baseline configurations for different models
+│   │   └──transformer.yml            <- Creates baseline parameters for the transformer model
+│   ├──models                         <- Contains all model code
+│   │   └──transformer.py             <- Transformer Model code
 │   ├──etl.py         
-│   ├──features.py              <- used to create features
-│   ├──text_cleaner.py          <- used to clean the data 
-│   └──model_training.py                     
+│   ├──features.py                    <- used to create features
+│   ├──text_cleaner.py                <- used to clean the data 
+│   └──model_training.py              <- used to train the model
 │
 │
-├── README.md                   <- README
+├── README.md                         <- README
 │
-├── requirements.txt            <- all required packages
+├── requirements.txt                  <- all required packages
 │
-└── run.py                   <- used to run the model
+└── run.py                            <- used to run the model
 ```
 
 ## Conclusion

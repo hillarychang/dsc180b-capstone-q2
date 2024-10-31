@@ -7,6 +7,7 @@ import logging
 from base.config import BaseConfig
 from base.model import BaseModel
 import pandas as pd
+from text_cleaner import clean_text
 
 
 def setup_logging():
@@ -20,16 +21,16 @@ def load_config(config_path: str) -> BaseConfig:
     with open(config_path, "r") as f:
         config_dict = yaml.safe_load(f)
 
-    model_type = config_dict.pop("model_type")
+    model_type = config_dict["model_type"]
     config_class = get_config_class(model_type)
     return config_class(**config_dict)
 
 
-def get_model_class(model_type: str) -> Type[BaseModel]:
+def get_model_class(model_type: str, model_version) -> Type[BaseModel]:
     """Dynamically import and return the model class."""
     try:
         module = importlib.import_module(f"src.models.{model_type.lower()}")
-        return getattr(module, model_type)
+        return getattr(module, model_version)
     except (ImportError, AttributeError) as e:
         raise ValueError(f"Model type {model_type} not found: {e}")
 
@@ -49,6 +50,7 @@ def train_model(model: BaseModel, train_data: pd.DataFrame, output_dir: Path):
 
     # Prepare data
     train_loader, val_loader = model.prepare_data(train_data)
+
 
     # Training loop
     best_metric = float("-inf")
@@ -90,11 +92,11 @@ def main():
     logger.info(f"Loaded configuration: {config}")
 
     # Load data
-    train_data = pd.read_csv(args.data)
+    train_data = clean_text(pd.read_parquet(args.data))
     logger.info(f"Loaded {len(train_data)} training examples")
 
     # Initialize model
-    model_class = get_model_class(config.model_type)
+    model_class = get_model_class(config.model_type, config.model_version)
     model = model_class(config)
     logger.info(f"Initialized model: {model.__class__.__name__}")
 

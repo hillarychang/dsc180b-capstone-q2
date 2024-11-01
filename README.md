@@ -10,8 +10,8 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/your-username/categorizing-memos.git
-    cd categorizing-memos
+    git clone https://github.com/hillarychang/dsc180a-capstone-q1.git
+    cd dsc180a-capstone-q1
     ```
 
 2. **Install the dependencies**:

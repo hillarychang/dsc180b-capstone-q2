@@ -69,7 +69,7 @@ We also examined seasonal patterns within the dataset, which spans from 2020 to 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figure/category_time.png}
-    \caption{Trends of transaction categories over time. This exploratory analysis visualizes patterns in transaction volume across different categories, revealing insights such as seasonal spending behavior and category-specific peaks. For example, categories like \texttt{DEPOSIT} and \texttt{EXTERNAL\_TRANSFER} show higher transaction counts in certain months.}
+    \caption{Trends of transaction categories over time. This exploratory analysis visualizes patterns in transaction volume across different categories, showing insights such as seasonal spending behavior and category-specific peaks. For example, categories like \texttt{DEPOSIT} and \texttt{EXTERNAL\_TRANSFER} show higher transaction counts in certain months.}
     \label{fig:category_trends}
 \end{figure}
 
@@ -213,16 +213,42 @@ We configured the Random Forest model with the following hyperparameters:
 
 The Random Forest model achieved an accuracy of 84.28\% on the test set, which was lower than the Logistic Regression model.
 
+\subsection{LLM with Transformer}
+We implemented a Transformer-based model using the Hugging Face \texttt{transformers} library, focusing on categorizing transaction memos. We configured the Transformer to operate with a pre-trained \texttt{distilbert-base-uncased} model as the foundation.
+
+\subsubsection{Configuration and Preprocessing}
+Our model training configuration was specified in a YAML file \texttt{(transformer.yml)}. This configuration included settings for model type, tokenization, batch size, learning rate, and additional hyperparameters.
+
+\begin{itemize}
+    \item \textbf{Model Type:} \texttt{distilbert-base-uncased}
+    \item \textbf{Maximum Length:} 128 tokens
+    \item \textbf{Batch Size:} 16 for training
+    \item \textbf{Learning Rate:} 2e-5 with a warmup ratio of 0.1 to avoid large initial steps
+\end{itemize}
+
+\subsubsection{Tokenization and Augmentation}
+Using \texttt{AutoTokenizer}, we tokenized the memo field and added custom tokens for whole dollar amounts and date information, as previously engineered in the token augmentation phase. Our feature generation steps are handled within the \texttt{features.py} script.
+
+\subsubsection{Model Training and Validation}
+We split the dataset into training and validation sets using an 80/20 split. Each dataset was processed with the Transformer-based dataset class, \texttt{TransformerDataset}, which formatted the inputs for Transformer compatibility. During training, we used the AdamW optimizer and a linear learning rate scheduler with warmup.
+
+\begin{itemize}
+    \item \textbf{Optimizer:} AdamW
+    \item \textbf{Scheduler:} Linear schedule with warmup ratio of 0.1.
+    \item \textbf{Epochs:} The model was trained over 3 epochs
+    \item \textbf{Gradient Clipping:} Applied with a maximum value of 1.0
+\end{itemize}
+
+
 
 \section{Results}
-\subsection{Logistic Regression with TF-IDF Vectorization}
+\subsection{Logistic Regression}
 
 The Logistic Regression model with TF-IDF vectorization achieved strong performance in classifying transaction categories. The key metrics used to evaluate the model were overall accuracy, ROC-AUC scores for each category, per-category accuracy, and a confusion matrix.
 
-\subsubsection{Overall Accuracy}
 The Logistic Regression model achieved an overall accuracy of 96.15\% on the test set, indicating its effectiveness in distinguishing between different transaction categories based on the tokenized `memo` text.
 
-\subsubsection{ROC-AUC Scores}
+\subsubsection{ROC-AUC Scores and Per-Category Accuracy}
 To assess the model’s ability to distinguish between each category in a one-vs-all setting, we calculated the ROC-AUC score for each category. Table \ref{table:roc_auc_scores_logreg} provides the ROC-AUC scores for all categories. The high ROC-AUC scores, particularly in categories like \texttt{GROCERIES}, \texttt{FOOD\_AND\_BEVERAGES}, and \texttt{MORTGAGE}, reflect the model's strong performance across multiple categories.
 
 \begin{table}[h]
@@ -246,7 +272,6 @@ To assess the model’s ability to distinguish between each category in a one-vs
     \label{table:roc_auc_scores_logreg}
 \end{table}
 
-\subsubsection{Per-Category Accuracy}
 We also evaluted the model’s accuracy for each category individually, as shown in Table \ref{table:category_accuracy_logreg}. High per-category accuracy, especially for categories such as \texttt{OVERDRAFT}, \texttt{MORTGAGE}, and \texttt{RENT}, indicates the model's reliability in classifying certain types of transactions with precision.
 
 \begin{table}[h]
@@ -280,14 +305,13 @@ The confusion matrix for the Logistic Regression model (Figure \ref{fig:log_reg_
     \label{fig:confusion_matrix_logreg}
 \end{figure}
 
-\subsection{Random Forest with TF-IDF Vectorization}
+\subsection{Random Forest}
 
 Although the Random Forest model with TF-IDF vectorization was a more complex classifier, its performance did not surpass the Logistic Regression model's performance. We used the same evaluation metrics for the Random Forest model (overall accuracy, ROC-AUC scores, per-category accuracy, and the confusion matrix).
 
-\subsubsection{Overall Accuracy}
 The Random Forest model achieved an overall accuracy of 84.28\% on the test set.
 
-\subsubsection{ROC-AUC Scores}
+\subsubsection{ROC-AUC Scores and Per-Category Accuracy}
 The ROC-AUC scores for each category are shown in Table \ref{table:roc_auc_rf}. These scores show that the Random Forest model had high discriminatory power in categories like \texttt{FOOD\_AND\_BEVERAGES} and \texttt{MORTGAGE}, but lower power in others, such as \texttt{EDUCATION} and \texttt{OVERDRAFT}.
 
 \begin{table}[h]
@@ -311,7 +335,6 @@ The ROC-AUC scores for each category are shown in Table \ref{table:roc_auc_rf}. 
     \label{table:roc_auc_rf}
 \end{table}
 
-\subsubsection{Per-Category Accuracy}
 Table \ref{table:category_accuracy_rf} shows the per-category accuracy of the Random Forest model. Categories such as \texttt{OVERDRAFT}, \texttt{MORTGAGE}, and \texttt{RENT} achieved near-perfect accuracy, whereas categories like \texttt{FOOD\_AND\_BEVERAGES} and \texttt{GENERAL\_MERCHANDISE} had lower accuracy.
 
 \begin{table}[h]
@@ -345,46 +368,54 @@ The confusion matrix for the Random Forest model (Figure \ref{fig:confusion_matr
     \label{fig:confusion_matrix_rf}
 \end{figure}
 
-\section{Discussion}
 
+\subsection{LLM Performance}
+The Transformer model was evaluated on a total of 9 transaction categories. After one epoch, it achieved a training loss of 0.1361 and a validation loss of 0.0603. The model’s validation accuracy reached 98.56\%, indicating strong generalization across categories. Evaluation on the validation set took approximately 2 minutes and 43 seconds to complete.
+
+Although the Transformer model achieved high accuracy (98.56\%) in categorizing transaction memos, it also exhibited higher latency compared to simpler models, requiring longer processing times for both training and evaluation.
+
+\section{Discussion}
 \subsection{Interpretation of Results}
 
-The Logistic Regression model achieved high accuracy (96.15\%) and strong ROC-AUC scores across most transaction categories, indicating that Logistic Regression, when combined with TF-IDF vectorization, is effective in distinguishing between categories based on term frequency patterns. This performance can largely be attributed to Logistic Regression's ability to handle a large number of features effectively, particularly with the addition of regularization (L2 penalty) using the \texttt{saga} solver. The model's simplicity and its capacity to generalize well without overfitting make it a suitable choice for text-based classification tasks, such as categorizing transaction memos into relevant categories.
+The Logistic Regression model achieved high accuracy (96.15\%) and strong ROC-AUC scores across most transaction categories, indicating that Logistic Regression, when combined with TF-IDF vectorization, is effective in distinguishing between categories based on term frequency patterns. This performance can largely be attributed to Logistic Regression's ability to handle a large number of features effectively, particularly with the addition of regularization (L2 penalty) using the \texttt{saga} solver.
 
-Although the Random Forest model is more complex, it achieved a lower overall accuracy of 84.28\% and had mixed performance across categories. While it performed well in certain categories, such as \texttt{OVERDRAFT} and \texttt{MORTGAGE}, it struggled in others, such as \texttt{EDUCATION} and \texttt{GENERAL\_MERCHANDISE}. This discrepancy suggests that model complexity alone does not ensure better performance, particularly for high-dimensional data.
+Although the Random Forest model is more complex, it achieved a lower overall accuracy of 84.28\% and had mixed performance across categories. While it performed well in certain categories, such as \texttt{OVERDRAFT} and \texttt{MORTGAGE}, it struggled in others, such as \texttt{EDUCATION} and \texttt{GENERAL\_MERCHANDISE}. This discrepancy suggests that model complexity alone does not ensure better performance.
+
+The Transformer model demonstrated the highest accuracy among the models at 98.56\%. However, the model’s high latency limit its practicality for real-time applications. 
 
 \subsection{Model Comparison}
-
 The likely reason for Random Forest’s lower performance lies in its sensitivity to high-dimensional, sparse data. Random Forest models work best with dense features and can struggle with the many zero-valued features produced by TF-IDF vectorization. In contrast, Logistic Regression’s performance demonstrates that it can handle sparse, high-dimensional data effectively due to its simple, linear structure and the use of regularization to prevent overfitting.
 
-The results indicate that Logistic Regression outperformed Random Forest in both overall accuracy and category-specific ROC-AUC scores. Additionally, the confusion matrices for each model reveal that Logistic Regression made fewer misclassifications, with fewer off-diagonal elements overall compared to the Random Forest model. This finding aligns with the accuracy and ROC-AUC scores, reinforcing the suitability of Logistic Regression with TF-IDF for this task.
+The results indicate that Logistic Regression outperformed Random Forest in both overall accuracy and category-specific ROC-AUC scores. Additionally, the confusion matrices for each model show that Logistic Regression made fewer misclassifications, with fewer off-diagonal elements overall compared to the Random Forest model.
 
-\subsection{Limitations}
+The Transformer model, while achieving the highest accuracy at 98.56\%, comes with significant latency and requires more processing time for both training and prediction. This latency trade-off makes it unsuitable for real-time or high-frequency applications, and make the lower latency Logistic Regression a more practical choice.
 
-A primary challenge in text-based classification is managing high-dimensional sparse data effectively. Although Logistic Regression performed well with TF-IDF features, the use of alternative feature extraction methods, such as word embeddings (e.g., Word2Vec or GloVe), could be explored to capture more semantic meaning between words. For the Random Forest model, the high feature sparsity from TF-IDF may have impacted its performance, as Random Forest models typically perform better with dense feature spaces.
 
 \subsection{Potential Improvements}
+For Random Forest, addressing feature sparsity by grouping similar words or applying dimensionality reduction techniques, such as Principal Component Analysis (PCA), could enhance performance. Further, fine-tuning hyperparameters for both models can further improve results. For Logistic Regression, using different regularization strengths could improve results, while for Random Forest, increasing the number of trees or using smaller maximum depths could improve performance.
 
-For Random Forest, addressing feature sparsity by grouping similar words or applying dimensionality reduction techniques, such as Principal Component Analysis (PCA) or Truncated Singular Value Decomposition (SVD), could enhance performance. Additionally, fine-tuning hyperparameters for both models may yield further improvements. For Logistic Regression, experimenting with different regularization strengths or solvers might yield marginal gains. For Random Forest, increasing the number of trees or experimenting with larger maximum depths could enhance performance, though these adjustments may require more computational resources.
+For the limitations of Transformer models, testing smaller model architectures could potentially reduce latency
 
-Given the mixed results of Random Forest, exploring other models specifically designed for text classification could provide further insight. Support Vector Machines (SVMs), known for their effectiveness on high-dimensional, sparse data, might be a promising alternative for this classification task.
-
-\subsection{Future Work}
-
-Future work could focus on implementing different models and feature engineering techniques to improve classification performance. Also, performing a more extensive hyperparameter search for both Logistic Regression and Random Forest could further optimize each model’s accuracy.
-
-Further understanding the misclassified categories could also provide insights into what the models do not capture effectively.
-
-
-
-
+Given the mixed results of Random Forest, exploring other complex models , such as Support Vector Machines (SVMs), could provide further insight for this classification task.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% Reference / Bibliography
+%%%% Literature Review and Prior Work
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\section{Literature Review and Discussion of Prior Work}
+
+\subsection{Attention is All You Need (2017)}
+
+One of the key papers in machine learning, \textit{“Attention is All You Need”} by Vaswani et al. (2017), introduced the Transformer architecture along with a cohort of innovative ideas for natural language processing, becoming the foundation for modern-day language models. Specifically, the architecture addressed limitations of traditional sequence models and outdated bigram models by introducing an attention mechanism that does not rely on recurrence or convolution operations, instead focusing on weights that allow models to weigh the importance of different parts of the input sequence during processing.
+
+This key innovation enabled Transformer models to capture long-range dependencies more effectively and efficiently compared to prior models such as RNNs and LSTMs. Additionally, Vaswani et al. demonstrated that Transformer models could achieve faster parallelism, requiring less training time.
+
+For our application in banking transaction categorization and credit default prediction, Transformer models are particularly relevant. They offer a promising approach for future banking categorization methods due to their strong capability in self-attention, which allows precise categorization of transaction memos. This specificity enhances the richness of the data available for analysis. Furthermore, the Transformer model's ability to learn patterns in spending behavior and recognize relationships between transactions over time offers potential in detecting financial distress or increased credit risk, as it learns from sequential transaction data associated with individual consumers.
+
+
+% Bibliography
 \bibliography{reference}
-\bibliographystyle{style/dsc180bibstyle}
+\bibliographystyle{IEEEtran}  % use a style that supports URLs
 
 \end{document}

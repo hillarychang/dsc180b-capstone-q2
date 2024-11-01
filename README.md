@@ -47,7 +47,7 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 │
 │
 ├── notebooks                            <- jupyter notebooks used for data analysis
-|   └──baseline_models.ipynb             <- JevanChahal's Notebook for performing logistic regression with tf-idf
+|   └──baseline_models.ipynb             <- Perform logistic regression and random forest with tf-idf
 │   ├──hillary_data_exploration.ipynb    <- Hillary Chang's Data Analysis Notebook         
 │   ├──kevin_data_exploration.ipynb      <- Kevin Wong's Data Analysis Notebook
 │   ├──kurumi_data_exploration.ipynb     <- Kurumi Kaneko's Data Analysis Notebook

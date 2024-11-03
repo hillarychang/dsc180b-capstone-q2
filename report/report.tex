@@ -403,7 +403,7 @@ Given the mixed results of Random Forest, exploring other complex models , such 
 %%%% Literature Review and Prior Work
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Literature Review and Discussion of Prior Work}
+\section{Literature Review}
 
 \subsection{Attention is All You Need (2017)}
 
@@ -413,9 +413,16 @@ This key innovation enabled Transformer models to capture long-range dependencie
 
 For our application in banking transaction categorization and credit default prediction, Transformer models are particularly relevant. They offer a promising approach for future banking categorization methods due to their strong capability in self-attention, which allows precise categorization of transaction memos. This specificity enhances the richness of the data available for analysis. Furthermore, the Transformer model's ability to learn patterns in spending behavior and recognize relationships between transactions over time offers potential in detecting financial distress or increased credit risk, as it learns from sequential transaction data associated with individual consumers.
 
+\subsection{Language Models are Unsupervised Multitask Learners (2019)}
+The paper \textit{“Language Models are Unsupervised Multitask Learners”} by Radford et al. (2019) marks a shift in natural language processing by introducing GPT-2, a model that emphasizes unsupervised multitask learning. Traditionally, NLP models rely on supervised learning, where they are trained on labeled data. In contrast, GPT-2 was trained on a massive dataset without any task-specific labels, allowing it to perform multiple tasks in a \textit{zero-shot setting}, meaning it can handle tasks without additional data or fine-tuning for each one.
 
-% Bibliography
-\bibliography{reference}
+GPT-2’s ability to generalize across a range of tasks is primarily attributed to its use of the Transformer architecture, which employs a self-attention mechanism to capture long-range dependencies in text more effectively than previous models such as RNNs or LSTMs. The Transformer’s design also supports parallel processing, making it both faster to train and more efficient in application. For training, the authors created WebText, a massive dataset comprising data from Reddit web pages.
+
+GPT-2’s zero-shot learning capability makes it highly adaptable for categorizing transaction memos without requiring labeled data for each specific task. By identifying patterns in transactions, GPT-2 could potentially discover trends across transaction types as well. However, despite these strengths, GPT-2 has limitations, especially in complex reasoning, which suggests room for further refinement and improvement.
+
+
+
+
 \bibliographystyle{IEEEtran}  % use a style that supports URLs
 
 \end{document}

@@ -13,6 +13,7 @@ class BaseConfig(ABC):
     num_epochs: int
     batch_size: int
     learning_rate: float
+    num_labels: int
     random_seed: int = 41
     device: str = 'cuda' if torch.cuda.is_available() else 'cpu'
 

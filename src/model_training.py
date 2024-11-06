@@ -10,6 +10,7 @@ import pandas as pd
 import torch
 from transformers import get_linear_schedule_with_warmup
 from text_cleaner import clean_text
+from features import add_token
 
 
 def setup_logging():
@@ -61,11 +62,11 @@ def train_model(model: BaseModel, data: pd.DataFrame, output_dir: Path):
     warmup_steps = int(total_steps * warmup_ratio)
 
     optimizer = torch.optim.AdamW(
-            model.model.parameters(),
-            lr=learning_rate,
-            weight_decay=weight_decay,
-        )
-    
+        model.model.parameters(),
+        lr=learning_rate,
+        weight_decay=weight_decay,
+    )
+
     scheduler = get_linear_schedule_with_warmup(
         optimizer, num_warmup_steps=warmup_steps, num_training_steps=total_steps
     )
@@ -90,12 +91,35 @@ def train_model(model: BaseModel, data: pd.DataFrame, output_dir: Path):
             model.config.save(output_dir / "config.json")
             logger.info(f"Saved new best model with metric: {best_metric:.4f}")
 
+def evaluate_model(model, data):
+    model.eval()
+    logger = logging.getLogger("train_model")
+
+    # create data loaders
+    _, val_loader = model.prepare_data(data)
+
+    # get metrics
+    metrics = model.evaluate(val_loader)
+
+    best_metric = metrics["primary_metric"]
+    logger.info(f"Validation metrics: {metrics}")
+
 
 def main():
     parser = argparse.ArgumentParser(description="Train a text classification model")
+    parser.add_argument(
+        "--evaluate_only", action="store_true", help="Only evaluate model"
+    )
     parser.add_argument("--config", required=True, help="Path to config file")
     parser.add_argument("--data", required=True, help="Path to training data")
-    parser.add_argument("--output", required=True, help="Output directory")
+    parser.add_argument("--output", required=False, help="Output directory")
+    parser.add_argument("--model_path", help="Path to pre-trained model")
+    parser.add_argument(
+        "--sample-ratio",
+        type=float,
+        default=1.0,
+        help="Fraction of data to use (between 0 and 1)",
+    )
     args = parser.parse_args()
 
     setup_logging()
@@ -110,16 +134,37 @@ def main():
     logger.info(f"Loaded configuration: {config}")
 
     # Load data
-    data = clean_text(pd.read_parquet(args.data))
+    full_data = pd.read_parquet(args.data)
+    if args.sample_ratio < 1.0:
+        sampled_data = full_data.sample(frac=args.sample_ratio)
+        data = add_token(clean_text(sampled_data))
+        # Log samples
+        logger.info(
+            f"Sampled {len(sampled_data)} examples from {len(full_data)} "
+            f"({args.sample_ratio:.1%} of data)"
+        )
+    else:
+        data = clean_text(full_data)
+
     logger.info(f"Loaded {len(data)} training examples")
 
     # Initialize model
     model_class = get_model_class(config.model_type, config.model_version)
-    model = model_class(config)
-    logger.info(f"Initialized model: {model.__class__.__name__}")
 
-    # train model
-    train_model(model, data, output_dir)
+    if args.evaluate_only:
+        if not args.model_path:
+            raise ValueError(
+                "Model Path must be specified with --model_path for evaluation only mode."
+            )
+        model = model_class.load_model(args.model_path)
+
+        evaluate_model(model, data)
+    else:
+        model = model_class(config)
+        logger.info(f"Initialized model: {model.__class__.__name__}")
+
+        # train model
+        train_model(model, data, output_dir)
 
 
 if __name__ == "__main__":

@@ -68,28 +68,3 @@ def fastext_function(data):
     conf_matrix = confusion_matrix(y_test, y_pred, labels=list(set(y_test)))
     conf_matrix_df = pd.DataFrame(conf_matrix, index=list(set(y_test)), columns=list(set(y_test)))
     print("\nConfusion Matrix:\n", conf_matrix_df)
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-

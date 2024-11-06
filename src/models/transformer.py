@@ -14,14 +14,18 @@ from transformers.utils import logging as transformers_logging
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
+from pathlib import Path
+import pickle
+import json
 
 from src.base.config import BaseConfig
 from src.base.model import BaseModel
 import warnings
 
 # Suppress Warnings
-warnings.filterwarnings('ignore', message = '.*_register_pytree_node.*')
+warnings.filterwarnings("ignore", message=".*_register_pytree_node.*")
 transformers_logging.set_verbosity_warning()
+
 
 @dataclass
 class TransformerConfig(BaseConfig):
@@ -96,6 +100,7 @@ class TransformerModel(BaseModel):
     """
     Transformer-based model implementation.
     """
+
     def __init__(self, config: TransformerConfig):
         super().__init__(config)
         self.config = config
@@ -134,8 +139,7 @@ class TransformerModel(BaseModel):
         self.num_labels = len(self.label_encoder.classes_)
 
         self.model = AutoModelForSequenceClassification.from_pretrained(
-            self.config.model_name,
-            num_labels = self.num_labels
+            self.config.model_name, num_labels=self.num_labels
         )
         self.model.to(self.device)
 
@@ -181,7 +185,7 @@ class TransformerModel(BaseModel):
         self.model.train()
         total_loss = 0
 
-        progress_bar = tqdm(train_loader, desc = "Training", leave = False)
+        progress_bar = tqdm(train_loader, desc="Training", leave=False)
         for batch in progress_bar:
             # Move batch to device
             batch = {k: v.to(self.device) for k, v in batch.items()}
@@ -291,31 +295,39 @@ class TransformerModel(BaseModel):
 
     def save_model(self, path: str) -> None:
         """Save model state and configuration."""
-        torch.save(
-            {
-                "model_state_dict": self.model.state_dict(),
-                "tokenizer": self.tokenizer,
-                "label_encoder": self.label_encoder,
-                "config": self.config,
-            },
-            path,
-        )
+        save_path = Path(path)
+        save_path.mkdir(parents=True, exist_ok=True)
 
-    @classmethod
-    def load_model(
-        cls, path: str, config: Optional[TransformerConfig] = None
-    ) -> "TransformerModel":
+        # save model & tokenzier
+        self.model.save_pretrained(path, from_pt=True)
+        self.tokenizer.save_pretrained(path, from_pt=True)
+
+        # save label encoder
+        label_path = save_path / "label_encoder.pkl"
+        with open(label_path, "wb") as f:
+            pickle.dump(self.label_encoder, f)
+
+        # save config
+        config_path = save_path / "config.json"
+        with open(config_path, "w") as f:
+            json.dump(self.config.__dict__, f)
+
+    def load_model(self, path: str, config: Optional[TransformerConfig] = None):
         """Load model state and configuration."""
-        checkpoint = torch.load(path, map_location="cpu")
+        with open(f"{path}/config.json", "r") as f:
+            config_dict = json.load(f)
 
-        # Use loaded config if none provided
-        if config is None:
-            config = checkpoint["config"]
+        config = TransformerConfig(**config_dict)
 
-        # Initialize model
-        model = cls(config)
-        model.model.load_state_dict(checkpoint["model_state_dict"])
-        model.tokenizer = checkpoint["tokenizer"]
-        model.label_encoder = checkpoint["label_encoder"]
+        # Load the model
+        model = AutoModelForSequenceClassification.from_pretrained(path)
+        model.to(config.device)
 
-        return model
+        # Load tokenizer
+        tokenizer = AutoTokenizer.from_pretrained(path)
+
+        self.model = model
+        self.tokenizer = tokenizer
+
+        with open(f"{path}/label_encoder.pkl") as f:
+            self.label_encoder = pickle.load(f)

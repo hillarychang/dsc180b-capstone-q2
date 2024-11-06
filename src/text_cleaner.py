@@ -37,7 +37,7 @@ def clean_text(data, column="memo"):
 
     # Define regex patterns
     pattern1 = r"\b(?:CA\s+)?(?:0?[1-9]|1[0-2])[/-](?:0?[1-9]|[12]\d|3[01])(?:/\d{2,4})?\b"  # Dates and optional 'CA'
-    pattern2 = r"(?<!#)X+|#X+"  # Excessive 'X' characters
+    pattern2 = r"X{3,}"  # Excessive 'X' characters
     pattern3 = r"[^a-zA-Z0-9\s./]"  # Unnecessary punctuation
     pattern4 = r"\s[A-Z]{2}$"  # State codes at the end
     pattern5 = r"(pos withdrawal|debit card withdrawal)"  # Transaction phrases

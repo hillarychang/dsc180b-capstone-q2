@@ -8,6 +8,8 @@ from base.config import BaseConfig
 from base.model import BaseModel
 import pandas as pd
 import torch
+import sys
+import os
 from transformers import get_linear_schedule_with_warmup
 from text_cleaner import clean_text
 from features import add_token
@@ -106,6 +108,7 @@ def evaluate_model(model, data):
 
 
 def main():
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     parser = argparse.ArgumentParser(description="Train a text classification model")
     parser.add_argument(
         "--evaluate_only", action="store_true", help="Only evaluate model"

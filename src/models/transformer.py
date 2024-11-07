@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 from transformers import (
     AutoTokenizer,
-    AutoModelForSequenceClassification,
+    DistilBertForSequenceClassification,
     PreTrainedTokenizer,
 )
 from transformers.utils import logging as transformers_logging
@@ -32,7 +32,8 @@ class TransformerConfig(BaseConfig):
     """Configuration for transformer-based models."""
 
     # Model specific
-    model_type: str = "Transformer"
+    model_type: str = "distilbert-base-uncased"
+    model_type_local: str = "Transformer"
     model_version: str = "TransformerModel"
     model_name: str = "distilbert-base-uncased"
     max_length: int = 128
@@ -51,6 +52,7 @@ class TransformerConfig(BaseConfig):
     val_ratio: float = 0.2
     text_column: str = "memo"
     label_column: str = "category"
+    num_labels: int = 9
 
     # System specific
     num_workers: int = 4
@@ -113,7 +115,7 @@ class TransformerModel(BaseModel):
         Initialize the transformer model and tokenizer.
         """
         self.tokenizer = AutoTokenizer.from_pretrained(self.config.model_name)
-        self.model = AutoModelForSequenceClassification.from_pretrained(
+        self.model = DistilBertForSequenceClassification.from_pretrained(
             self.config.model_name
         )
 
@@ -138,7 +140,7 @@ class TransformerModel(BaseModel):
         encoded_labels = self.label_encoder.fit_transform(df[self.config.label_column])
         self.num_labels = len(self.label_encoder.classes_)
 
-        self.model = AutoModelForSequenceClassification.from_pretrained(
+        self.model = DistilBertForSequenceClassification.from_pretrained(
             self.config.model_name, num_labels=self.num_labels
         )
         self.model.to(self.device)
@@ -299,7 +301,7 @@ class TransformerModel(BaseModel):
         save_path.mkdir(parents=True, exist_ok=True)
 
         # save model & tokenzier
-        self.model.save_pretrained(path, from_pt=True)
+        self.model.save_pretrained(path, from_pt = True)
         self.tokenizer.save_pretrained(path, from_pt=True)
 
         # save label encoder
@@ -312,22 +314,26 @@ class TransformerModel(BaseModel):
         with open(config_path, "w") as f:
             json.dump(self.config.__dict__, f)
 
-    def load_model(self, path: str, config: Optional[TransformerConfig] = None):
+    @classmethod
+    def load_model(cls, path: str):
         """Load model state and configuration."""
+        model = DistilBertForSequenceClassification.from_pretrained(path, num_labels = 9)
+
+        # Load tokenizer
+        tokenizer = AutoTokenizer.from_pretrained(path)
+
+        with open(f"{path}/label_encoder.pkl", "rb") as f:
+            label_encoder = pickle.load(f)
+
         with open(f"{path}/config.json", "r") as f:
             config_dict = json.load(f)
 
         config = TransformerConfig(**config_dict)
 
         # Load the model
-        model = AutoModelForSequenceClassification.from_pretrained(path)
-        model.to(config.device)
+        transformer_model = cls(config)
+        transformer_model.model = model
+        transformer_model.tokenizer = tokenizer
+        transformer_model.label_encoder = label_encoder
 
-        # Load tokenizer
-        tokenizer = AutoTokenizer.from_pretrained(path)
-
-        self.model = model
-        self.tokenizer = tokenizer
-
-        with open(f"{path}/label_encoder.pkl") as f:
-            self.label_encoder = pickle.load(f)
+        return transformer_model

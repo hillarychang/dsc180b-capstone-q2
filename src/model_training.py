@@ -26,7 +26,7 @@ def load_config(config_path: str) -> BaseConfig:
     with open(config_path, "r") as f:
         config_dict = yaml.safe_load(f)
 
-    model_type = config_dict["model_type"]
+    model_type = config_dict["model_type_local"]
     config_class = get_config_class(model_type)
     return config_class(**config_dict)
 
@@ -94,7 +94,6 @@ def train_model(model: BaseModel, data: pd.DataFrame, output_dir: Path):
             logger.info(f"Saved new best model with metric: {best_metric:.4f}")
 
 def evaluate_model(model, data):
-    model.eval()
     logger = logging.getLogger("train_model")
 
     # create data loaders
@@ -128,9 +127,7 @@ def main():
     setup_logging()
     logger = logging.getLogger("main")
 
-    # Create output directory
-    output_dir = Path(args.output)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    
 
     # Load configuration
     config = load_config(args.config)
@@ -152,17 +149,20 @@ def main():
     logger.info(f"Loaded {len(data)} training examples")
 
     # Initialize model
-    model_class = get_model_class(config.model_type, config.model_version)
+    model_class = get_model_class(config.model_type_local, config.model_version)
 
     if args.evaluate_only:
         if not args.model_path:
             raise ValueError(
                 "Model Path must be specified with --model_path for evaluation only mode."
             )
-        model = model_class.load_model(args.model_path)
+        model = model_class.load_model(path = args.model_path)
 
         evaluate_model(model, data)
     else:
+        # Create output directory
+        output_dir = Path(args.output)
+        output_dir.mkdir(parents=True, exist_ok=True)
         model = model_class(config)
         logger.info(f"Initialized model: {model.__class__.__name__}")
 

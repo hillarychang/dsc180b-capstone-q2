@@ -1,4 +1,5 @@
-model_type: Transformer
+model_type_local: Transformer
+model_type: distilbert-base-uncased
 model_version: TransformerModel
 model_name: distilbert-base-uncased
 max_length: 32

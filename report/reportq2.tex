@@ -1,0 +1,77 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{style/dsc180reportstyle} % import dsc180reportstyle.sty
+\usepackage{hyperref} % for URLs
+\usepackage{tocloft} % for custom table of contents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Title and Authors
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{DSC Capstone Q2 Written Proposal}
+
+\author{Jevan Chahal\\
+  {\tt j2chahal@ucsd.edu} \\\And
+  Hillary Chang \\
+  {\tt hic001@ucsd.edu} \\\And
+  Kurumi Kaneko \\
+  {\tt kskaneko@ucsd.edu} \\\And
+  Kevin Wong \\
+  {\tt kew024@ucsd.edu} \\\And
+  Brian Duke \\
+  {\tt brian.duke@prismdata.com} \\\And
+  Kyle Nero \\
+  {\tt kyle.nero@ucsd.edu} \\}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+    \textcolor{Black}{
+    The process of capturing what makes a creditor trustworthy or not is especially vital within the confines of bank data, due to the guidelines and ethics of what makes this data usable. Although the quantity of the data is massive, there are only a few available features that are explicitly useful in the confines of machine learning, which calls into question how we should measure customer's trustworthiness towards their creditors. Our methodology details the process of refining bank data into categories using Natural Language Processing, assessing individual's income based on bank data alone, and also measuring their credit worthiness both accurately and efficiently. 
+    }
+\end{abstract}
+
+\begin{center}
+Code: \url{https://github.com/hillarychang/dsc180a-capstone-q1}
+\end{center}
+
+\tableofcontents
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Main Contents
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Broad Problem Statement}
+Access to credit is extremely important for people trying to build their lives, whether it is used to buy a house, obtain an education, or handle emergencies. However, traditional credit scoring systems like FICO often exclude key aspects of a person’s financial situation. They heavily rely on static data, such as repayment history or credit utilization, which doesn’t tell the whole story. As a result, certain groups, like young adults or those in underprivileged communities, are disproportionately impacted, affecting their access to financial opportunities.
+
+By analyzing detailed spending and income patterns, we can build a more inclusive and fair scoring system. This approach allows us to move away from rigid models and towards a system that reflects actual financial behavior. Patterns like income consistency, balance trends, and spending habits offer a much comprehensive view of a consumer’s risk profile.
+
+By investing 10 weeks into this project, we can demonstrate how transaction data can lead to fairer credit evaluations, ultimately benefiting both lenders and consumers. The opportunity to replace biased systems with data-driven models is incredibly important for equality for all.
+
+
+\section{Narrow Problem Statement}
+Traditional credit scoring models miss important details like income regularity, spending priorities, and how balances change over time. During Quarter 1, we made progress by categorizing transactions and estimating income based on inflows. However, this didn’t address how these features could predict credit risk. We now need to build a scoring model that uses these insights to evaluate consumers fairly.
+
+To solve this, we propose building a credit risk prediction model that relies on transaction-based features. Our methods will include:
+\begin{enumerate}
+    \item \textbf{Dataset Exploration and Baseline Feature Testing:} We will begin by identifying the single best feature for predicting credit risk and evaluate its standalone performance.
+    \item \textbf{Balance and Income Feature Engineering:} We will analyze balance trends and income consistency to create meaningful features beyond static metrics like “current balance” or “current income.” This includes sampling “good” and “bad” consumers to identify key differences.
+    \item \textbf{Category-Based Features:} By categorizing spending and income (ex. essentials like rent or groceries, major income sources like paychecks), we will derive features that highlight spending priorities and financial stability.
+    \item \textbf{Temporal Attributes and Comprehensive Feature Set:} We will engineer attributes that capture changes in spending, income, and balances over time, creating at least 100 meaningful features.
+    \item \textbf{Feature Selection:} To ensure model efficiency, we will write code to reduce the feature set to the top 40 predictors.
+    \item \textbf{Model Training and Explanation:} Using three machine learning methods (ex. Logistic Regression, Random Forest, and Gradient Boosted Trees), we will train and evaluate models. Additionally, we will generate reason codes to explain why specific consumers are classified as risky and analyze common themes.
+\end{enumerate}
+
+The methods we’re proposing build directly on the gaps identified in Quarter 1. While categorization and income estimation provided insights into financial behavior, they didn’t connect these patterns to credit risk outcomes. By bridging this gap with feature engineering and interpretable models, we can create a practical scoring tool that is both fair and scalable. This solution is urgently needed to address systemic issues in credit access and to demonstrate how modern data techniques can improve financial systems.
+
+
+\section{Primary Output}
+This project will deliver the following results:
+\begin{enumerate}
+    \item \textbf{Comprehensive Report:} A comprehensive report explaining our methods, results, and the impact of transaction-based features on credit risk prediction. This report will also address fairness and interpretability considerations.
+    \item \textbf{Prediction CSV File:} A file containing credit risk scores for each consumer in the holdout dataset, along with three reason codes per prediction. These reason codes will explain why each consumer was classified as risky or non-risky, ensuring transparency.
+    \item \textbf{Presentation Poster:} A poster summarizing the project’s methodology, results, etc. visually. This will be useful for presenting our findings to stakeholders in a concise way.
+\end{enumerate}
+
+\end{document}

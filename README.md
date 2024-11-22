@@ -46,25 +46,6 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 │   ├──transformers.py                   <- Used to initialize the Transformer Model
 │
 │
-├── notebooks                            <- jupyter notebooks used for data analysis
-|   └──baseline_models.ipynb             <- Perform logistic regression and random forest with tf-idf
-│   ├──hillary_data_exploration.ipynb    <- Hillary Chang's Data Analysis Notebook         
-│   ├──kevin_data_exploration.ipynb      <- Kevin Wong's Data Analysis Notebook
-│   ├──kurumi_data_exploration.ipynb     <- Kurumi Kaneko's Data Analysis Notebook
-│   ├──kurumi_feature_engineering.ipynb  <- Kurumi Kaneko's Notebook for Feature Creation
-│   └──jevan_week2.ipynb                 <- Jevan Chahal's notebook for train/test/split
-│
-│
-├── report                            <- used to keep the report LaTeX pdf
-│   ├──figure                         <- figures for the report
-│   │   ├──amt_category.png       
-│   │   ├──category_time.png
-│   │   ├──clean_df.jpeg
-│   │   ├──inflow.png
-│   │   ├──nonclean_df.png  
-│   │   └──outflow.png        
-│   └──report.tex   
-│
 ├── src                               <- src files for the creation of features, model training, and more
 │   ├──base                           <- Baseline Classes
 │   │   ├──config.py                  <- Creates a configuration for all models
@@ -76,7 +57,25 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 │   ├──etl.py         
 │   ├──features.py                    <- used to create features
 │   ├──text_cleaner.py                <- used to clean the data 
-│   └──model_training.py              <- used to train the model
+│   ├──model_training.py              <- used to train the model
+│   ├──notebooks                      <- Jupyter notebooks used for data analysis
+│   │   ├──baseline_models.ipynb      <- Perform logistic regression and random forest with tf-idf
+│   │   ├──hillary_data_exploration.ipynb    <- Hillary Chang's Data Analysis Notebook         
+│   │   ├──kevin_data_exploration.ipynb      <- Kevin Wong's Data Analysis Notebook
+│   │   ├──kurumi_data_exploration.ipynb     <- Kurumi Kaneko's Data Analysis Notebook
+│   │   ├──kurumi_feature_engineering.ipynb  <- Kurumi Kaneko's Notebook for Feature Creation
+│   │   └──jevan_week2.ipynb                 <- Jevan Chahal's notebook for train/test/split
+│
+│
+├── report                            <- used to keep the report LaTeX pdf
+│   ├──figure                         <- figures for the report
+│   │   ├──amt_category.png       
+│   │   ├──category_time.png
+│   │   ├──clean_df.jpeg
+│   │   ├──inflow.png
+│   │   ├──nonclean_df.png  
+│   │   └──outflow.png        
+│   └──report.tex   
 │
 │
 ├── README.md                         <- README

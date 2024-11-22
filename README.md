@@ -31,58 +31,55 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 ### File Structure
 
 ```
-├── config                               <- parameters for model (currently all dummy files)
-│   ├──data_params.json     
-│   ├──feature_params.json
-│   └──model_params.json
-│
+├├── config                               <- parameters for model (currently all dummy files)
+│   ├── data_params.json     
+│   ├── feature_params.json
+│   └── model_params.json
 │
 ├── data                                 <- .gitignore (data not tracked in the repository)
-│   ├──ucsd-inflows.pqt                  <- Inflow data (money getting put into bank)
-│   └──ucsd-outflows.pqt                 <- Outflow data (money getting out of bank)   
+│   ├── ucsd-inflows.pqt                 <- Inflow data (money getting put into bank)
+│   └── ucsd-outflows.pqt                <- Outflow data (money getting out of bank)   
 │
+├── report                               <- used to keep the report LaTeX pdf
+│   ├── figure                           <- figures for the report
+│   │   ├── amt_category.png       
+│   │   ├── category_time.png
+│   │   ├── clean_df.jpeg
+│   │   ├── inflow.png
+│   │   ├── nonclean_df.png  
+│   │   └── outflow.png        
+│   ├── report.tex                       <- Quarter 1 report
+│   └── reportq2.tex                     <- Quarter 2 report
 │
-├── models                               <- Model Creation
-│   ├──transformers.py                   <- Used to initialize the Transformer Model
+├── src                                  <- src files for the creation of features, model training, and more
+│   ├── base                             <- Baseline Classes
+│   │   ├── config.py                    <- Creates a configuration for all models
+│   │   └── model.py                     <- Creates a Baseline Model
+│   ├── configs                          <- Used to create baseline configurations for different models
+│   │   └── transformer.yml              <- Creates baseline parameters for the transformer model
+│   ├── models                           <- Contains all model code
+│   │   ├── distilbert_classifier.py     <- DistilBERT Model for classification
+│   │   ├── fasttext_function.py         <- FastText Model for classification
+│   │   ├── logistic_regression_function.py <- Logistic Regression Model for classification
+│   │   ├── random_trees_function.py     <- Random Forest Model for classification
+│   │   └── transformer.py               <- Transformer Model code
+│   ├── notebooks                        <- Jupyter notebooks for data analysis and feature creation
+│   │   ├── baseline_models.ipynb        <- Perform logistic regression and random forest with tf-idf
+│   │   ├── hillary_data_exploration.ipynb <- Hillary Chang's Data Analysis Notebook         
+│   │   ├── kevin_data_exploration.ipynb <- Kevin Wong's Data Analysis Notebook
+│   │   ├── kurumi_data_exploration.ipynb <- Kurumi Kaneko's Data Analysis Notebook
+│   │   ├── kurumi_feature_engineering.ipynb <- Kurumi Kaneko's Notebook
+│   │   └── jevan_week2.ipynb            <- Jevan Chahal's Notebook
+│   ├── etl.py       
+│   ├── features.py                      <- Used to create features
+│   ├── text_cleaner.py                  <- Used to clean the data 
+│   └── model_training.py                <- Used to train the model
 │
+├── README.md                            <- README
 │
-├── src                               <- src files for the creation of features, model training, and more
-│   ├──base                           <- Baseline Classes
-│   │   ├──config.py                  <- Creates a configuration for all models
-│   │   └──model.py                   <- Creates a Baseline Model
-│   ├──configs                        <- Used to create baseline configurations for different models
-│   │   └──transformer.yml            <- Creates baseline parameters for the transformer model
-│   ├──models                         <- Contains all model code
-│   │   └──transformer.py             <- Transformer Model code
-│   ├──etl.py         
-│   ├──features.py                    <- used to create features
-│   ├──text_cleaner.py                <- used to clean the data 
-│   ├──model_training.py              <- used to train the model
-│   ├──notebooks                      <- Jupyter notebooks used for data analysis
-│   │   ├──baseline_models.ipynb      <- Perform logistic regression and random forest with tf-idf
-│   │   ├──hillary_data_exploration.ipynb    <- Hillary Chang's Data Analysis Notebook         
-│   │   ├──kevin_data_exploration.ipynb      <- Kevin Wong's Data Analysis Notebook
-│   │   ├──kurumi_data_exploration.ipynb     <- Kurumi Kaneko's Data Analysis Notebook
-│   │   ├──kurumi_feature_engineering.ipynb  <- Kurumi Kaneko's Notebook for Feature Creation
-│   │   └──jevan_week2.ipynb                 <- Jevan Chahal's notebook for train/test/split
+├── requirements.txt                     <- All required packages
 │
-│
-├── report                            <- used to keep the report LaTeX pdf
-│   ├──figure                         <- figures for the report
-│   │   ├──amt_category.png       
-│   │   ├──category_time.png
-│   │   ├──clean_df.jpeg
-│   │   ├──inflow.png
-│   │   ├──nonclean_df.png  
-│   │   └──outflow.png        
-│   └──report.tex   
-│
-│
-├── README.md                         <- README
-│
-├── requirements.txt                  <- all required packages
-│
-└── run.py                            <- used to run the model
+└── run.py                               <- Used to run the model
 ```
 
 ## Conclusion

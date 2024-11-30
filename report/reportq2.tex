@@ -50,20 +50,23 @@ By analyzing detailed spending and income patterns, we can build a more inclusiv
 By investing 10 weeks into this project, we can demonstrate how transaction data can lead to fairer credit evaluations, ultimately benefiting both lenders and consumers. The opportunity to replace biased systems with data-driven models is incredibly important for equality for all.
 
 
-\section{Narrow Problem Statement}
-Traditional credit scoring models miss important details like income regularity, spending priorities, and how balances change over time. During Quarter 1, we made progress by categorizing transactions and estimating income based on inflows. However, this didn’t address how these features could predict credit risk. We now need to build a scoring model that uses these insights to evaluate consumers fairly.
+\section{Narrow Problem Statement} Traditional credit scoring models miss important details like income regularity, spending priorities, and how balances change over time. During Quarter 1, we made progress by categorizing transactions and estimating income based on inflows. However, this didn’t address how these features could predict credit risk. We now need to build a scoring model that uses these insights to evaluate consumers fairly.
 
 To solve this, we propose building a credit risk prediction model that relies on transaction-based features. Our methods will include:
-\begin{enumerate}
-    \item \textbf{Dataset Exploration and Baseline Feature Testing:} We will begin by identifying the single best feature for predicting credit risk and evaluate its standalone performance.
-    \item \textbf{Balance and Income Feature Engineering:} We will analyze balance trends and income consistency to create meaningful features beyond static metrics like “current balance” or “current income.” This includes sampling “good” and “bad” consumers to identify key differences.
-    \item \textbf{Category-Based Features:} By categorizing spending and income (ex. essentials like rent or groceries, major income sources like paychecks), we will derive features that highlight spending priorities and financial stability.
-    \item \textbf{Temporal Attributes and Comprehensive Feature Set:} We will engineer attributes that capture changes in spending, income, and balances over time, creating at least 100 meaningful features.
-    \item \textbf{Feature Selection:} To ensure model efficiency, we will write code to reduce the feature set to the top 40 predictors.
-    \item \textbf{Model Training and Explanation:} Using three machine learning methods (ex. Logistic Regression, Random Forest, and Gradient Boosted Trees), we will train and evaluate models. Additionally, we will generate reason codes to explain why specific consumers are classified as risky and analyze common themes.
-\end{enumerate}
 
-The methods we’re proposing build directly on the gaps identified in Quarter 1. While categorization and income estimation provided insights into financial behavior, they didn’t connect these patterns to credit risk outcomes. By bridging this gap with feature engineering and interpretable models, we can create a practical scoring tool that is both fair and scalable. This solution is urgently needed to address systemic issues in credit access and to demonstrate how modern data techniques can improve financial systems.
+\textbf{Dataset Exploration and Baseline Feature Testing:} We will begin by performing exploratory data analysis (EDA) to identify trends in the dataset and evaluate single features, such as total inflows or balance variability, to assess their standalone predictive power and to determine which feature is most predictive of credit risk.
+
+\textbf{Balance and Income Feature Engineering:} We will analyze temporal patterns in income and balance trends by using moving averages, standard deviations, and recurrence analysis to identify consistency. For instance, we will calculate features like "mean balance over the last three months" and "income variability over time" using time-series statistical methods. By sampling “good” and “bad” consumers, we will use K-means clustering to uncover key behavioral patterns.
+
+\textbf{Category-Based Features:} We will categorize spending and income transactions into groups like essentials and non-essentials based on transaction memos and amounts. Using NLP techniques like TF-IDF or BERT-based embeddings, we will further refine these categories to derive features like "percent of income spent on essentials" or "ratio of paycheck to discretionary spending."
+
+\textbf{Temporal Attributes and Comprehensive Feature Set:} We will engineer attributes that capture dynamic changes in spending, income, and balances over time. This includes calculating balance recovery times, peak-to-trough differences, and seasonality patterns using Fourier transforms or seasonal decomposition of time series. The goal is to create at least 100 features that capture short-term and long-term financial behavior.
+
+\textbf{Feature Selection:} To optimize the model and reduce overfitting, we will apply feature selection techniques such as Lasso regression. These methods will allow us to narrow down our feature set to the top 40 predictors by ranking their importance based on model performance.
+
+\textbf{Model Training and Explanation:} We will train and evaluate machine learning models using Logistic Regression, Random Forest, and Gradient Boosted Trees like XGBoost. We will generate reason codes for each consumer that highlight why they were classified as risky or non-risky. These codes will help us analyze the distribution of common reasons across the population.
+
+The methods we’re proposing build directly on the gaps identified in Quarter 1. While categorization and income estimation provided insights into financial behavior, they didn’t connect these patterns to credit risk outcomes. By bridging this gap with feature engineering, temporal analysis, and interpretable machine learning models, we can create a practical scoring tool that is both fair and scalable. This solution is urgently needed to address systemic issues in credit access and to demonstrate how modern data techniques can improve financial systems.
 
 
 \section{Primary Output}

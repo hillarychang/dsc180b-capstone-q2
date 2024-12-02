@@ -213,6 +213,33 @@ We configured the Random Forest model with the following hyperparameters:
 
 The Random Forest model achieved an accuracy of 84.28\% on the test set, which was lower than the Logistic Regression model.
 
+\subsection{FastText for Text Classification}
+We implemented a text classification model using FastText, a library designed for efficient and accurate text classification. FastText allows for rapid training and inference, making it a suitable choice for our categorization tasks. 
+
+\subsubsection{Data Preparation}
+The dataset was split into training and test sets, with 80\% of the data used for training and 20\% for testing. Each transaction's \texttt{memo} field served as the input text, while its \texttt{category} was used as the target label. The training data was formatted according to FastText's requirements, with each line containing a label and corresponding text in the format:
+
+\begin{verbatim}
+__label__<label> <text>
+\end{verbatim}
+
+The formatted data was saved into text files, \texttt{train\_data.txt} and \texttt{test\_data.txt}, to be fed into the FastText training and testing pipelines.
+
+\subsubsection{Model Training}
+We trained the FastText model using the following hyperparameters:
+\begin{itemize}
+    \item \textbf{Epochs:} 25
+    \item \textbf{Learning Rate:} 1.0
+    \item \textbf{Word N-Grams:} 2
+    \item \textbf{Bucket Size:} 200,000
+    \item \textbf{Embedding Dimension:} 50
+\end{itemize}
+
+The training process was efficient, taking approximately 12.5 minutes. We suppressed detailed output during training to streamline the process.
+
+\subsubsection{Inference and Evaluation}
+After training, the model was evaluated on the test set. Predictions were made by mapping input text back to its predicted category label. Key metrics, including accuracy, precision, recall, and F1-score, were computed to assess the model's performance. Additionally, a confusion matrix was generated to visualize category-specific prediction performance.
+
 \subsection{LLM with Transformer}
 We implemented a Transformer-based model using the Hugging Face \texttt{transformers} library, focusing on categorizing transaction memos. We configured the Transformer to operate with a pre-trained \texttt{distilbert-base-uncased} model as the foundation.
 
@@ -368,6 +395,14 @@ The confusion matrix for the Random Forest model (Figure \ref{fig:confusion_matr
     \label{fig:confusion_matrix_rf}
 \end{figure}
 
+\subsection{FastText Results}
+The FastText model demonstrated exceptional performance in categorizing transaction memos. Below are the key outcomes from the evaluation:
+
+\begin{itemize}
+    \item \textbf{Accuracy:} The model achieved an accuracy of 98.4\%, indicating a high level of reliability in categorizing transactions.
+    \item \textbf{Training and Prediction Time:} The entire process of training and prediction was completed in approximately 12.5 minutes, showcasing the model's efficiency.
+\end{itemize}
+
 
 \subsection{LLM Performance}
 The Transformer model was evaluated on a total of 9 transaction categories. After one epoch, it achieved a training loss of 0.1361 and a validation loss of 0.0603. The model’s validation accuracy reached 98.56\%, indicating strong generalization across categories. Evaluation on the validation set took approximately 2 minutes and 43 seconds to complete.
@@ -398,6 +433,64 @@ For the limitations of Transformer models, testing smaller model architectures c
 
 Given the mixed results of Random Forest, exploring other complex models , such as Support Vector Machines (SVMs), could provide further insight for this classification task.
 
+\section{Inflows Analysis}
+Understanding the various types of inflows is critical to assessing consumer financial behavior and identifying major income sources. This section categorizes inflows, defines what is considered income, and presents an analysis of the dataset to determine the major contributors to consumer inflows.
+
+\subsection{Defining Inflows}
+Inflows refer to any money credited to a consumer's account, including categories like \texttt{PAYCHECK}, \texttt{DEPOSIT}, \texttt{EXTERNAL\_TRANSFER}, \texttt{UNEMPLOYMENT\_BENEFITS}, and more. For this analysis, we established specific criteria for categorizing transactions:
+
+\begin{itemize}
+    \item \textbf{PAYCHECK}: Includes both \texttt{PAYCHECK} and \texttt{PAYCHECK\_PLACEHOLDER}. These transactions are typically recurrent and represent regular income, such as wages or salaries. They do not require strict recurrence to be considered income.
+    \item \textbf{DEPOSIT}: Represents funds deposited directly into an account, such as checks or ATM deposits. These can be counted as income depending on the memo and recurrence.
+    \item \textbf{EXTERNAL\_TRANSFER}: Includes transfers from external sources such as Venmo, Zelle, or PayPal. Regularity in the transaction pattern (e.g., weekly or monthly) and memo clustering were used to classify these as income or non-income.
+    \item \textbf{OTHER\_BENEFITS}: Captures child support, social security, or other government benefits, which are considered income.
+    \item \textbf{UNEMPLOYMENT\_BENEFITS}: Categorized as income, though not always recurrent.
+    \item \textbf{INVESTMENT\_INCOME}: Includes dividends or other earnings from investments, counted as income.
+    \item \textbf{INSURANCE}: Rarely classified as income, as these transactions typically represent reimbursements rather than earnings.
+    \item \textbf{Non-Income Categories}: Categories such as \texttt{REFUND}, \texttt{SELF\_TRANSFER}, \texttt{LOAN}, and \texttt{SMALL\_DOLLAR\_ADVANCE} are excluded from income calculations as they do not contribute to a consumer's earnings.
+\end{itemize}
+
+A detailed categorization process was employed, combining memos, amounts, and recurrence patterns to ensure accurate classification. For instance, \texttt{EXTERNAL\_TRANSFER} transactions were evaluated based on their frequency, with clustering algorithms applied to group similar memos and identify patterns of recurrent inflows.
+
+\subsection{Analysis of Inflows}
+After categorizing the inflows, we analyzed their distribution across consumers and identified major sources of income. Figure \ref{fig:inflow_contributions} presents the average percentage contribution of each inflow category to total income, along with its standard deviation.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figure/inflows.jpeg}
+    \caption{Average Percentage Contribution of Inflows by Category with Standard Deviation. \texttt{PAYCHECK} contributes the highest percentage, followed by \texttt{EXTERNAL\_TRANSFER} and \texttt{DEPOSIT}. Categories like \texttt{UNEMPLOYMENT\_BENEFITS} and \texttt{INSURANCE} have minimal contributions.}
+    \label{fig:inflow_contributions}
+\end{figure}
+
+The analysis shows that:
+\begin{itemize}
+    \item \textbf{\texttt{PAYCHECK}} is the largest contributor, accounting for an average of 41.37\% of total inflows, with a standard deviation of 35.49. This highlights the central role of regular wages in consumer income.
+    \item \textbf{\texttt{EXTERNAL\_TRANSFER}} follows, contributing 27.31\%. Its variability (standard deviation: 28.01) suggests diverse uses, ranging from personal income (e.g., tutoring payments) to non-income transfers.
+    \item \textbf{\texttt{DEPOSIT}} contributes 21.99\% on average, often representing additional sources of income like cash deposits or checks.
+    \item Other categories such as \texttt{OTHER\_BENEFITS} and \texttt{INVESTMENT\_INCOME} make smaller contributions but remain important for specific subsets of consumers.
+    \item Minimal contributions are observed from \texttt{UNEMPLOYMENT\_BENEFITS} (0.60\%) and \texttt{INSURANCE} (0.14\%), which are less frequent or non-recurrent sources.
+\end{itemize}
+
+This breakdown provides insight into the primary drivers of consumer inflows, particularly emphasizing the importance of recurrent sources like \texttt{PAYCHECK}. By understanding these patterns, we can develop more robust models to assess financial stability and creditworthiness.
+
+\subsection{Statistical Insights on Inflows}
+At the consumer level, we calculated several key statistics:
+\begin{enumerate}
+    \item \textbf{Transactions per Consumer}: The number of inflows for each consumer was computed to assess financial activity frequency.
+    \item \textbf{Sum of Inflows per Consumer}: The total value of all inflows, categorized by source, was used to determine major income contributors.
+\end{enumerate}
+
+These statistics allowed us to identify the total and mean contributions of each inflow category, along with the regularity and variability of income sources. As shown in Figure \ref{fig:recurrent_vs_non_recurrent}, \texttt{PAYCHECK}, \texttt{EXTERNAL\_TRANSFER}, and \texttt{DEPOSIT} are dominant for recurrent inflows, while non-recurrent inflows show greater diversity in sources.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figure/recurrent_vs_non_recurrent}
+    \caption{Major Sources of Income for Recurrent vs. Non-Recurrent Inflows. \texttt{PAYCHECK} dominates recurrent inflows, while non-recurrent inflows have significant contributions from \texttt{DEPOSIT}, \texttt{EXTERNAL\_TRANSFER}, and \texttt{INVESTMENT\_INCOME}.}
+    \label{fig:recurrent_vs_non_recurrent}
+\end{figure}
+
+This analysis highlights the critical role of recurrent income sources in consumer financial stability, while also accounting for the impact of less predictable, non-recurrent inflows.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% Literature Review and Prior Work
@@ -420,17 +513,9 @@ GPT-2’s ability to generalize across a range of tasks is primarily attributed 
 
 GPT-2’s zero-shot learning capability makes it highly adaptable for categorizing transaction memos without requiring labeled data for each specific task. By identifying patterns in transactions, GPT-2 could potentially discover trends across transaction types as well. However, despite these strengths, GPT-2 has limitations, especially in complex reasoning, which suggests room for further refinement and improvement.
 
-\subsection{DGHNL: A new deep genetic hierarchical network of learners for prediction of credit scoring (2020)}
 
-In financial risk management, accurate credit scoring and transaction categorization models play a crucial role in understanding borrower behavior and assessing creditworthiness. Traditional models like logistic regression offer simplicity but often fail to capture the complex, nonlinear patterns found in financial data. More advanced machine learning techniques, such as neural networks and ensemble methods, have demonstrated improved predictive accuracy by modeling these complexities. However, these approaches can be challenging to interpret, an essential factor for regulatory requirements in financial applications.
-
-The Deep Genetic Hierarchical Network of Learners (DGHNL) offers a solution by using a combination of genetic algorithms (GAs) and hierarchical neural networks to optimize feature selection and learning in a structured, layered way. This hybrid approach is relevant to both credit scoring and transaction categorization models, as it can capture intricate patterns in bank transaction data—vital for understanding spending behaviors and identifying risky patterns. By categorizing transactions more accurately, DGHNL could support better credit assessments by providing a clearer view of a borrower’s financial habits.
-
-DGHNL’s hierarchical architecture allows the model to focus on various data levels, potentially making it highly suitable for categorizing diverse transaction types. This structured learning enables DGHNL to balance detailed data analysis with high-level abstractions, enhancing both accuracy and interpretability. Consequently, the model not only improves risk predictions but also supports nuanced transaction categorization, helping to bridge gaps in credit scoring and financial behavior analysis.
 
 
 \bibliographystyle{IEEEtran}  % use a style that supports URLs
-
-\bibliography{reference}
 
 \end{document}

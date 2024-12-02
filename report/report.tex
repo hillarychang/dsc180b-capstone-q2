@@ -214,31 +214,79 @@ We configured the Random Forest model with the following hyperparameters:
 The Random Forest model achieved an accuracy of 84.28\% on the test set, which was lower than the Logistic Regression model.
 
 \subsection{FastText for Text Classification}
-We implemented a text classification model using FastText, a library designed for efficient and accurate text classification. FastText allows for rapid training and inference, making it a suitable choice for our categorization tasks. 
+We implemented a text classification model using FastText, a lightweight and efficient library designed for text classification. FastText allows for rapid training and inference, making it a practical choice for our categorization tasks.
 
 \subsubsection{Data Preparation}
-The dataset was split into training and test sets, with 80\% of the data used for training and 20\% for testing. Each transaction's \texttt{memo} field served as the input text, while its \texttt{category} was used as the target label. The training data was formatted according to FastText's requirements, with each line containing a label and corresponding text in the format:
+The dataset was split into training and test sets with an 80/20 split. The transaction \texttt{memo} field was used as input, and its corresponding \texttt{category} served as the target label. The data was formatted to meet FastText's requirements, where each line in the training file followed this format:
 
 \begin{verbatim}
 __label__<label> <text>
 \end{verbatim}
 
-The formatted data was saved into text files, \texttt{train\_data.txt} and \texttt{test\_data.txt}, to be fed into the FastText training and testing pipelines.
+To prepare the data for FastText, we performed the following steps:
+\begin{enumerate}
+    \item \textbf{Categorization Based on Labels:} Each transaction memo was paired with its corresponding category, such as \texttt{FOOD\_AND\_BEVERAGES}, \texttt{GROCERIES}, or \texttt{EXTERNAL\_TRANSFER}, which were used as labels for supervised classification.
+    
+    \item \textbf{Formatting for FastText:} We ensured the training and test data were formatted such that each line included the label prefixed with \texttt{\_\_label\_\_} followed by the transaction memo. For example:
+    \begin{verbatim}
+    __label__PAYCHECK Direct deposit from employer
+    __label__GROCERIES Walmart Supercenter purchase
+    \end{verbatim}
+    
+    \item \textbf{Data Splitting:} The data was split into two separate files:
+    \begin{itemize}
+        \item \texttt{train\_data.txt} for training data.
+        \item \texttt{test\_data.txt} for test data.
+    \end{itemize}
+    
+    \item \textbf{Handling Text Variations:}
+    \begin{itemize}
+        \item Irregular capitalization and punctuation were normalized for consistency.
+        \item Extraneous details, such as timestamps or numerical identifiers unrelated to categorization, were removed to reduce noise.
+        \item Recurring patterns, such as URLs or identifiable keywords (e.g., \texttt{POS Purchase}), were retained to provide contextual clues for classification.
+    \end{itemize}
+\end{enumerate}
+
+These steps ensured that the FastText model received clean, structured, and meaningful inputs, enabling it to perform well in the categorization task.
 
 \subsubsection{Model Training}
-We trained the FastText model using the following hyperparameters:
+The FastText model was trained with the following parameters:
 \begin{itemize}
     \item \textbf{Epochs:} 25
     \item \textbf{Learning Rate:} 1.0
     \item \textbf{Word N-Grams:} 2
-    \item \textbf{Bucket Size:} 200,000
     \item \textbf{Embedding Dimension:} 50
+    \item \textbf{Bucket Size:} 200,000
 \end{itemize}
-
-The training process was efficient, taking approximately 12.5 minutes. We suppressed detailed output during training to streamline the process.
+The training process was highly efficient, completing in approximately 12.5 minutes.
 
 \subsubsection{Inference and Evaluation}
-After training, the model was evaluated on the test set. Predictions were made by mapping input text back to its predicted category label. Key metrics, including accuracy, precision, recall, and F1-score, were computed to assess the model's performance. Additionally, a confusion matrix was generated to visualize category-specific prediction performance.
+The trained model was evaluated on the test set, and predictions were made for each input text. The overall accuracy of the FastText model was 98.93\%, demonstrating its effectiveness in categorizing transactions. Table \ref{table:fasttext_classification_report} summarizes the evaluation metrics, including precision, recall, and F1-score for each category.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lccc}
+        \hline
+        \textbf{Category} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
+        \hline
+        GENERAL\_MERCHANDISE & 0.98 & 0.94 & 0.96 \\
+        TRAVEL & 0.98 & 0.99 & 0.99 \\
+        PETS & 0.99 & 0.99 & 0.99 \\
+        GROCERIES & 0.99 & 0.99 & 0.99 \\
+        FOOD\_AND\_BEVERAGES & 1.00 & 1.00 & 1.00 \\
+        EDUCATION & 1.00 & 0.99 & 1.00 \\
+        RENT & 0.99 & 0.99 & 0.99 \\
+        OVERDRAFT & 0.99 & 0.98 & 0.99 \\
+        MORTGAGE & 0.99 & 0.99 & 0.99 \\
+        \hline
+        \textbf{Overall Accuracy} & \multicolumn{3}{c}{98.93\%} \\
+        \hline
+    \end{tabular}
+    \caption{FastText Classification Report}
+    \label{table:fasttext_classification_report}
+\end{table}
+
+A confusion matrix was also generated to visualize the classification performance across all categories. The FastText model's performance indicates its suitability for transaction memo categorization in this project.
 
 \subsection{LLM with Transformer}
 We implemented a Transformer-based model using the Hugging Face \texttt{transformers} library, focusing on categorizing transaction memos. We configured the Transformer to operate with a pre-trained \texttt{distilbert-base-uncased} model as the foundation.
@@ -396,13 +444,45 @@ The confusion matrix for the Random Forest model (Figure \ref{fig:confusion_matr
 \end{figure}
 
 \subsection{FastText Results}
-The FastText model demonstrated exceptional performance in categorizing transaction memos. Below are the key outcomes from the evaluation:
+The FastText model achieved exceptional performance, showcasing its ability to accurately classify transaction memos into categories. Below are the key outcomes from the evaluation:
 
 \begin{itemize}
-    \item \textbf{Accuracy:} The model achieved an accuracy of 98.4\%, indicating a high level of reliability in categorizing transactions.
-    \item \textbf{Training and Prediction Time:} The entire process of training and prediction was completed in approximately 12.5 minutes, showcasing the model's efficiency.
+    \item \textbf{Accuracy:} The model achieved an overall accuracy of 98.93\%.
+    \item \textbf{Macro Average:} Precision, recall, and F1-score values were consistently high, with a macro average F1-score of 98\%.
+    \item \textbf{Weighted Average:} Weighted averages for precision, recall, and F1-score were all 99\%, highlighting the model's ability to handle class imbalances effectively.
 \end{itemize}
 
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lcccc}
+        \hline
+        \textbf{Category} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\
+        \hline
+        GENERAL\_MERCHANDISE & 0.98 & 0.94 & 0.96 & 892 \\
+        TRAVEL               & 0.98 & 0.99 & 0.99 & 96,363 \\
+        PETS                 & 0.99 & 0.99 & 0.99 & 105,107 \\
+        GROCERIES            & 0.99 & 0.99 & 0.99 & 43,809 \\
+        FOOD\_AND\_BEVERAGES & 1.00 & 1.00 & 1.00 & 236 \\
+        EDUCATION            & 1.00 & 0.99 & 1.00 & 646 \\
+        RENT                 & 0.99 & 0.99 & 0.99 & 1,844 \\
+        OVERDRAFT            & 0.99 & 0.98 & 0.99 & 649 \\
+        MORTGAGE             & 0.99 & 0.99 & 0.99 & 11,745 \\
+        \hline
+        \textbf{Overall Accuracy:} & \multicolumn{4}{c}{0.989} \\
+        \hline
+    \end{tabular}
+    \caption{Classification Report for FastText Model}
+    \label{tab:fasttext_classification_report}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{path_to_image/confusion_matrix_fasttext.png}
+    \caption{Confusion Matrix for FastText Model. Most predictions align with true categories, with minimal misclassifications.}
+    \label{fig:confusion_matrix_fasttext}
+\end{figure}
+
+These results demonstrate that FastText is an effective and efficient model for classifying transaction memos. With its fast training time and high accuracy, it provides a reliable baseline for further development.
 
 \subsection{LLM Performance}
 The Transformer model was evaluated on a total of 9 transaction categories. After one epoch, it achieved a training loss of 0.1361 and a validation loss of 0.0603. The model’s validation accuracy reached 98.56\%, indicating strong generalization across categories. Evaluation on the validation set took approximately 2 minutes and 43 seconds to complete.

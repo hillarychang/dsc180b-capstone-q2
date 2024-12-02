@@ -7,3 +7,4 @@ torch
 dataclasses
 typing
 tdqm
+fasttext

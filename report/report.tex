@@ -436,7 +436,7 @@ Table \ref{table:category_accuracy_rf} shows the per-category accuracy of the Ra
 \subsubsection{Confusion Matrix}
 The confusion matrix for the Random Forest model (Figure \ref{fig:confusion_matrix_rf}) provides insights into its classification performance. Misclassifications are more prevalent in categories like \texttt{FOOD\_AND\_BEVERAGES} and \texttt{GENERAL\_MERCHANDISE}. This pattern suggests that the Random Forest model struggled to distinguish some categories with high similarity in text patterns.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{figure/random_forest_confusion.png}
     \caption{Confusion Matrix for the Random Forest Model with TF-IDF Vectorization.}
@@ -593,9 +593,21 @@ GPT-2’s ability to generalize across a range of tasks is primarily attributed 
 
 GPT-2’s zero-shot learning capability makes it highly adaptable for categorizing transaction memos without requiring labeled data for each specific task. By identifying patterns in transactions, GPT-2 could potentially discover trends across transaction types as well. However, despite these strengths, GPT-2 has limitations, especially in complex reasoning, which suggests room for further refinement and improvement.
 
+\subsection{DGHNL: A new deep genetic hierarchical network of learners for prediction of credit scoring (2020)}
 
+In financial risk management, accurate credit scoring and transaction categorization models play a crucial role in understanding borrower behavior and assessing creditworthiness. Traditional models like logistic regression offer simplicity but often fail to capture the complex, nonlinear patterns found in financial data. More advanced machine learning techniques, such as neural networks and ensemble methods, have demonstrated improved predictive accuracy by modeling these complexities. However, these approaches can be challenging to interpret, an essential factor for regulatory requirements in financial applications.
+The Deep Genetic Hierarchical Network of Learners (DGHNL) offers a solution by using a combination of genetic algorithms (GAs) and hierarchical neural networks to optimize feature selection and learning in a structured, layered way. This hybrid approach is relevant to both credit scoring and transaction categorization models, as it can capture intricate patterns in bank transaction data—vital for understanding spending behaviors and identifying risky patterns. By categorizing transactions more accurately, DGHNL could support better credit assessments by providing a clearer view of a borrower’s financial habits.
+DGHNL’s hierarchical architecture allows the model to focus on various data levels, potentially making it highly suitable for categorizing diverse transaction types. This structured learning enables DGHNL to balance detailed data analysis with high-level abstractions, enhancing both accuracy and interpretability. Consequently, the model not only improves risk predictions but also supports nuanced transaction categorization, helping to bridge gaps in credit scoring and financial behavior analysis.
 
+%\bibliographystyle{IEEEtran}  % use a style that supports URLs
 
-\bibliographystyle{IEEEtran}  % use a style that supports URLs
+\clearpage
+
+\makereference
+\bibliography{reference}
+\bibliographystyle{style/dsc180bibstyle}
+
+\cite{plawiak2020dghnl}
+\cite{vaswani2023attention}
 
 \end{document}

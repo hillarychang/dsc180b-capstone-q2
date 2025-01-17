@@ -65,7 +65,8 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 │   │   └── transformer.py               <- Transformer Model code
 │   ├── notebooks                        <- Jupyter notebooks for data analysis and feature creation
 │   │   ├── baseline_models.ipynb              <- Perform logistic regression and random forest with tf-idf
-│   │   ├── hillary_data_exploration.ipynb     <- Hillary Chang's Data Analysis Notebook         
+│   │   ├── hillary_data_exploration.ipynb     <- Hillary Chang's Data Analysis Notebook
+│   │   ├── hillary_q2.ipynb                   <- Hillary Chang's Q2 Data Analysis Notebook
 │   │   ├── kevin_data_exploration.ipynb       <- Kevin Wong's Data Analysis Notebook
 │   │   ├── kevin_inflows_exploration.ipynb    <- Kevin Wong's Data Analysis Notebook
 │   │   ├── kevin_q2_eda.ipynb                 <- Kevin Wong's Q2 Data Analysis Notebook

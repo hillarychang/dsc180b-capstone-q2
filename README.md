@@ -68,9 +68,11 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 │   │   ├── hillary_data_exploration.ipynb     <- Hillary Chang's Data Analysis Notebook         
 │   │   ├── kevin_data_exploration.ipynb       <- Kevin Wong's Data Analysis Notebook
 │   │   ├── kevin_inflows_exploration.ipynb    <- Kevin Wong's Data Analysis Notebook
+│   │   ├── kevin_q2_eda.ipynb                 <- Kevin Wong's Q2 Data Analysis Notebook
 │   │   ├── kurumi_data_exploration.ipynb      <- Kurumi Kaneko's Data Analysis Notebook
 │   │   ├── kurumi_feature_engineering.ipynb   <- Kurumi Kaneko's Notebook
 │   │   ├── kurumi_inflows_data_exploration.ipynb <- Kurumi Kaneko's Notebook
+│   │   ├── kurumi_q2_eda.ipynb                <- Kurumi Kaneko's Q2 Data Analysis Notebook
 │   │   └── jevan_quarter1_project.ipynb       <- Jevan Chahal's Notebook
 │   ├── etl.py       
 │   ├── features.py                      <- Used to create features

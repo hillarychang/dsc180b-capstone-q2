@@ -1,4 +1,4 @@
-# DSC180A Capstone Q1: Categorizing Memo
+# DSC180B Capstone Q2: Categorizing Memo
 
 **Group 1:** Kevin Wong, Kurumi Kaneko, Hillary Chang, Jevan Chahal
 
@@ -10,8 +10,8 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/hillarychang/dsc180a-capstone-q1.git
-    cd dsc180a-capstone-q1
+    git clone https://github.com/hillarychang/dsc180b-capstone-q2.git
+    cd dsc180b-capstone-q2
     ```
 
 2. **Install the dependencies**:

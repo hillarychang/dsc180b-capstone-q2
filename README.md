@@ -1,4 +1,4 @@
-# DSC180A Capstone Q1: Categorizing Memo
+# DSC180B Capstone Q2: Categorizing Memo
 
 **Group 1:** Kevin Wong, Kurumi Kaneko, Hillary Chang, Jevan Chahal
 
@@ -10,8 +10,8 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/hillarychang/dsc180a-capstone-q1.git
-    cd dsc180a-capstone-q1
+    git clone https://github.com/hillarychang/dsc180b-capstone-q2.git
+    cd dsc180b-capstone-q2
     ```
 
 2. **Install the dependencies**:
@@ -31,39 +31,39 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 ### File Structure
 
 ```
-├├── config                               <- parameters for model (currently all dummy files)
+├── config                                     <- parameters for model (currently all dummy files)
 │   ├── data_params.json     
 │   ├── feature_params.json
 │   └── model_params.json
 │
-├── data                                 <- .gitignore (data not tracked in the repository)
-│   ├── ucsd-inflows.pqt                 <- Inflow data (money getting put into bank)
-│   └── ucsd-outflows.pqt                <- Outflow data (money getting out of bank)   
+├── data                                       <- .gitignore (data not tracked in the repository)
+│   ├── ucsd-inflows.pqt                       <- Inflow data (money getting put into bank)
+│   └── ucsd-outflows.pqt                      <- Outflow data (money getting out of bank)   
 │
-├── report                               <- used to keep the report LaTeX pdf
-│   ├── figure                           <- figures for the report
+├── report                                     <- used to keep the report LaTeX pdf
+│   ├── figure                                 <- figures for the report
 │   │   ├── amt_category.png       
 │   │   ├── category_time.png
 │   │   ├── clean_df.jpeg
 │   │   ├── inflow.png
 │   │   ├── nonclean_df.png  
 │   │   └── outflow.png        
-│   ├── report.tex                       <- Quarter 1 report
-│   └── reportq2.tex                     <- Quarter 2 report
+│   ├── report.tex                             <- Quarter 1 report
+│   └── reportq2.tex                           <- Quarter 2 report
 │
-├── src                                  <- src files for the creation of features, model training, and more
-│   ├── base                             <- Baseline Classes
-│   │   ├── config.py                    <- Creates a configuration for all models
-│   │   └── model.py                     <- Creates a Baseline Model
-│   ├── configs                          <- Used to create baseline configurations for different models
-│   │   └── transformer.yml              <- Creates baseline parameters for the transformer model
-│   ├── models                           <- Contains all model code
-│   │   ├── distilbert_classifier.py     <- DistilBERT Model for classification
-│   │   ├── fasttext_function.py         <- FastText Model for classification
-│   │   ├── logistic_regression_function.py <- Logistic Regression Model for classification
-│   │   ├── random_trees_function.py     <- Random Forest Model for classification
-│   │   └── transformer.py               <- Transformer Model code
-│   ├── notebooks                        <- Jupyter notebooks for data analysis and feature creation
+├── src                                        <- src files for the creation of features, model training, and more
+│   ├── base                                   <- Baseline Classes
+│   │   ├── config.py                          <- Creates a configuration for all models
+│   │   └── model.py                           <- Creates a Baseline Model
+│   ├── configs                                <- Used to create baseline configurations for different models
+│   │   └── transformer.yml                    <- Creates baseline parameters for the transformer model
+│   ├── models                                 <- Contains all model code
+│   │   ├── distilbert_classifier.py           <- DistilBERT Model for classification
+│   │   ├── fasttext_function.py               <- FastText Model for classification
+│   │   ├── logistic_regression_function.py    <- Logistic Regression Model for classification
+│   │   ├── random_trees_function.py           <- Random Forest Model for classification
+│   │   └── transformer.py                     <- Transformer Model code
+│   ├── notebooks                              <- Jupyter notebooks for data analysis and feature creation
 │   │   ├── baseline_models.ipynb              <- Perform logistic regression and random forest with tf-idf
 │   │   ├── hillary_data_exploration.ipynb     <- Hillary Chang's Data Analysis Notebook
 │   │   ├── hillary_q2.ipynb                   <- Hillary Chang's Q2 Data Analysis Notebook
@@ -76,15 +76,15 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 │   │   ├── kurumi_q2_eda.ipynb                <- Kurumi Kaneko's Q2 Data Analysis Notebook
 │   │   └── jevan_quarter1_project.ipynb       <- Jevan Chahal's Notebook
 │   ├── etl.py       
-│   ├── features.py                      <- Used to create features
-│   ├── text_cleaner.py                  <- Used to clean the data 
-│   └── model_training.py                <- Used to train the model
+│   ├── features.py                            <- Used to create features
+│   ├── text_cleaner.py                        <- Used to clean the data 
+│   └── model_training.py                      <- Used to train the model
 │
-├── README.md                            <- README
+├── README.md                                  <- README
 │
-├── requirements.txt                     <- All required packages
+├── requirements.txt                           <- All required packages
 │
-└── run.py                               <- Used to run the model
+└── run.py                                     <- Used to run the model
 ```
 
 ## Conclusion

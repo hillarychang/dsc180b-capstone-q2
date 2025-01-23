@@ -1,4 +1,4 @@
-# DSC180B Capstone Q2: Categorizing Memo
+# DSC180B Capstone Q2: Cash Score
 
 **Group 1:** Kevin Wong, Kurumi Kaneko, Hillary Chang, Jevan Chahal
 

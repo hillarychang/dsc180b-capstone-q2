@@ -4,7 +4,7 @@
 
 ## Overview
 
-This project implements a data pipeline for Quarter 1 of our DSC Capstone. For this project specifically, we are implementing a categorization model to categorize memos given by vendors. For instance, given a memo of "Amazon.com", we would want to create a model that can categorize this into "General Merchandise" with a high accuracy, while also being fast with low latency.
+This project implements a data pipeline for our DSC Capstone. For this project specifically, we are implementing a categorization model to categorize memos given by vendors. For instance, given a memo of "Amazon.com", we would want to create a model that can categorize this into "General Merchandise" with a high accuracy, while also being fast with low latency. As we move onto our main project, which will be to give consumers a "Cash Score" between 1-999 which predicts their probability of defaulting on debt or credit. Through this, we aim to provide institutions like banks or credit unions with a supplement that can help them save money and make sure loans and credit can go to those who have the bank history to back it up. 
 
 ## Running the Project
 
@@ -20,7 +20,7 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
     ```
 
 3. **Prepare the data**:  
-    Place the inflow and outflow data (`ucsd-inflows.pqt`, `ucsd-outflows.pqt`) in the `data/` directory. This data contains the transactions we will use for memo categorization.
+    Place the inflow and outflow data (`ucsd-inflows.pqt`, `ucsd-outflows.pqt`) in the `data/` directory. This data contains the transactions we will use for memo categorization. Additionally, our data for the rest of our project is heavily regulated, which means it will not be in this github repository. Provided by Prism Data, we cannot give this data out. 
 
 4. **Run the data pipeline**:  
     To run the entire pipeline, use the following command:
@@ -88,4 +88,4 @@ This project implements a data pipeline for Quarter 1 of our DSC Capstone. For t
 ```
 
 ## Conclusion
-The goal of this project for Quarter 1 is to categorize vendor memos. Next, we will be implementing a data pipeline to process inflow and outflow data, create features, and train a machine learning model to achieve this.
+Our end goal for this project was to create a score that could allow both consumers and banks to better understand who would be able to receive credit and loans. We wanted to create a reputable score that was more robust, ethical, and accurate without giving an advantage to those who have already been building credit for decades. We believe credit score favors those who are consistent for long periods of times, but also unfairly disadvantages those who are young and don't have that (like college students, those who haven't had a credit card, etc). In the end, our "Cash Score" project aims to provide better infrastructure to credit and loans while still being aware of the risks that often occur when consumers spend their money recklessly. 

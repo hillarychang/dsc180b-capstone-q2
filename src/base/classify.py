@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 
 # Scikit-Learn Components
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import (
@@ -87,18 +87,6 @@ def run_classification(
         (XGBClassifier(use_label_encoder=False, eval_metric="logloss"), "XGBoost"),
         (CatBoostClassifier(silent=True), "CatBoost"),
         (HistGradientBoostingClassifier(), "HistGB"),
-        # SVM Variants
-        (
-            GridSearchCV(
-                SVC(
-                    class_weight="balanced", probability=True, random_state=random_state
-                ),
-                param_grid={"C": [0.1, 1, 10], "gamma": [1, 0.1, 0.01]},
-                cv=3,
-                scoring="roc_auc",
-            ),
-            "Tuned SVM",
-        ),
         # Neural Networks
         (
             MLPClassifier(

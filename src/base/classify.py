@@ -89,19 +89,6 @@ def run_classification(
         (HistGradientBoostingClassifier(), "HistGB"),
         # SVM Variants
         (
-            SVC(class_weight="balanced", probability=True, random_state=random_state),
-            "SVM-RBF",
-        ),
-        (
-            SVC(
-                kernel="linear",
-                class_weight="balanced",
-                probability=True,
-                random_state=random_state,
-            ),
-            "SVM-Linear",
-        ),
-        (
             GridSearchCV(
                 SVC(
                     class_weight="balanced", probability=True, random_state=random_state

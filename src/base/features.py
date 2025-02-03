@@ -26,7 +26,7 @@ def get_transaction_categories(transactions, categories):
         categories, how="left", left_on="category", right_on="category_id"
     )
     transaction_categories = transaction_categories.drop(columns = ['category_x'])
-    transaction_categories.rename(columns={"category_y": "category"})
+    transaction_categories.rename(columns={"category_y": "category"}, inplace = True)
     return transaction_categories
 
 
@@ -34,7 +34,7 @@ def get_transaction_categories(transactions, categories):
 def get_category_occurences_sums(transaction_categories, consumer_balance):
     outflow_occurences = (
         transaction_categories[transaction_categories["credit_or_debit"] == "DEBIT"]
-        .groupby(["prism_consumer_id", "category_y"])
+        .groupby(["prism_consumer_id", "category"])
         .size()
         .unstack(fill_value=0)
         .reset_index()
@@ -49,7 +49,7 @@ def get_category_occurences_sums(transaction_categories, consumer_balance):
 
     inflow_occurences = (
         transaction_categories[transaction_categories["credit_or_debit"] == "CREDIT"]
-        .groupby(["prism_consumer_id", "category_y"])
+        .groupby(["prism_consumer_id", "category"])
         .size()  # Count number of unique occurrences
         .unstack(fill_value=0)  # Create one column per category_x
         .reset_index()
@@ -64,7 +64,7 @@ def get_category_occurences_sums(transaction_categories, consumer_balance):
 
     outflow_sums = (
         transaction_categories[transaction_categories["credit_or_debit"] == "DEBIT"]
-        .groupby(["prism_consumer_id", "category_y"])["amount"]
+        .groupby(["prism_consumer_id", "category"])["amount"]
         .sum()  # Count number of unique occurrences
         .unstack(fill_value=0)  # Create one column per category_x
         .reset_index()
@@ -76,7 +76,7 @@ def get_category_occurences_sums(transaction_categories, consumer_balance):
 
     inflow_sums = (
         transaction_categories[transaction_categories["credit_or_debit"] == "CREDIT"]
-        .groupby(["prism_consumer_id", "category_y"])["amount"]
+        .groupby(["prism_consumer_id", "category"])["amount"]
         .sum()  # Count number of unique occurrences
         .unstack(fill_value=0)  # Create one column per category_x
         .reset_index()
@@ -186,7 +186,7 @@ def running_total(all_features, transactions):
     all_features = all_features.merge(time_features, on = "prism_consumer_id")
     return all_features
 
-def get_categorical_features(all_features, transaction_categories):
+def get_categorical_features(all_features, transaction_categories, acct, consumer):
     """
     Extracts categorical features from the provided data in a more efficient manner.
 
@@ -197,8 +197,12 @@ def get_categorical_features(all_features, transaction_categories):
         DataFrame: DataFrame containing categorical features.
     """
     # Convert 'posted_date' to datetime and create a 'month' column.
-    transaction_categories["datetime"] = pd.to_datetime(transaction_categories["posted_date"])
-    transaction_categories["month"] = transaction_categories["datetime"].dt.strftime("%Y-%m")
+    transaction_categories["datetime"] = pd.to_datetime(
+        transaction_categories["posted_date"]
+    )
+    transaction_categories["month"] = transaction_categories["datetime"].dt.strftime(
+        "%Y-%m"
+    )
 
     # Generate the permutations of consumers, categories, and months
     consumer_intervals = (
@@ -229,12 +233,18 @@ def get_categorical_features(all_features, transaction_categories):
 
     consumer_category_months_df = pd.DataFrame(consumer_category_months)
 
-    # Group the transaction_categories data by 'prism_consumer_id', 'category', and 'month' and aggregate 'amount'
     by_category = (
         transaction_categories[["prism_consumer_id", "category", "month", "amount"]]
         .groupby(["prism_consumer_id", "category", "month"])
         .sum()
         .reset_index()
+    )
+
+
+    by_category = by_category.merge(
+        consumer_category_months_df,
+        on=["prism_consumer_id", "category", "month"],
+        how="right",
     )
 
     # Merge the generated consumer-category-month combinations with the aggregated data
@@ -260,9 +270,7 @@ def get_categorical_features(all_features, transaction_categories):
     )
 
     # Aggregate account balances by 'prism_consumer_id'
-    acct_on_cons = (
-        acct[["prism_consumer_id", "balance"]].groupby("prism_consumer_id").sum()
-    )
+    acct_on_cons = acct[["prism_consumer_id", "balance"]].groupby("prism_consumer_id").sum()
 
     # Create a pivot table for the consumer-category statistics
     pivot_df = metrics.pivot_table(index="prism_consumer_id", columns="category")
@@ -275,4 +283,5 @@ def get_categorical_features(all_features, transaction_categories):
     pivot_df = pivot_df.merge(consumer, on="prism_consumer_id", how="left")
     pivot_df = pivot_df.merge(acct_on_cons, on="prism_consumer_id", how="left")
 
-    return pivot_df
+    all_features = all_features.merge(pivot_df, on = 'prism_consumer_id', how = 'left')
+    return all_features

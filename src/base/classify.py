@@ -53,8 +53,20 @@ def run_classification(
     warnings.filterwarnings(action="ignore", category=UndefinedMetricWarning)
     dataset = dataset.dropna()
 
-    # Define features and target
+    def preprocess_features(dataset):
+        # Replace infinite values
+        dataset = dataset.replace([np.inf, -np.inf], np.nan)
+
+        # Drop or fill NaN values
+        dataset = dataset.fillna(
+            dataset.median()
+        )  # Or use mean, or a specific strategy
+
+        return dataset
+
+    # Define features and targett
     X = dataset[feature_column]
+    X = preprocess_features(X)
     y = dataset[target_column]
 
     # Train-test split
@@ -83,35 +95,12 @@ def run_classification(
             "Logistic Regression",
         ),
         (RandomForestClassifier(random_state=random_state), "Random Forest"),
-        (lgb.LGBMClassifier(objective = "binary", force_row_wise = True), "LightGBM"),
+        (lgb.LGBMClassifier(objective="binary", force_row_wise=True), "LightGBM"),
         (BalancedRandomForestClassifier(random_state=random_state), "Balanced RF"),
         # Gradient Boosting Family
         (XGBClassifier(eval_metric="logloss"), "XGBoost"),
         (CatBoostClassifier(silent=True), "CatBoost"),
         (HistGradientBoostingClassifier(), "HistGB"),
-        # Neural Networks
-        # (
-        #     MLPClassifier(
-        #         hidden_layer_sizes=(64, 32),
-        #         early_stopping=True,
-        #         random_state=random_state,
-        #     ),
-        #     "MLP",
-        # ),
-        # Advanced Ensembles
-        # (
-        #     StackingClassifier(
-        #         estimators=base_models,
-        #         final_estimator=LogisticRegression(),
-        #         stack_method="predict_proba",
-        #     ),
-        #     "Stacking Ensemble",
-        # ),
-        # # Imbalance Specialists
-        # (
-        #     EasyEnsembleClassifier(n_estimators=10, random_state=random_state),
-        #     "EasyEnsemble",
-        # ),
         (RUSBoostClassifier(random_state=random_state), "RUSBoost"),
     ]
 
@@ -149,7 +138,7 @@ def run_classification(
 
             # Plot AUC-ROC score
             fpr, tpr, _ = roc_curve(y_test, y_proba)
-            plt.plot(fpr, tpr, label = f"{name} (AUC = {metrics['roc_auc']:.3f})")
+            plt.plot(fpr, tpr, label=f"{name} (AUC = {metrics['roc_auc']:.3f})")
 
         except Exception as e:
             print(f"\n\033[91mError in {name}: {str(e)}\033[0m")
@@ -207,14 +196,22 @@ def run_classification(
         except AttributeError:
             continue
 
-    plt.plot([0, 1], [0, 1], linestyle = '--', color = 'gray')
+    plt.plot([0, 1], [0, 1], linestyle="--", color="gray")
     plt.xlabel("False Positive Rate")
     plt.ylabel("True Positive Rate")
     plt.title("AUC-ROC Curve for All Models")
     plt.legend()
     plt.show()
 
-def get_best_features(feature_column, target_column, dataset, n_features = 50, test_size=0.2, random_state=42):
+
+def get_best_features(
+    feature_column,
+    target_column,
+    dataset,
+    n_features=50,
+    test_size=0.2,
+    random_state=42,
+):
     warnings.filterwarnings(action="ignore", category=UndefinedMetricWarning)
     dataset = dataset.dropna()
 
@@ -256,7 +253,7 @@ def get_best_features(feature_column, target_column, dataset, n_features = 50, t
                 .sort_values("Importance", ascending=False)
                 .head(n_features)
             )
-            highest_importances = importance['Feature']
+            highest_importances = importance["Feature"]
             best_features.append(highest_importances)
 
             # print(f"\nTop Features ({model.__class__.__name__}):")
@@ -265,5 +262,3 @@ def get_best_features(feature_column, target_column, dataset, n_features = 50, t
             continue
 
     return best_features
-
-    

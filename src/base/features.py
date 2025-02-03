@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import polars as pl
+
 
 def get_datasets():
     categories = pd.read_csv("../../data_q2/q2-ucsd-cat-map.csv")
@@ -11,93 +13,14 @@ def get_datasets():
     )
     return categories, consumer, acct, transactions
 
-# get balance and standard credit
-def get_balance(acct, consumer):
-    total_balance = acct.groupby("prism_consumer_id")["balance"].sum()
-    consumer_balance = consumer.merge(
-        pd.DataFrame(total_balance), on="prism_consumer_id", how="outer"
-    )
-
-    return consumer_balance
-
 
 def get_transaction_categories(transactions, categories):
     transaction_categories = transactions.merge(
         categories, how="left", left_on="category", right_on="category_id"
     )
-    transaction_categories = transaction_categories.drop(columns = ['category_x'])
-    transaction_categories.rename(columns={"category_y": "category"}, inplace = True)
+    transaction_categories = transaction_categories.drop(columns=["category_x"])
+    transaction_categories.rename(columns={"category_y": "category"}, inplace=True)
     return transaction_categories
-
-
-# get category occurences for DEBIT and CREDIT
-def get_category_occurences_sums(transaction_categories, consumer_balance):
-    outflow_occurences = (
-        transaction_categories[transaction_categories["credit_or_debit"] == "DEBIT"]
-        .groupby(["prism_consumer_id", "category"])
-        .size()
-        .unstack(fill_value=0)
-        .reset_index()
-    )
-
-    # name columns for clarity
-    outflow_occurences = outflow_occurences.rename(
-        columns=lambda col: f"outflow_occurences_{col}"
-        if col != "prism_consumer_id"
-        else col
-    )
-
-    inflow_occurences = (
-        transaction_categories[transaction_categories["credit_or_debit"] == "CREDIT"]
-        .groupby(["prism_consumer_id", "category"])
-        .size()  # Count number of unique occurrences
-        .unstack(fill_value=0)  # Create one column per category_x
-        .reset_index()
-    )
-
-    # name columns for clarity
-    inflow_occurences = inflow_occurences.rename(
-        columns=lambda col: f"inflow_occurrences_{col}"
-        if col != "prism_consumer_id"
-        else col
-    )
-
-    outflow_sums = (
-        transaction_categories[transaction_categories["credit_or_debit"] == "DEBIT"]
-        .groupby(["prism_consumer_id", "category"])["amount"]
-        .sum()  # Count number of unique occurrences
-        .unstack(fill_value=0)  # Create one column per category_x
-        .reset_index()
-    )
-    # name columns for clarity
-    outflow_sums = outflow_sums.rename(
-        columns=lambda col: f"outflow_sums_{col}" if col != "prism_consumer_id" else col
-    )
-
-    inflow_sums = (
-        transaction_categories[transaction_categories["credit_or_debit"] == "CREDIT"]
-        .groupby(["prism_consumer_id", "category"])["amount"]
-        .sum()  # Count number of unique occurrences
-        .unstack(fill_value=0)  # Create one column per category_x
-        .reset_index()
-    )
-
-    # name columns for clarity
-    inflow_sums = inflow_sums.rename(
-        columns=lambda col: f"inflow_sums_{col}" if col != "prism_consumer_id" else col
-    )
-
-    features = (
-        outflow_occurences.merge(outflow_sums, how="left", on="prism_consumer_id")
-        .merge(inflow_occurences, how="left", on="prism_consumer_id")
-        .merge(inflow_sums, how="left", on="prism_consumer_id")
-    )
-
-    consumer_features = consumer_balance.merge(
-        features, how="left", on="prism_consumer_id"
-    )
-
-    return consumer_features
 
 
 def one_hot_accounts(acct, consumer_features):
@@ -112,6 +35,7 @@ def one_hot_accounts(acct, consumer_features):
 
     all_features = consumer_features.merge(one_hot_aggregated, on="prism_consumer_id")
     return all_features
+
 
 def all_cat_percent(all_features, transactions, consumer, categories):
     def get_cat_percent(df, category="all"):
@@ -152,8 +76,9 @@ def all_cat_percent(all_features, transactions, consumer, categories):
         trxn_cat_features, left_index=True, right_index=True
     )
 
-    all_features = all_features.merge(all_cat_features, on = "prism_consumer_id")
+    all_features = all_features.merge(all_cat_features, on="prism_consumer_id")
     return all_features
+
 
 def running_total(all_features, transactions):
     def running_total_statistics(df, time_frame="1D"):
@@ -183,10 +108,11 @@ def running_total(all_features, transactions):
     day = running_total_statistics(transactions.copy(), time_frame="1D")
     time_features = month.merge(week, left_index=True, right_index=True)
     time_features = time_features.merge(day, left_index=True, right_index=True)
-    all_features = all_features.merge(time_features, on = "prism_consumer_id")
+    all_features = all_features.merge(time_features, on="prism_consumer_id")
     return all_features
 
-def get_categorical_features(all_features, transaction_categories, acct, consumer):
+
+def get_categorical_features(all_features, transaction_categories, acct):
     """
     Extracts categorical features from the provided data in a more efficient manner.
 
@@ -240,7 +166,6 @@ def get_categorical_features(all_features, transaction_categories, acct, consume
         .reset_index()
     )
 
-
     by_category = by_category.merge(
         consumer_category_months_df,
         on=["prism_consumer_id", "category", "month"],
@@ -269,8 +194,42 @@ def get_categorical_features(all_features, transaction_categories, acct, consume
         .agg(["mean", "std"])
     )
 
+    def polars_categorical_features(transaction_categories):
+        df = pl.DataFrame(transaction_categories)
+
+        advanced_metrics = df.group_by(["prism_consumer_id", "category"]).agg(
+            [
+                pl.col("amount").median().alias("median"),
+                pl.col("amount").count().alias("count"),
+                pl.col("amount").skew().alias("skewness"),
+                (
+                    pl.col("amount").quantile(0.75) - pl.col("amount").quantile(0.25)
+                ).alias("iqr"),
+                (pl.col("amount").std() / pl.col("amount").mean())
+                .fill_nan(0)
+                .alias("coef_variation"),
+            ]
+        )
+
+        return advanced_metrics
+
+    advanced_metrics = polars_categorical_features(transaction_categories).to_pandas()
+    pivot_advanced = advanced_metrics.pivot_table(
+        index="prism_consumer_id",
+        columns="category",
+        values=["median", "count", "skewness", "iqr", "coef_variation"],
+    )
+    pivot_advanced.columns = [f"{col[1]}_{col[0]}" for col in pivot_advanced.columns]
+    pivot_advanced = pivot_advanced.reset_index()
+    pivot_advanced = pivot_advanced.fillna(0)
+    all_features = all_features.merge(
+        pivot_advanced, on="prism_consumer_id", how="left"
+    )
+
     # Aggregate account balances by 'prism_consumer_id'
-    acct_on_cons = acct[["prism_consumer_id", "balance"]].groupby("prism_consumer_id").sum()
+    acct_on_cons = (
+        acct[["prism_consumer_id", "balance"]].groupby("prism_consumer_id").sum()
+    )
 
     # Create a pivot table for the consumer-category statistics
     pivot_df = metrics.pivot_table(index="prism_consumer_id", columns="category")
@@ -280,8 +239,146 @@ def get_categorical_features(all_features, transaction_categories, acct, consume
     pivot_df = pivot_df.fillna(0).reset_index()
 
     # Merge the consumer statistics and account balance data
-    pivot_df = pivot_df.merge(consumer, on="prism_consumer_id", how="left")
     pivot_df = pivot_df.merge(acct_on_cons, on="prism_consumer_id", how="left")
 
-    all_features = all_features.merge(pivot_df, on = 'prism_consumer_id', how = 'left')
+    all_features = all_features.merge(pivot_df, on="prism_consumer_id", how="left")
+    return all_features
+
+
+def get_categorical_features2(all_features, transaction_categories, acct):
+    # Convert 'posted_date' to datetime and create 'month' column
+    transaction_categories["datetime"] = pd.to_datetime(
+        transaction_categories["posted_date"]
+    )
+    transaction_categories["month"] = transaction_categories["datetime"].dt.strftime(
+        "%Y-%m"
+    )
+
+    # Generate all consumer-category-month combinations using vectorized operations
+    consumer_intervals = (
+        transaction_categories.groupby("prism_consumer_id")["datetime"]
+        .agg(min_date="min", max_date="max")
+        .reset_index()
+    )
+
+    consumer_intervals["min_month"] = (
+        consumer_intervals["min_date"].dt.to_period("M").dt.start_time
+    )
+    consumer_intervals["max_month"] = (
+        consumer_intervals["max_date"].dt.to_period("M").dt.start_time
+    )
+
+    # Generate all months for each consumer
+    consumer_intervals["months"] = consumer_intervals.apply(
+        lambda row: pd.date_range(
+            start=row["min_month"], end=row["max_month"], freq="MS"
+        ),
+        axis=1,
+    )
+    consumer_months = consumer_intervals.explode("months")[
+        ["prism_consumer_id", "months"]
+    ]
+    consumer_months["month"] = consumer_months["months"].dt.strftime("%Y-%m")
+    consumer_months = consumer_months.drop(columns="months")
+
+    # Cross join with categories
+    categories = transaction_categories["category"].unique()
+    consumer_category_months_df = pd.merge(
+        consumer_months.assign(key=1),
+        pd.DataFrame({"category": categories, "key": 1}),
+        on="key",
+    ).drop(columns="key")
+
+    # Aggregate amounts by consumer-category-month and merge to fill missing with 0
+    by_category = (
+        transaction_categories.groupby(["prism_consumer_id", "category", "month"])[
+            "amount"
+        ]
+        .sum()
+        .reset_index()
+    )
+
+    by_category = pd.merge(
+        consumer_category_months_df,
+        by_category,
+        on=["prism_consumer_id", "category", "month"],
+        how="left",
+    ).fillna({"amount": 0})
+
+    # Calculate diffs between consecutive months
+    by_category = by_category.sort_values(["prism_consumer_id", "category", "month"])
+    by_category["diffs"] = (
+        by_category.groupby(["prism_consumer_id", "category"])["amount"]
+        .diff()
+        .fillna(0)
+    )
+
+    # Aggregate mean and std of diffs
+    metrics = (
+        by_category.groupby(["prism_consumer_id", "category"])["diffs"]
+        .agg(["mean", "std"])
+        .fillna(0)
+        .reset_index()
+    )
+
+    # Pivot metrics
+    pivot_df = metrics.pivot_table(
+        index="prism_consumer_id",
+        columns="category",
+        values=["mean", "std"],
+        fill_value=0,
+    )
+    # Correct column naming
+    pivot_df.columns = [f"{col[1]}_{col[0]}" for col in pivot_df.columns]
+    pivot_df = pivot_df.reset_index()
+
+    # Advanced metrics using Pandas
+    advanced_metrics = (
+        transaction_categories.groupby(["prism_consumer_id", "category"])
+        .agg(
+            median=("amount", "median"),
+            count=("amount", "count"),
+            skewness=("amount", "skew"),
+            q1=("amount", lambda x: x.quantile(0.25)),
+            q3=("amount", lambda x: x.quantile(0.75)),
+            mean_amount=("amount", "mean"),
+            std_amount=("amount", "std"),
+        )
+        .reset_index()
+    )
+
+    advanced_metrics["iqr"] = advanced_metrics["q3"] - advanced_metrics["q1"]
+    advanced_metrics["coef_variation"] = (
+        advanced_metrics["std_amount"] / advanced_metrics["mean_amount"]
+    ).fillna(0)
+    advanced_metrics.drop(
+        columns=["q1", "q3", "mean_amount", "std_amount"], inplace=True
+    )
+
+    # Pivot advanced metrics
+    pivot_advanced = advanced_metrics.pivot_table(
+        index="prism_consumer_id",
+        columns="category",
+        values=["median", "count", "skewness", "iqr", "coef_variation"],
+        fill_value=0,
+    )
+    pivot_advanced.columns = [f"{col[1]}_{col[0]}" for col in pivot_advanced.columns]
+    pivot_advanced = pivot_advanced.reset_index()
+
+    # Merge advanced metrics into all_features
+    all_features = all_features.merge(
+        pivot_advanced, on="prism_consumer_id", how="left"
+    )
+
+    # Merge account balances
+    acct_on_cons = acct.groupby("prism_consumer_id")["balance"].sum().reset_index()
+    pivot_df = pivot_df.merge(acct_on_cons, on="prism_consumer_id", how="left").fillna(
+        0
+    )
+
+    # Merge metrics into all_features
+    all_features = all_features.merge(
+        pivot_df, on="prism_consumer_id", how="left"
+    ).fillna(0)
+
     return all_features

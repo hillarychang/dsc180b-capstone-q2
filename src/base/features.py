@@ -7,9 +7,6 @@ def get_balance(acct, consumer, transactions):
     consumer_balance = consumer.merge(
         pd.DataFrame(total_balance), on="prism_consumer_id", how="outer"
     )
-    consumer_balance["std_credit"] = (
-        consumer_balance["credit_score"] - consumer_balance["credit_score"].mean()
-    ) / consumer_balance["credit_score"].std()
 
     return consumer_balance
 

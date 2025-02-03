@@ -94,9 +94,9 @@ def run_classification(
             LogisticRegression(class_weight="balanced", max_iter=200),
             "Logistic Regression",
         ),
-        (RandomForestClassifier(random_state=random_state), "Random Forest"),
+        # (RandomForestClassifier(random_state=random_state), "Random Forest"),
         (lgb.LGBMClassifier(objective="binary", force_row_wise=True), "LightGBM"),
-        (BalancedRandomForestClassifier(random_state=random_state), "Balanced RF"),
+        # (BalancedRandomForestClassifier(random_state=random_state), "Balanced RF"),
         # Gradient Boosting Family
         (XGBClassifier(eval_metric="logloss"), "XGBoost"),
         (CatBoostClassifier(silent=True), "CatBoost"),

@@ -1,8 +1,18 @@
 import pandas as pd
 import numpy as np
 
+def get_datasets():
+    categories = pd.read_csv("../../data_q2/q2-ucsd-cat-map.csv")
+    consumer = pd.read_parquet("../../data_q2/q2-ucsd-consDF.pqt")
+    acct = pd.read_parquet("../../data_q2/q2-ucsd-acctIDF.pqt")
+    transactions = pd.read_parquet("../../data_q2/q2-ucsd-trxnDF.pqt")
+    transactions["amount"] = transactions["amount"].where(
+        transactions["credit_or_debit"] == "DEBIT", -transactions["amount"]
+    )
+    return categories, consumer, acct, transactions
+
 # get balance and standard credit
-def get_balance(acct, consumer, transactions):
+def get_balance(acct, consumer):
     total_balance = acct.groupby("prism_consumer_id")["balance"].sum()
     consumer_balance = consumer.merge(
         pd.DataFrame(total_balance), on="prism_consumer_id", how="outer"
@@ -15,6 +25,8 @@ def get_transaction_categories(transactions, categories):
     transaction_categories = transactions.merge(
         categories, how="left", left_on="category", right_on="category_id"
     )
+    transaction_categories = transaction_categories.drop(columns = ['category_x'])
+    transaction_categories.rename(columns={"category_y": "category"})
     return transaction_categories
 
 
@@ -174,3 +186,93 @@ def running_total(all_features, transactions):
     all_features = all_features.merge(time_features, on = "prism_consumer_id")
     return all_features
 
+def get_categorical_features(all_features, transaction_categories):
+    """
+    Extracts categorical features from the provided data in a more efficient manner.
+
+    Args:
+        data (dict): A dictionary containing DataFrames.
+
+    Returns:
+        DataFrame: DataFrame containing categorical features.
+    """
+    # Convert 'posted_date' to datetime and create a 'month' column.
+    transaction_categories["datetime"] = pd.to_datetime(transaction_categories["posted_date"])
+    transaction_categories["month"] = transaction_categories["datetime"].dt.strftime("%Y-%m")
+
+    # Generate the permutations of consumers, categories, and months
+    consumer_intervals = (
+        transaction_categories[["prism_consumer_id", "month"]]
+        .groupby("prism_consumer_id")
+        .agg(["min", "max"])
+    )
+    consumer_intervals.columns = ["min", "max"]
+    consumer_intervals = consumer_intervals.to_dict()
+    categories = sorted(transaction_categories["category"].unique())
+
+    consumer_category_months = []
+    for con in consumer_intervals["min"].keys():
+        consumer_min = consumer_intervals["min"][con]
+        consumer_max = consumer_intervals["max"][con]
+        month_range = pd.date_range(consumer_min, consumer_max, freq="1M")
+        month_range = [d.strftime("%Y-%m") for d in month_range] + [consumer_max]
+
+        for category in categories:
+            for month in month_range:
+                consumer_category_months.append(
+                    {
+                        "prism_consumer_id": con,
+                        "month": month,
+                        "category": category,
+                    }
+                )
+
+    consumer_category_months_df = pd.DataFrame(consumer_category_months)
+
+    # Group the transaction_categories data by 'prism_consumer_id', 'category', and 'month' and aggregate 'amount'
+    by_category = (
+        transaction_categories[["prism_consumer_id", "category", "month", "amount"]]
+        .groupby(["prism_consumer_id", "category", "month"])
+        .sum()
+        .reset_index()
+    )
+
+    # Merge the generated consumer-category-month combinations with the aggregated data
+    by_category = by_category.merge(
+        consumer_category_months_df,
+        on=["prism_consumer_id", "category", "month"],
+        how="right",
+    )
+
+    # Fill any missing values with 0
+    by_category = by_category.fillna(0)
+
+    # Calculate the difference of 'amount' for each consumer-category group (diff of consecutive months)
+    by_category["diffs"] = by_category.groupby(["prism_consumer_id", "category"])[
+        "amount"
+    ].transform(lambda x: x.diff())
+
+    # Aggregate the mean and std of the amounts for each consumer-category group
+    metrics = (
+        by_category.drop(columns="month")
+        .groupby(["prism_consumer_id", "category"])
+        .agg(["mean", "std"])
+    )
+
+    # Aggregate account balances by 'prism_consumer_id'
+    acct_on_cons = (
+        acct[["prism_consumer_id", "balance"]].groupby("prism_consumer_id").sum()
+    )
+
+    # Create a pivot table for the consumer-category statistics
+    pivot_df = metrics.pivot_table(index="prism_consumer_id", columns="category")
+    pivot_df.columns = [f"{col[2]}_{col[0]}_{col[1]}" for col in pivot_df.columns]
+
+    # Fill any NaN values with 0
+    pivot_df = pivot_df.fillna(0).reset_index()
+
+    # Merge the consumer statistics and account balance data
+    pivot_df = pivot_df.merge(consumer, on="prism_consumer_id", how="left")
+    pivot_df = pivot_df.merge(acct_on_cons, on="prism_consumer_id", how="left")
+
+    return pivot_df

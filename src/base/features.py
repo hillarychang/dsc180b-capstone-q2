@@ -36,6 +36,22 @@ def one_hot_accounts(acct, consumer_features):
     all_features = consumer_features.merge(one_hot_aggregated, on="prism_consumer_id")
     return all_features
 
+def count_account_types(acct, consumer_features):
+    # Group by consumer ID and account type, count occurrences
+    account_counts = (
+        acct.groupby(["prism_consumer_id", "account_type"])
+        .size()
+        .unstack(fill_value=0)
+        .add_prefix("num_accounts_")  # Prefix for clarity
+    )
+
+    # Merge with consumer features
+    all_features = consumer_features.merge(
+        account_counts, on="prism_consumer_id", how="left"
+    ).fillna(0)  # Fill NaN with 0 for consumers with no accounts of certain types
+
+    return all_features
+
 
 def all_cat_percent(all_features, transactions, consumer, categories):
     def get_cat_percent(df, category="all"):

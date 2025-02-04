@@ -85,18 +85,12 @@ def preprocess_features(feature_column, target_column, dataset, test_size = 0.2,
 
 # run_classification models
 def run_classification(
-    X_train, X_test, y_train, y_test, random_state=42
+    feature_column, target_column, dataset, random_state=42
 ):
     """
     Enhanced classification analysis with multiple models and comprehensive reporting.
     """
-
-    # Configure models in standardized format
-    base_models = [
-        ("rf", RandomForestClassifier(n_estimators=100, random_state=random_state)),
-        ("xgb", XGBClassifier(use_label_encoder=False, eval_metric="logloss")),
-        ("lgbm", lgb.LGBMClassifier()),
-    ]
+    X_train, X_test, y_train, y_test = preprocess_features(feature_column, target_column, dataset)
 
     models = [
         # Core Models
@@ -194,16 +188,37 @@ def run_classification(
 
 
 def get_best_features(
-    X_train,
-    X_test,
-    y_train,
-    y_test,
+    feature_column,
+    target_column,
+    dataset,
     n_features=50,
     test_size=0.2,
     random_state=42,
 ):
+    warnings.filterwarnings(action="ignore", category=UndefinedMetricWarning)
+    dataset = dataset.dropna()
+
+    def preprocess(dataset):
+        # Replace infinite values
+        dataset = dataset.replace([np.inf, -np.inf], np.nan)
+
+        # Drop or fill NaN values
+        dataset = dataset.fillna(
+            dataset.median()
+        )  # Or use mean, or a specific strategy
+
+        return dataset
+    
+    # Define features and target
+    X = dataset[feature_column]
+    X = preprocess(X)
+    y = dataset[target_column]
+
+    # Train-test split
+    X_train, X_test, y_train, y_test = preprocess_features(feature_column, target_column, dataset)
+
     # Feature analysis
-    feature_correlations = X_train.corrwith(y_train)
+    feature_correlations = X.corrwith(y)
     best_features = []
 
     for model in [
@@ -216,7 +231,7 @@ def get_best_features(
             importance = (
                 pd.DataFrame(
                     {
-                        "Feature": X_train.columns,
+                        "Feature": feature_column,
                         "Importance": m.feature_importances_,
                         "Correlation": feature_correlations,
                     }
@@ -225,38 +240,41 @@ def get_best_features(
                 .head(n_features)
             )
             highest_importances = importance["Feature"]
+            highest_importances = importance["Feature"]
             best_features.append(highest_importances)
 
-            print(f"\nTop Features ({model.__class__.__name__}):")
-            print(importance.to_string(index=False))
+            # print(f"\nTop Features ({model.__class__.__name__}):")
+            # print(importance.to_string(index=False))
         except AttributeError:
             continue
-    
 
     return best_features
 
 
-def optimize_xgb_params(X_train, y_train, max_evals=100):
+def optimize_xgb_params(X_train, X_val, y_train, y_val, max_evals=100):
     """
     Optimize XGBoost hyperparameters using Hyperopt with TPE algorithm.
+    Uses separate validation set for parameter tuning to prevent overfitting.
 
     Parameters:
     -----------
     X_train : array-like
         Training features
+    X_val : array-like
+        Validation features for hyperparameter tuning
     y_train : array-like
         Training target
+    y_val : array-like
+        Validation target for hyperparameter tuning
     max_evals : int, default=100
         Number of optimization iterations
 
     Returns:
     --------
     dict : Best parameters found
-    float : Best score achieved
+    float : Best validation score achieved
     XGBClassifier : Best model
     """
-
-    # Define the search space
     space = {
         "learning_rate": hp.loguniform("learning_rate", np.log(0.001), np.log(0.3)),
         "max_depth": hp.choice("max_depth", range(3, 11)),
@@ -270,7 +288,7 @@ def optimize_xgb_params(X_train, y_train, max_evals=100):
     }
 
     def objective(params):
-        # Create XGBoost classifier with current parameters
+        # Create and train XGBoost classifier with current parameters
         xgb = XGBClassifier(
             objective="binary:logistic",
             eval_metric="auc",
@@ -278,18 +296,21 @@ def optimize_xgb_params(X_train, y_train, max_evals=100):
             **params,
         )
 
-        # Perform cross-validation
-        score = cross_val_score(
-            xgb, X_train, y_train, scoring="roc_auc", cv=5, n_jobs=-1
-        ).mean()
+        # Train on training set
+        xgb.fit(
+            X_train,
+            y_train,
+            eval_set=[(X_val, y_val)],
+            verbose=False,
+        )
 
-        # Return negative score for minimization
-        return {"loss": -score, "status": STATUS_OK}
+        # Evaluate on validation set
+        val_pred = xgb.predict_proba(X_val)[:, 1]
+        val_score = roc_auc_score(y_val, val_pred)
 
-    # Store training history
+        return {"loss": -val_score, "status": STATUS_OK}
+
     trials = Trials()
-
-    # Run optimization
     print("Starting hyperparameter optimization...")
     best = fmin(
         fn=objective,
@@ -300,10 +321,10 @@ def optimize_xgb_params(X_train, y_train, max_evals=100):
         verbose=1,
     )
 
-    # Convert best parameters to proper format
+    # Convert best parameters
     best_params = {
         "learning_rate": float(best["learning_rate"]),
-        "max_depth": best["max_depth"] + 3,  # Adjust for hp.choice indexing
+        "max_depth": best["max_depth"] + 3,
         "min_child_weight": int(best["min_child_weight"]),
         "subsample": float(best["subsample"]),
         "colsample_bytree": float(best["colsample_bytree"]),
@@ -321,16 +342,23 @@ def optimize_xgb_params(X_train, y_train, max_evals=100):
         random_state=42,
         **best_params,
     )
-    best_model.fit(X_train, y_train)
 
-    # Get best score
+    # Train with early stopping using validation set
+    best_model.fit(
+        X_train,
+        y_train,
+        eval_set=[(X_val, y_val)],
+        verbose=False,
+    )
+
+    # Get best validation score
     best_score = -min(trials.losses())
 
     # Print results
     print("\nBest parameters found:")
     for param, value in best_params.items():
         print(f"{param}: {value}")
-    print(f"\nBest ROC-AUC score: {best_score:.4f}")
+    print(f"\nBest validation ROC-AUC score: {best_score:.4f}")
 
     # Plot optimization history
     scores = [-trial["result"]["loss"] for trial in trials.trials]
@@ -338,7 +366,7 @@ def optimize_xgb_params(X_train, y_train, max_evals=100):
     plt.plot(scores)
     plt.title("Hyperopt Optimization History")
     plt.xlabel("Iteration")
-    plt.ylabel("ROC-AUC Score")
+    plt.ylabel("Validation ROC-AUC Score")
     plt.show()
 
     return best_params, best_score, best_model

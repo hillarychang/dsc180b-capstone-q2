@@ -224,7 +224,9 @@ def get_best_features(
     for model in [
         RandomForestClassifier(),
         BalancedRandomForestClassifier(),
-        XGBClassifier(),
+        XGBClassifier(
+            objective="binary:logistic",
+        ),
     ]:
         try:
             m = model.fit(X_train, y_train)
@@ -276,12 +278,12 @@ def optimize_xgb_params(X_train, X_val, y_train, y_val, max_evals=100):
     XGBClassifier : Best model
     """
     space = {
-        "learning_rate": hp.loguniform("learning_rate", np.log(0.001), np.log(0.3)),
-        "max_depth": hp.choice("max_depth", range(3, 11)),
+        "learning_rate": hp.loguniform("learning_rate", np.log(0.04), np.log(0.12)),
+        "max_depth": hp.choice("max_depth", range(5, 11)),
         "min_child_weight": hp.quniform("min_child_weight", 1, 7, 1),
         "subsample": hp.uniform("subsample", 0.6, 1.0),
         "colsample_bytree": hp.uniform("colsample_bytree", 0.6, 1.0),
-        "n_estimators": hp.choice("n_estimators", [100, 200, 300, 400, 500]),
+        "n_estimators": hp.choice("n_estimators", range(50, 500, 50)),
         "gamma": hp.loguniform("gamma", np.log(1e-8), np.log(1.0)),
         "reg_alpha": hp.loguniform("reg_alpha", np.log(1e-8), np.log(1.0)),
         "reg_lambda": hp.loguniform("reg_lambda", np.log(1e-8), np.log(1.0)),

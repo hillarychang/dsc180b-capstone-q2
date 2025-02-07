@@ -245,8 +245,8 @@ def get_best_features(
             highest_importances = importance["Feature"]
             best_features.append(highest_importances)
 
-            # print(f"\nTop Features ({model.__class__.__name__}):")
-            # print(importance.to_string(index=False))
+            print(f"\nTop Features ({model.__class__.__name__}):")
+            print(importance.to_string(index=False))
         except AttributeError:
             continue
 

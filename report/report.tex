@@ -102,6 +102,7 @@ We utilized multiple datasets that provide consumer transaction details, account
 \begin{itemize}
     \item Identified differences in transaction patterns between delinquent and non-delinquent consumers.
     \item Examined seasonal trends, payday effects, and spending fluctuations.
+    \item Estimated income using reoccuring transactions
     \item Analyzed the impact of account fees, buy-now-pay-later (BNPL) transactions, and overdrafts.
 \end{itemize}
 
@@ -124,7 +125,7 @@ We utilized multiple datasets that provide consumer transaction details, account
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{figure/balance_single_non_delinquent.png}
-    \caption{Balance over time for a single non-delinquent consumer. The balance exhibits periodic fluctuations, potentially due to income deposits and spending patterns, but remains above zero for the majority of the observed period.}
+    \caption{Balance over time for a single non-delinquent consumer. The balance exhibits periodic fluctuations, potentially due to income deposits and spending patterns, but remains above zero during the observed period.}
     \label{fig:balance_single_non_delinquent}
 \end{figure}
 
@@ -142,6 +143,7 @@ We engineered multiple features relevant to the prediction of delinquency:
     \item \textbf{Balance Features}: Negative balance ratio, balance trends, payday effects.
     \item \textbf{Transaction-Based Features}: Credit vs. debit transaction volume, category-based spending breakdown.
     \item \textbf{Temporal Features}: Spending frequency over time, account for longevity effects.
+    \item \textbf{Account Types}: Features based on the types of accounts a consumer has
 \end{itemize}
 
 \begin{figure}[H]
@@ -166,6 +168,12 @@ We trained the following machine learning models:
     \item \textbf{Random Forest}: Captures non-linear financial relationships.
     \item \textbf{XGBoost}: Optimized for structured financial data.
     \item \textbf{Neural Networks}: Captures complex spending patterns.
+    \item \textbf{LightGBM}: Efficient with categorical features and handling imbalanced data.
+    \item \textbf{Balanced RF}: Handles class imbalance by weighting classes or resampling.
+    \item \textbf{CatBoost}: Handles categorical features automatically, robust to overfitting.
+    \item \textbf{HistGB}: A histogram-based gradient boosting model
+    \item \textbf{RUSBoost}: Combines Random Under-Sampling with boosting to address class imbalance while maintaining predictive performance.
+  
 \end{itemize}
 
 \subsection{Model Evaluation}
@@ -173,6 +181,9 @@ Key metrics for model evaluation include:
 \begin{itemize}
     \item \textbf{Accuracy and F1-Score}: Measures classification performance.
     \item \textbf{ROC-AUC}: Evaluates the model's ability to differentiate delinquent users.
+    \item \textbf{Precision and Recall}: Precision measures correct positives; recall measures detected positives.
+    \item \textbf{Training Time}: Time required to train the model.
+    \item \textbf{Prediction Time}: Time taken to make predictions.
     \item \textbf{Feature Importance}: Highlights predictive variables.
 \end{itemize}
 To mitigate the class imbalance (delinquents only ~8.4\% of dataset), we used:
@@ -184,28 +195,91 @@ To mitigate the class imbalance (delinquents only ~8.4\% of dataset), we used:
 \section{Results}
 
 \subsection{Feature Performance}
-Key predictors of delinquency:
+Key predictors of delinquency (XGBClassifier):
 \begin{itemize}
-    \item \textbf{Negative balance ratio}
-    \item \textbf{Account fees (category 23)}
-    \item \textbf{BNPL transactions (category 25)}
+    \item \textbf{Account Type - Savings}: If a consumer has a savings acc
+    \item \textbf{Account fees}: Sum of all account fees
+    \item \textbf{Credit Score}: Credit score of a consumer
+    \item \textbf{Overdraft Median}: Median amount of Overdraft
+    \item \textbf{Account fees}: Median amount of Account fees
+    \item \textbf{BNPL Std}: Standard Deviation of BNPL transactions
+    \item \textbf{Overdraft count}: Number of overdraft transactions
+    \item \textbf{Investment Income Median}: Median amount of Investment income
+    \item \textbf{Investment Income Count}: Number of Investment income transactions
+    \item \textbf{Banking Catch All Std}: Standard deviation of a consumer's transactions within this category
 \end{itemize}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|c|c|}
+        \hline
+        Feature & Importance & Correlation \\
+        \hline
+        account\_types\_savings & 0.044091 & -0.099071 \\
+        account\_fees\_count & 0.037083 & 0.020680 \\
+        credit\_score & 0.030284 & -0.249976 \\
+        overdraft\_median & 0.026024 & 0.000407 \\
+        account\_fees\_median & 0.021387 & 0.001497 \\
+        BNPL\_std & 0.021323 & 0.034083 \\
+        overdraft\_count & 0.021319 & 0.066101 \\
+        investment\_income\_median & 0.018767 & 0.004675 \\
+        investment\_income\_count & 0.017630 & -0.026354 \\
+        banking\_catch\_all\_std & 0.014733 & -0.010585 \\
+        \hline
+    \end{tabular}
+    \caption{Top Features of XGBClassifier}
+    \label{tab:top_features_xgb}
+\end{table}
 
 \subsection{Model Performance}
 \begin{table}[H]
     \centering
-    \begin{tabular}{|l|c|c|c|c|}
+    \begin{tabular}{|l|c|c|c|c|c|c|c|}
         \hline
-        Model & Accuracy & F1-Score & ROC-AUC & Training Time \\
+        Model & ROC-AUC & Accuracy & Precision & Recall & F1-Score \\
         \hline
-        Logistic Regression & 85.2\% & 0.83 & 0.88 & Fast \\
-        Random Forest & 89.5\% & 0.87 & 0.91 & Medium \\
-        XGBoost & \textbf{92.3\%} & \textbf{0.90} & \textbf{0.94} & Slow \\
-        Neural Network & 91.8\% & 0.89 & 0.93 & Slow \\
+
+        HistGB & \textbf{0.842428} & 0.913528 & 0.889776 & 0.913528 & 0.899533 \\
+        XGBoost & 0.839279 & 0.910069 & 0.889033 & 0.910069 & 0.898105 \\
+        LightGBM & 0.828857 & 0.913912 & 0.889361 & 0.913912 & 0.899373 \\
+        CatBoost & 0.823153 & 0.915834 & 0.887905 & 0.915834 & 0.898882 \\
+        RUSBoost & 0.805893 & 0.826287 & 0.905010 & 0.826287 & 0.857906 \\
+        Random Forest & 0.794283 & 0.915450 & 0.885290 & 0.915450 & 0.897285 \\
+        Balanced RF & 0.791598 & \textbf{0.919677} & 0.892594 & \textbf{0.919677} & \textbf{0.902200} \\
+        Logistic Regression & 0.761125 & 0.759416 & \textbf{0.906664} & 0.759416 & 0.814041 \\
         \hline
     \end{tabular}
     \caption{Comparison of model performance}
 \end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|c|c|}
+        \hline
+        Model & Training-Time & Prediction-Time\\
+        \hline
+
+        HistGB & 8.755626 & TODO \\
+        XGBoost & 5.682351 & TODO \\
+        LightGBM & 4.397599 & TODO \\
+        CatBoost & 42.606373 & TODO \\
+        RUSBoost & 23.319771 & TODO \\
+        Random Forest & 22.369477 & TODO \\
+        Balanced RF & 27.226752 & TODO \\
+        Logistic Regression & \textbf{2.352007} & TODO \\
+        \hline
+    \end{tabular}
+    \caption{Comparison of time-based model performance}
+\end{table}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]
+    {figure/auc_roc_all_models.png}
+    \caption{Comparison of all AUC\_ROC scores of the different models we trained.}
+    \label{fig:standardized_credit_balance}
+\end{figure}
 
 \subsection{Interpretability \& Reason Codes}
 Delinquent consumers often had high spending in BNPL and account fees. The top reason codes included:

@@ -123,6 +123,7 @@ def run_classification(
         try:
             start_time = time.time()
             model.fit(X_train, y_train)
+            train_time_end = time.time()
             y_pred = model.predict(X_test)
             y_proba = model.predict_proba(X_test)[:, 1]
 
@@ -131,7 +132,8 @@ def run_classification(
                 "model": name,
                 "roc_auc": roc_auc_score(y_test, y_proba),
                 "accuracy": accuracy_score(y_test, y_pred),
-                "train_time": time.time() - start_time,
+                "train_time": train_time_end - start_time,
+                "predict_time": (time.time() - train_time_end) / X_test.shape[0]
             }
 
             # Add classification report metrics
@@ -145,7 +147,7 @@ def run_classification(
             print(
                 f"ROC-AUC: {metrics['roc_auc']:.3f} | Accuracy: {metrics['accuracy']:.3f}"
             )
-            print(f"Training Time: {metrics['train_time']:.1f}s")
+            print(f"Training Time: {metrics['train_time']:.1f}s | Predicting Time: {metrics['predict_time']:.6f}s")
             print(classification_report(y_test, y_pred))
 
             # Plot AUC-ROC score
@@ -173,6 +175,7 @@ def run_classification(
                 "recall",
                 "f1-score",
                 "train_time",
+                "predict_time"
             ]
         ]
         .sort_values("roc_auc", ascending=False)

@@ -137,11 +137,11 @@ We utilized multiple datasets that provide consumer transaction details, account
 
 
 \subsection{Feature Engineering}
-We engineered multiple features relevant to delinquency prediction:
+We engineered multiple features relevant to the prediction of delinquency:
 \begin{itemize}
     \item \textbf{Balance Features}: Negative balance ratio, balance trends, payday effects.
     \item \textbf{Transaction-Based Features}: Credit vs. debit transaction volume, category-based spending breakdown.
-    \item \textbf{Temporal Features}: Spending frequency over time, account longevity effects.
+    \item \textbf{Temporal Features}: Spending frequency over time, account for longevity effects.
 \end{itemize}
 
 \begin{figure}[H]
@@ -172,13 +172,13 @@ We trained the following machine learning models:
 Key metrics for model evaluation include:
 \begin{itemize}
     \item \textbf{Accuracy and F1-Score}: Measures classification performance.
-    \item \textbf{ROC-AUC}: Evaluates model's ability to differentiate delinquent users.
+    \item \textbf{ROC-AUC}: Evaluates the model's ability to differentiate delinquent users.
     \item \textbf{Feature Importance}: Highlights predictive variables.
 \end{itemize}
-To mitigate class imbalance (delinquents only ~8.4\% of dataset), we used:
+To mitigate the class imbalance (delinquents only ~8.4\% of dataset), we used:
 \begin{itemize}
     \item \textbf{SMOTE \& SMOTEENN}: Oversampling techniques.
-    \item \textbf{Feature Normalization}: Standardizing key variables.
+    \item \textbf{Feature Normalization}: Standardization of key variables.
 \end{itemize}
 
 \section{Results}
@@ -208,7 +208,7 @@ Key predictors of delinquency:
 \end{table}
 
 \subsection{Interpretability \& Reason Codes}
-Delinquent consumers often had high spending in BNPL and account fees. Top reason codes included:
+Delinquent consumers often had high spending in BNPL and account fees. The top reason codes included:
 \begin{itemize}
     \item High balance volatility and overdrafts.
     \item Excessive BNPL spending.
@@ -216,7 +216,7 @@ Delinquent consumers often had high spending in BNPL and account fees. Top reaso
 \end{itemize}
 
 \section{Conclusion}
-We refined predictive features and improved model performance for delinquency assessment. By leveraging transaction data, we developed a "Cash Score" that improves upon traditional credit assessments. Future work includes:
+We refined predictive features and improved model performance for the assessment of delinquency. By leveraging transaction data, we developed a "Cash Score" that improves upon traditional credit assessments. Future work includes:
 \begin{itemize}
     \item Enhancing interpretability with reason codes.
     \item Submitting final model predictions.
@@ -229,7 +229,26 @@ We refined predictive features and improved model performance for delinquency as
 
 \section{Literature Review}
 
+\subsection{Attention is All You Need (2017)}
 
+One of the key papers in machine learning, \textit{“Attention is All You Need”} by Vaswani et al. (2017), introduced the Transformer architecture along with a cohort of innovative ideas for natural language processing, becoming the foundation for modern-day language models. Specifically, the architecture addressed limitations of traditional sequence models and outdated bigram models by introducing an attention mechanism that does not rely on recurrence or convolution operations, instead focusing on weights that allow models to weigh the importance of different parts of the input sequence during processing.
+
+This key innovation enabled Transformer models to capture long-range dependencies more effectively and efficiently compared to prior models such as RNNs and LSTMs. Additionally, Vaswani et al. demonstrated that Transformer models could achieve faster parallelism, requiring less training time.
+
+For our application in banking transaction categorization and credit default prediction, Transformer models are particularly relevant. They offer a promising approach for future banking categorization methods due to their strong capability in self-attention, which allows precise categorization of transaction memos. This specificity enhances the richness of the data available for analysis. Furthermore, the Transformer model's ability to learn patterns in spending behavior and recognize relationships between transactions over time offers potential in detecting financial distress or increased credit risk, as it learns from sequential transaction data associated with individual consumers.
+
+\subsection{Language Models are Unsupervised Multitask Learners (2019)}
+The paper \textit{“Language Models are Unsupervised Multitask Learners”} by Radford et al. (2019) marks a shift in natural language processing by introducing GPT-2, a model that emphasizes unsupervised multitask learning. Traditionally, NLP models rely on supervised learning, where they are trained on labeled data. In contrast, GPT-2 was trained on a massive dataset without any task-specific labels, allowing it to perform multiple tasks in a \textit{zero-shot setting}, meaning it can handle tasks without additional data or fine-tuning for each one.
+
+GPT-2’s ability to generalize across a range of tasks is primarily attributed to its use of the Transformer architecture, which employs a self-attention mechanism to capture long-range dependencies in text more effectively than previous models such as RNNs or LSTMs. The Transformer’s design also supports parallel processing, making it both faster to train and more efficient in application. For training, the authors created WebText, a massive dataset comprising data from Reddit web pages.
+
+GPT-2’s zero-shot learning capability makes it highly adaptable for categorizing transaction memos without requiring labeled data for each specific task. By identifying patterns in transactions, GPT-2 could potentially discover trends across transaction types as well. However, despite these strengths, GPT-2 has limitations, especially in complex reasoning, which suggests room for further refinement and improvement.
+
+\subsection{DGHNL: A new deep genetic hierarchical network of learners for prediction of credit scoring (2020)}
+
+In financial risk management, accurate credit scoring and transaction categorization models play a crucial role in understanding borrower behavior and assessing creditworthiness. Traditional models like logistic regression offer simplicity but often fail to capture the complex, nonlinear patterns found in financial data. More advanced machine learning techniques, such as neural networks and ensemble methods, have demonstrated improved predictive accuracy by modeling these complexities. However, these approaches can be challenging to interpret, an essential factor for regulatory requirements in financial applications.
+The Deep Genetic Hierarchical Network of Learners (DGHNL) offers a solution by using a combination of genetic algorithms (GAs) and hierarchical neural networks to optimize feature selection and learning in a structured, layered way. This hybrid approach is relevant to both credit scoring and transaction categorization models, as it can capture intricate patterns in bank transaction data—vital for understanding spending behaviors and identifying risky patterns. By categorizing transactions more accurately, DGHNL could support better credit assessments by providing a clearer view of a borrower’s financial habits.
+DGHNL’s hierarchical architecture allows the model to focus on various data levels, potentially making it highly suitable for categorizing diverse transaction types. This structured learning enables DGHNL to balance detailed data analysis with high-level abstractions, enhancing both accuracy and interpretability. Consequently, the model not only improves risk predictions but also supports nuanced transaction categorization, helping to bridge gaps in credit scoring and financial behavior analysis.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% References
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

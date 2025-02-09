@@ -200,7 +200,7 @@ To identify key predictors of delinquency, we utilized models like XGBClassifier
 \textbf{The top predictors include}: \\
 
 \begin{itemize}
-    \item \textbf{Account Type - Savings}: If a consumer has a savings acc
+    \item \textbf{Account Type - Savings}: If a consumer has a savings account
     \item \textbf{Account fees}: Sum of all account fees
     \item \textbf{Credit Score}: Credit score of a consumer
     \item \textbf{Overdraft Median}: Median amount of Overdraft
@@ -299,21 +299,53 @@ Apart from standard classification metrics, training and prediction time are cru
 \end{table}
 
 
-\subsection{Interpretability \& Reason Codes PLEASE UPDATE}
-Delinquent consumers often had high spending in BNPL and account fees. The top reason codes included:
+% \subsection{Interpretability \& Reason Codes PLEASE UPDATE}
+% Delinquent consumers often had high spending in BNPL and account fees. The top reason codes included:
+% \begin{itemize}
+%     \item High balance volatility and overdrafts.
+%     \item Excessive BNPL spending.
+%     \item Significant account fees.
+% \end{itemize}
+
+\subsection{Interpretability \& Reason Codes}
+
+\textbf{Top reason codes contributing to a high delinquency risk score:}
+
 \begin{itemize}
-    \item High balance volatility and overdrafts.
-    \item Excessive BNPL spending.
-    \item Significant account fees.
+    \item \textbf{Frequent Negative Balances}: A high negative balance ratio and frequent occurrences of negative balances per day were strong predictors of delinquency.
+
+    \item \textbf{Overdraft Usage}: The total number and magnitude of overdraft transactions contributed highly to delinquency risk.
+
+    \item \textbf{Buy-Now-Pay-Later (BNPL) Transactions}: Consumers with excessive BNPL spending, specifically those with a high standard deviation in BNPL transactions, displayed greater financial risk.
+
+    \item \textbf{High Account Fees}: Frequent account fees, including overdraft penalties and maintenance charges, were associated to a higher likelihood of delinquency.
+
+    \item \textbf{Spending in High-Risk Categories}: High expenditures in categories such as payday loans, fast cash lending, and gambling suggested increased financial instability.
+
+    \item \textbf{Unstable or Low Income Deposits}: Consumers with volatile paycheck deposits or irregular income streams exhibited increased delinquency risk.
+
+    \item \textbf{Late Payment History}: Features related to recurring payments and whether they were missed or delayed indicated high delinquency.
+
 \end{itemize}
 
-\section{Conclusion PLEASE UPDATE}
-We refined predictive features and improved model performance for the assessment of delinquency. By leveraging transaction data, we developed a "Cash Score" that improves upon traditional credit assessments. Future work includes:
+
+\section{Conclusion}
+
+\subsection{Key Findings}
+
+Through feature engineering and model evaluation, we identified several key findings relating to delinquency prediction:
+
 \begin{itemize}
-    \item Enhancing interpretability with reason codes.
-    \item Submitting final model predictions.
-    \item Preparing stakeholder presentations.
+    \item \textbf{Balance Trends Matter}: Consumers with frequent negative balances or high overdraft usage are significantly more likely to default.
+    \item \textbf{Spending Patterns are Predictive}: Categories such as Buy Now Pay Later (BNPL), account fees, and high-risk financial services are disproportionately represented among delinquent consumers.
+    \item \textbf{Income Stability is Crucial}: Variability in paycheck deposits and reliance on short-term lending options are strong indicators of delinquency.
 \end{itemize}
+
+From a modeling perspective, we evaluated multiple approaches, with HistGB and Balanced RF emerging as the top performers. HistGB achieved the highest ROC-AUC score (0.8424), while Balanced RF demonstrated the best overall recall and precision, making it a solid model as well.
+
+\subsection{Next Steps: Developing the Cash Score}
+
+Our next steps will be on implementing a Cash Score, a scoring system based on transactional data. We will focus on enhancing reason codes to provide clearer insights into the factors contributing to delinquency risk. We will also work on finalizing our model predictions, ensuring that they align with both accuracy and fairness in assessing credit risk. Additionally, we will prepare stakeholder presentations to communicate our findings, methodology, and the potential impact of integrating the Cash Score into existing risk assessment frameworks.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% Literature Review and Prior Work
@@ -369,7 +401,7 @@ DGHNL’s hierarchical architecture allows the model to focus on various data le
 
 \section{Contributions}
 \begin{itemize}
-    \item \textbf{Hillary}: EDA, creating \& testing features, report
+    \item \textbf{Hillary}: EDA, creating \& testing features, report, website
     \item \textbf{Kevin}: EDA, creating \& testing features, creating graphs, wrote the main code that tests all of our features
     \item \textbf{Kurumi}: EDA, creating \& testing features, creating graphs, report
     \item \textbf{Jevan}: EDA, creating \& testing features

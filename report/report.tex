@@ -195,7 +195,10 @@ To mitigate the class imbalance (delinquents only ~8.4\% of dataset), we used:
 \section{Results}
 
 \subsection{Feature Performance}
-Key predictors of delinquency (XGBClassifier):
+To identify key predictors of delinquency, we utilized models like XGBClassifier, which highlighted several influential financial indicators. Table \ref{tab:top_features_xgb} presents the most important features based on their contribution to the model. \\
+\\
+\textbf{The top predictors include}: \\
+
 \begin{itemize}
     \item \textbf{Account Type - Savings}: If a consumer has a savings acc
     \item \textbf{Account fees}: Sum of all account fees
@@ -231,6 +234,8 @@ Key predictors of delinquency (XGBClassifier):
     \label{tab:top_features_xgb}
 \end{table}
 
+The credit score has the strongest negative correlation with delinquency (-0.25), reaffirming its importance in assessing financial risk. Overdraft-related features and account fees also exhibit relatively strong relationships with delinquency, as consumers with high overdraft usage and excessive fees are more likely to struggle with repayments.
+
 \subsection{Model Performance}
 \begin{table}[H]
     \centering
@@ -252,6 +257,26 @@ Key predictors of delinquency (XGBClassifier):
     \caption{Comparison of model performance}
 \end{table}
 
+\begin{itemize}
+    \item HistGB achieved the highest ROC-AUC score (0.8424), indicating the best overall ability to distinguish between classes.
+    \item Balanced RF attained the highest accuracy (0.9197), recall (0.9197), and F1-score (0.9022). This suggests that the model effectively classifies both delinquent and non-delinquent cases, particularly excelling in identifying delinquent cases
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]
+    {figure/auc_roc_all_models.png}
+    \caption{Comparison of all AUC\_ROC scores of the different models we trained, further demonstrating the relative strengths of each approach}
+    \label{fig:auc_roc_all}
+\end{figure}
+
+Apart from standard classification metrics, training and prediction time are crucial considerations. Table \ref{tab:time_performance} compares the models based on:
+
+\begin{itemize}
+    \item \textbf{Training Time}: The time required to train the model.
+    \item \textbf{Prediction Time}: The time taken for the model to make a single prediction.
+\end{itemize}
+
 \begin{table}[H]
     \centering
     \begin{tabular}{|l|c|c|}
@@ -259,29 +284,22 @@ Key predictors of delinquency (XGBClassifier):
         Model & Training-Time & Prediction-Time\\
         \hline
 
-        HistGB & 8.755626 & TODO \\
-        XGBoost & 5.682351 & TODO \\
-        LightGBM & 4.397599 & TODO \\
-        CatBoost & 42.606373 & TODO \\
-        RUSBoost & 23.319771 & TODO \\
-        Random Forest & 22.369477 & TODO \\
-        Balanced RF & 27.226752 & TODO \\
-        Logistic Regression & \textbf{2.352007} & TODO \\
+        HistGB & 8.755626 & 0.000015 \\
+        XGBoost & 5.682351 & 0.000009 \\
+        LightGBM & 4.397599 & 0.000012 \\
+        CatBoost & 42.606373 & 0.000009 \\
+        RUSBoost & 23.319771 & 0.000042 \\
+        Random Forest & 22.369477 & 0.000036 \\
+        Balanced RF & 27.226752 & 0.000035 \\
+        Logistic Regression & \textbf{2.352007} & \textbf{0.000008} \\
         \hline
     \end{tabular}
     \caption{Comparison of time-based model performance}
+    \label{tab:time_performance}
 \end{table}
 
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]
-    {figure/auc_roc_all_models.png}
-    \caption{Comparison of all AUC\_ROC scores of the different models we trained.}
-    \label{fig:standardized_credit_balance}
-\end{figure}
-
-\subsection{Interpretability \& Reason Codes}
+\subsection{Interpretability \& Reason Codes PLEASE UPDATE}
 Delinquent consumers often had high spending in BNPL and account fees. The top reason codes included:
 \begin{itemize}
     \item High balance volatility and overdrafts.
@@ -289,7 +307,7 @@ Delinquent consumers often had high spending in BNPL and account fees. The top r
     \item Significant account fees.
 \end{itemize}
 
-\section{Conclusion}
+\section{Conclusion PLEASE UPDATE}
 We refined predictive features and improved model performance for the assessment of delinquency. By leveraging transaction data, we developed a "Cash Score" that improves upon traditional credit assessments. Future work includes:
 \begin{itemize}
     \item Enhancing interpretability with reason codes.
@@ -336,5 +354,27 @@ DGHNL’s hierarchical architecture allows the model to focus on various data le
 \cite{plawiak2020dghnl}
 \cite{radford2019gpt2}
 \cite{vaswani2023attention}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Appendix
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\section{Appendix}
+
+\begin{center}
+\textbf{Project Proposal}: \\
+\url{https://drive.google.com/file/d/1G-DzwBNvGlgd32JJwjMDrFrnr5IMGV8t/view?usp=sharing}
+\end{center}
+
+
+\section{Contributions}
+\begin{itemize}
+    \item \textbf{Hillary}: EDA, creating \& testing features, report
+    \item \textbf{Kevin}: EDA, creating \& testing features, creating graphs, wrote the main code that tests all of our features
+    \item \textbf{Kurumi}: EDA, creating \& testing features, creating graphs, report
+    \item \textbf{Jevan}: EDA, creating \& testing features
+\end{itemize}
+
+Everyone has met all deadlines and contributed equally.
 
 \end{document}

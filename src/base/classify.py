@@ -80,11 +80,13 @@ def preprocess_features(feature_column, target_column, dataset, test_size = 0.2,
     # Balance and scale data
     resampler = SMOTETomek(random_state=random_state)
     X_train, y_train = resampler.fit_resample(X_train, y_train)
+    train_id = X_train.index
+    test_id = X_test.index
     scaler = StandardScaler()
     X_train = scaler.fit_transform(X_train)
     X_test = scaler.transform(X_test)
 
-    return X_train, X_test, y_train, y_test
+    return X_train, X_test, y_train, y_test, train_id, test_id
 
 
 # run_classification models
@@ -94,7 +96,7 @@ def run_classification(
     """
     Enhanced classification analysis with multiple models and comprehensive reporting.
     """
-    X_train, X_test, y_train, y_test = preprocess_features(feature_column, target_column, dataset)
+    X_train, X_test, y_train, y_test, train_id, test_id = preprocess_features(feature_column, target_column, dataset)
 
     models = [
         # Core Models
@@ -176,6 +178,7 @@ def run_classification(
 
         except Exception as e:
             print(f"\n\033[91mError in {name}: {str(e)}\033[0m")
+        return (test_id, y_proba)
 
     # Execute all models
     for model, name in models:
@@ -242,7 +245,7 @@ def get_best_features(
     y = dataset[target_column]
 
     # Train-test split
-    X_train, X_test, y_train, y_test = preprocess_features(feature_column, target_column, dataset)
+    X_train, X_test, y_train, y_test, train_id, test_id = preprocess_features(feature_column, target_column, dataset)
 
     # Feature analysis
     feature_correlations = X.corrwith(y)

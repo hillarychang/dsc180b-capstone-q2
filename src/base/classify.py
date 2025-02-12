@@ -4,7 +4,11 @@ import warnings
 import time
 import pandas as pd
 import numpy as np
+import seaborn as sns
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import plotly.express as px
+from plotly.subplots import make_subplots
 
 # Scikit-Learn Components
 from sklearn.model_selection import train_test_split, cross_val_score
@@ -99,7 +103,7 @@ def run_classification(
             "Logistic Regression",
         ),
         (RandomForestClassifier(random_state=random_state), "Random Forest"),
-        (lgb.LGBMClassifier(objective="binary", force_row_wise=True), "LightGBM"),
+        (lgb.LGBMClassifier(objective="binary", verbose = -1, force_row_wise=True), "LightGBM"),
         (BalancedRandomForestClassifier(random_state=random_state), "Balanced RF"),
         # Gradient Boosting Family
         (
@@ -118,6 +122,7 @@ def run_classification(
 
     # Model evaluation framework
     model_results = []
+    roc_curves = []
 
     def evaluate_model(model, name):
         try:
@@ -150,9 +155,24 @@ def run_classification(
             print(f"Training Time: {metrics['train_time']:.1f}s | Predicting Time: {metrics['predict_time']:.6f}s")
             print(classification_report(y_test, y_pred))
 
-            # Plot AUC-ROC score
             fpr, tpr, _ = roc_curve(y_test, y_proba)
-            plt.plot(fpr, tpr, label=f"{name} (AUC = {metrics['roc_auc']:.3f})")
+            roc_curves.append((fpr, tpr, name, metrics["roc_auc"]))
+
+            # Plot Confusion Matrix
+            cm = confusion_matrix(y_test, y_pred)
+            plt.figure(figsize=(5, 4))
+            sns.heatmap(
+                cm,
+                annot=True,
+                fmt="d",
+                cmap="Blues",
+                xticklabels=["Negative", "Positive"],
+                yticklabels=["Negative", "Positive"],
+            )
+            plt.xlabel("Predicted Label")
+            plt.ylabel("True Label")
+            plt.title(f"{name} - Confusion Matrix")
+            plt.show()
 
         except Exception as e:
             print(f"\n\033[91mError in {name}: {str(e)}\033[0m")
@@ -182,6 +202,10 @@ def run_classification(
         .to_string(index=False)
     )
 
+    # Plot all AUC-ROC curves
+    plt.figure(figsize=(8, 6))
+    for fpr, tpr, name, auc in roc_curves:
+        plt.plot(fpr, tpr, label=f"{name} (AUC = {auc:.3f})")
     plt.plot([0, 1], [0, 1], linestyle="--", color="gray")
     plt.xlabel("False Positive Rate")
     plt.ylabel("True Positive Rate")
@@ -375,3 +399,243 @@ def optimize_xgb_params(X_train, X_val, y_train, y_val, max_evals=100):
     plt.show()
 
     return best_params, best_score, best_model
+
+
+def run_classification_plotly(feature_column, target_column, dataset, random_state=42):
+    """
+    Enhanced classification analysis with multiple models and comprehensive reporting using Plotly visualizations.
+    """
+    X_train, X_test, y_train, y_test = preprocess_features(
+        feature_column, target_column, dataset
+    )
+
+    models = [
+        (
+            LogisticRegression(
+                class_weight="balanced", max_iter=200, random_state=random_state
+            ),
+            "Logistic Regression",
+        ),
+        (RandomForestClassifier(random_state=random_state), "Random Forest"),
+        (
+            lgb.LGBMClassifier(
+                objective="binary",
+                verbose=-1,
+                force_row_wise=True,
+                random_state=random_state,
+            ),
+            "LightGBM",
+        ),
+        (BalancedRandomForestClassifier(random_state=random_state), "Balanced RF"),
+        (
+            XGBClassifier(
+                learning_rate=0.08,
+                max_depth=7,
+                n_estimators=100,
+                objective="binary:logistic",
+                random_state=random_state,
+            ),
+            "XGBoost",
+        ),
+        (CatBoostClassifier(silent=True, random_state=random_state), "CatBoost"),
+        (HistGradientBoostingClassifier(random_state=random_state), "HistGB"),
+        (RUSBoostClassifier(random_state=random_state), "RUSBoost"),
+    ]
+
+    model_results = []
+    roc_curves = []
+
+    def plot_classification_report(clf_report, model_name):
+        """Create heatmap visualization of classification report"""
+        # Extract class-specific scores (excluding 'accuracy' and averages)
+        classes = ['0.0', '1.0']  # For binary classification
+        metrics = ["precision", "recall", "f1-score"]
+
+        z = []
+        for cls in classes:
+            row = []
+            for metric in metrics:
+                row.append(clf_report[cls][metric])
+            z.append(row)
+
+        # Add macro avg and weighted avg
+        for avg_type in ["macro avg", "weighted avg"]:
+            row = []
+            for metric in metrics:
+                row.append(clf_report[avg_type][metric])
+            z.append(row)
+
+        # Update labels to include averages
+        classes = classes + ["macro avg", "weighted avg"]
+
+        fig = go.Figure(
+            data=go.Heatmap(
+                z=z,
+                x=metrics,
+                y=classes,
+                colorscale="Blues",
+                text=np.round(z, 3),
+                texttemplate="%{text}",
+                textfont={"size": 12},
+                showscale=True,
+            )
+        )
+
+        fig.update_layout(
+            title=f"Classification Report - {model_name}",
+            xaxis_title="Metrics",
+            yaxis_title="Classes",
+            height=400,
+        )
+        fig.show()
+
+    def plot_confusion_matrix(cm, model_name):
+        """Create interactive confusion matrix visualization"""
+        fig = go.Figure(
+            data=go.Heatmap(
+                z=cm,
+                x=["Negative", "Positive"],
+                y=["Negative", "Positive"],
+                colorscale="Blues",
+                text=cm,
+                texttemplate="%{text}",
+                textfont={"size": 16},
+                showscale=True,
+            )
+        )
+
+        fig.update_layout(
+            title=f"Confusion Matrix - {model_name}",
+            xaxis_title="Predicted Label",
+            yaxis_title="True Label",
+            height=400,
+        )
+        fig.show()
+
+    def evaluate_model(model, name):
+        try:
+            start_time = time.time()
+            model.fit(X_train, y_train)
+            train_time_end = time.time()
+            y_pred = model.predict(X_test)
+            y_proba = model.predict_proba(X_test)[:, 1]
+
+            metrics = {
+                "model": name,
+                "roc_auc": roc_auc_score(y_test, y_proba),
+                "accuracy": accuracy_score(y_test, y_pred),
+                "train_time": train_time_end - start_time,
+                "predict_time": (time.time() - train_time_end) / X_test.shape[0],
+            }
+
+            clf_report = classification_report(y_test, y_pred, output_dict=True)
+            for k, v in clf_report["weighted avg"].items():
+                metrics[k] = v
+            model_results.append(metrics)
+
+            print(f"\n\033[1m{name} Results\033[0m")
+            print(
+                f"ROC-AUC: {metrics['roc_auc']:.3f} | Accuracy: {metrics['accuracy']:.3f}"
+            )
+            print(
+                f"Training Time: {metrics['train_time']:.1f}s | Predicting Time: {metrics['predict_time']:.6f}s"
+            )
+
+            # Plot classification report
+            plot_classification_report(clf_report, name)
+
+            # Get ROC curve data
+            fpr, tpr, _ = roc_curve(y_test, y_proba)
+            roc_curves.append((fpr, tpr, name, metrics["roc_auc"]))
+
+            # Plot confusion matrix
+            cm = confusion_matrix(y_test, y_pred)
+            plot_confusion_matrix(cm, name)
+
+        except Exception as e:
+            print(f"\n\033[91mError in {name}: {str(e)}\033[0m")
+
+    # Execute all models
+    for model, name in models:
+        evaluate_model(model, name)
+
+    # Create final results visualization
+    results_df = pd.DataFrame(model_results).sort_values("roc_auc", ascending=False)
+
+    # Plot final results as a parallel coordinates plot
+    fig = px.parallel_coordinates(
+        results_df,
+        dimensions=["roc_auc", "accuracy", "precision", "recall", "f1-score"],
+        color="model",
+        title="Model Performance Comparison",
+    )
+    fig.update_layout(height=600)
+    fig.show()
+
+    # Create bar plot for training and prediction times
+    fig = make_subplots(
+        rows=1, cols=2, subplot_titles=("Training Time", "Prediction Time (per sample)")
+    )
+
+    fig.add_trace(
+        go.Bar(x=results_df["model"], y=results_df["train_time"], name="Training Time"),
+        row=1,
+        col=1,
+    )
+    fig.add_trace(
+        go.Bar(
+            x=results_df["model"], y=results_df["predict_time"], name="Prediction Time"
+        ),
+        row=1,
+        col=2,
+    )
+
+    fig.update_layout(
+        height=500, title_text="Model Timing Comparison", showlegend=False
+    )
+    fig.show()
+
+    # Plot all ROC curves
+    fig = go.Figure()
+    for fpr, tpr, name, auc in roc_curves:
+        fig.add_trace(
+            go.Scatter(x=fpr, y=tpr, name=f"{name} (AUC = {auc:.3f})", mode="lines")
+        )
+
+    fig.add_trace(
+        go.Scatter(
+            x=[0, 1],
+            y=[0, 1],
+            name="Random",
+            mode="lines",
+            line=dict(dash="dash", color="gray"),
+        )
+    )
+
+    fig.update_layout(
+        title="ROC Curves for All Models",
+        xaxis_title="False Positive Rate",
+        yaxis_title="True Positive Rate",
+        height=600,
+        showlegend=True,
+    )
+    fig.show()
+
+    # Print final results table
+    print("\n\033[1m" + "=" * 40 + " FINAL RESULTS " + "=" * 40 + "\033[0m")
+    print(
+        results_df[
+            [
+                "model",
+                "roc_auc",
+                "accuracy",
+                "precision",
+                "recall",
+                "f1-score",
+                "train_time",
+                "predict_time",
+            ]
+        ]
+        .sort_values("roc_auc", ascending=False)
+        .to_string(index=False)
+    )

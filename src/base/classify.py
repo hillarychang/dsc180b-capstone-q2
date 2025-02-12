@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import plotly.express as px
 from plotly.subplots import make_subplots
+from joblib import dump
+from joblib import load
 
 # Scikit-Learn Components
 from sklearn.model_selection import train_test_split, cross_val_score
@@ -52,20 +54,21 @@ from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 
 
 # preprocess features and train test split
+def preprocess(dataset):
+    # Replace infinite values
+    dataset = dataset.replace([np.inf, -np.inf], np.nan)
+
+    # Drop or fill NaN values
+    dataset = dataset.fillna(
+        dataset.median()
+    )  # Or use mean, or a specific strategy
+
+    return dataset
+
+
 def preprocess_features(feature_column, target_column, dataset, test_size = 0.2, random_state = 42):
     warnings.filterwarnings(action="ignore", category=UndefinedMetricWarning)
     dataset = dataset.dropna()
-
-    def preprocess(dataset):
-        # Replace infinite values
-        dataset = dataset.replace([np.inf, -np.inf], np.nan)
-
-        # Drop or fill NaN values
-        dataset = dataset.fillna(
-            dataset.median()
-        )  # Or use mean, or a specific strategy
-
-        return dataset
 
     # Define features and targett
     X = dataset[feature_column]
@@ -88,6 +91,14 @@ def preprocess_features(feature_column, target_column, dataset, test_size = 0.2,
 
     return X_train, X_test, y_train, y_test, train_id, test_id
 
+def individual_test(feature_column, dataset, random_state=42):
+    trained_model = load("Random Forest.joblib")
+    scaler = load('scaler.joblib')
+    X = dataset[feature_column]
+    X = preprocess(X)
+    X = scaler.transform(X)
+    probabilities = trained_model.predict_proba(X)[:, 1]
+    return probabilities
 
 # run_classification models
 def run_classification(

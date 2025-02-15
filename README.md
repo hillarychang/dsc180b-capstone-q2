@@ -64,6 +64,9 @@ This project implements a data pipeline for our DSC Capstone. For this project s
 │   │   ├── random_trees_function.py           <- Random Forest Model for classification
 │   │   └── transformer.py                     <- Transformer Model code
 │   ├── notebooks                              <- Jupyter notebooks for data analysis and feature creation
+│   │   ├── catboost_info                      <- CatBoost Model
+│   │   ├── plots                              <- Visualizations for Report, Poster, and Website
+│   │   │   ├── feature_plot_credit_score.png  <- Feature plot of Delinquency vs Credit Score  
 │   │   ├── baseline_models.ipynb              <- Perform logistic regression and random forest with tf-idf
 │   │   ├── hillary_data_exploration.ipynb     <- Hillary Chang's Data Analysis Notebook
 │   │   ├── hillary_q2.ipynb                   <- Hillary Chang's Q2 Data Analysis Notebook

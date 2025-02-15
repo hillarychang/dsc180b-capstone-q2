@@ -157,7 +157,9 @@
         \item \textbf{Account Types}: Features based on the types of accounts a consumer has
     \end{itemize}
 
-    \begin{table}[H]
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \begin{table}[H]
         \centering
         \begin{tabular}{|l|c|c|}
             \hline
@@ -174,6 +176,16 @@
         \caption{Top Features of XGBClassifier}
         \label{tab:top_features_xgb}
     \end{table}
+    \end{column}
+
+    \begin{column}{0.5\textwidth}
+        \begin{figure}[H]
+        \includegraphics[width=\textwidth]{figure/feature_plot_credit_score.png}
+        \caption{Delinquency Percentage vs Credit Score}
+        \label{fig:feature_plot_credit_score}
+    \end{figure}
+    \end{column}
+\end{columns}
 
   \end{block}
 
@@ -186,7 +198,7 @@
         \item \textbf{Precision and Recall}: Precision measures correct positives; recall measures detected positives.
         \item \textbf{Training Time}: Time required to train the model.
         \item \textbf{Prediction Time}: Time taken to make predictions.
-        \item \textbf{Feature Importance}: Highlights predictive variables.
+        % \item \textbf{Feature Importance}: Highlights predictive variables.
     \end{itemize}
     To mitigate the class imbalance (delinquents only ~8.4\% of dataset), we used:
     \begin{itemize}
@@ -198,15 +210,20 @@
 
 \begin{columns}
 \begin{column}{0.5\textwidth}  %%<--- here
-\justify
-WRITE DESCRIPTION HERE
+    \begin{center}
+      \begin{figure}[H]
+        \includegraphics[width=\textwidth]{figure/classification_report_xgboost.png}
+        \caption{Classification Report for XGBoost}
+        \label{fig:classification_report}
+      \end{figure}
+    \end{center}
 
 \end{column}
 \begin{column}{0.5\textwidth}
 \begin{center}
       \begin{figure}[H]
-        \includegraphics[width=\textwidth]{figure/auc_roc_all_models.png}
-        \caption{All AUC-ROC scores for models we tested}
+        \includegraphics[height=0.2\textheight]{figure/auc_roc_all_models.png}
+        % \caption{All AUC-ROC scores for models we tested}
         \label{fig:accounts_df}
     \end{figure}
 \end{center}
@@ -219,16 +236,14 @@ WRITE DESCRIPTION HERE
 
 \begin{column}{\colwidth}
 
-  \begin{exampleblock}{Results}
-\\
-    \begin{center}
-      \begin{figure}[H]
-        \includegraphics[width=0.4\textwidth]{figure/classification_report_xgboost.png}
-        \caption{All AUC-ROC scores for models we tested}
-        \label{fig:accounts_df}
-      \end{figure}
-    \end{center}
-    
+  \begin{exampleblock}{Cash Score Results}
+  \begin{itemize}
+        \item \textbf{Best Model}: XGBoost had the best model overall
+        \item \textbf{Reason Score}: \\
+        Add Viz of distribution of common reasons
+    \end{itemize}
+
+    WHERE SHOULD I PUT THIS TABLE
     \begin{table}[H]
     \centering
     \begin{tabular}{|l|c|c|c|c|c|c|c|}

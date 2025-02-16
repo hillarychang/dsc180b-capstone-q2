@@ -240,7 +240,9 @@
   \begin{itemize}
         \item \textbf{Best Model}: XGBoost had the best model overall
         \item \textbf{Reason Score}: \\
-        Add Viz of distribution of common reasons
+        Add Viz of distribution of common reasons of denial
+        \item \textbf{Distribution of Cash Scores?}: \\
+        also add viz
     \end{itemize}
 
     WHERE SHOULD I PUT THIS TABLE
@@ -264,6 +266,28 @@
     \caption{Comparison of model performance}
     \end{table}
 
+WE PROB DON'T NEED THIS?? NO SPACE
+    \begin{table}[H]
+    \centering
+    \begin{tabular}{|l|c|c|}
+        \hline
+        Model & Training-Time & Prediction-Time\\
+        \hline
+
+        HistGB & 8.755626 & 0.000015 \\
+        XGBoost & 5.682351 & 0.000009 \\
+        LightGBM & 4.397599 & 0.000012 \\
+        CatBoost & 42.606373 & 0.000009 \\
+        RUSBoost & 23.319771 & 0.000042 \\
+        Random Forest & 22.369477 & 0.000036 \\
+        Balanced RF & 27.226752 & 0.000035 \\
+        Logistic Regression & \textbf{2.352007} & \textbf{0.000008} \\
+        \hline
+    \end{tabular}
+    \caption{Comparison of time-based model performance}
+    \label{tab:time_performance}
+\end{table}
+
     STILL IN PROGRESS
 
   \end{exampleblock}
@@ -271,6 +295,15 @@
   \begin{block}{Conclusion}
 
     STILL IN PROGRESS
+
+  \end{block}
+
+  \begin{block}{Future Work}
+
+    \begin{itemize}
+        \item \textbf{Integrate Q1 Project}: Leverage our categorization model to create a category column, enabling additional feature generation for the Cash Score model. The model categorizes transactions based on the memos column in our Q1 dataset.
+        \item \textbf{UPDATE LATER}
+    \end{itemize}
 
   \end{block}
 

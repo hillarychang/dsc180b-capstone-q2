@@ -20,8 +20,19 @@ def get_transaction_categories(transactions, categories):
     )
     transaction_categories = transaction_categories.drop(columns=["category_x"])
     transaction_categories.rename(columns={"category_y": "category"}, inplace=True)
-    transaction_categories['prism_consumer_id'] = transaction_categories['prism_consumer_id'].astype(int)
-    
+    transaction_categories = transaction_categories[
+        ~transaction_categories["category"].isin(
+            [
+                "UNEMPLOYMENT_BENEFITS",
+                "EDUCATION",
+                "HOME_IMPROVEMENT",
+                "HEALTHCARE_MEDICAL",
+                "CHILD_DEPENDENTS",
+                "PENSION",
+            ]
+        )
+    ]
+
     return transaction_categories
 
 

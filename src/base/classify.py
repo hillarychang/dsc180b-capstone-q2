@@ -190,22 +190,22 @@ def run_classification(
             plt.title(f"{name} - Confusion Matrix")
             plt.show()
 
-            X_train_sampled = shap.utils.sample(X_train, 100, random_state=42)
-            explainer = shap.KernelExplainer(model.predict_proba, X_train_sampled)
+            # X_train_sampled = shap.utils.sample(X_train, 100, random_state=42)
+            # explainer = shap.KernelExplainer(model.predict_proba, X_train_sampled)
             
-            shap_values = explainer.shap_values(X_test[:10])
+            # shap_values = explainer.shap_values(X_test[:10])
             
-            shap_values = shap_values[:,:,:1].squeeze()
+            # shap_values = shap_values[:,:,:1].squeeze()
 
-            shap.summary_plot(shap_values, X_test[:10], feature_names=feature_column, max_display=10)
+            # shap.summary_plot(shap_values, X_test[:10], feature_names=feature_column, max_display=10)
 
-            max_shap_per_user = np.max(np.abs(shap_values), axis=1) 
-            feature_index_with_max_shap = np.argmax(np.abs(shap_values), axis=1)
-            max_shap_feature_per_user = [feature_column[i] for i in feature_index_with_max_shap]
+            # max_shap_per_user = np.max(np.abs(shap_values), axis=1) 
+            # feature_index_with_max_shap = np.argmax(np.abs(shap_values), axis=1)
+            # max_shap_feature_per_user = [feature_column[i] for i in feature_index_with_max_shap]
 
         except Exception as e:
             print(f"\n\033[91mError in {name}: {str(e)}\033[0m")
-        return (test_id, y_proba, max_shap_feature_per_user, max_shap_per_user)
+        # return (test_id, y_proba, max_shap_feature_per_user, max_shap_per_user)
 
     # Execute all models
     for model, name in models:

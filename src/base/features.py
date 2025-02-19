@@ -4,10 +4,10 @@ import polars as pl
 
 
 def get_datasets():
-    categories = pd.read_csv("../../data_q2/q2-ucsd-cat-map.csv")
-    consumer = pd.read_parquet("../../data_q2/q2-ucsd-consDF.pqt")
-    acct = pd.read_parquet("../../data_q2/q2-ucsd-acctIDF.pqt")
-    transactions = pd.read_parquet("../../data_q2/q2-ucsd-trxnDF.pqt")
+    categories = pd.read_csv("../../data/q2-ucsd-cat-map.csv")
+    consumer = pd.read_parquet("../../data/q2-ucsd-consDF.pqt")
+    acct = pd.read_parquet("../../data/q2-ucsd-acctDF.pqt")
+    transactions = pd.read_parquet("../../data/q2-ucsd-trxnDF.pqt")
     transactions["amount"] = transactions["amount"].where(
         transactions["credit_or_debit"] == "DEBIT", -transactions["amount"]
     )

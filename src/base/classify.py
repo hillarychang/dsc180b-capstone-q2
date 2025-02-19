@@ -11,6 +11,7 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 from joblib import dump
 from joblib import load
+import shap 
 
 # Scikit-Learn Components
 from sklearn.model_selection import train_test_split, cross_val_score
@@ -139,6 +140,8 @@ def run_classification(
 
     def evaluate_model(model, name):
         try:
+            if name != "XGBoost":
+                return
             start_time = time.time()
             model.fit(X_train, y_train)
             train_time_end = time.time()
@@ -186,6 +189,16 @@ def run_classification(
             plt.ylabel("True Label")
             plt.title(f"{name} - Confusion Matrix")
             plt.show()
+
+            X_train_sampled = shap.utils.sample(X_train, 100, random_state=42)
+            explainer = shap.KernelExplainer(model.predict_proba, X_train_sampled)
+            
+            shap_values = explainer.shap_values(X_test[:100])
+            
+            shap_values = shap_values[:,:,:1].squeeze()
+
+            shap.summary_plot(shap_values, X_test[:100], feature_names=feature_column, max_display=10)
+            
 
         except Exception as e:
             print(f"\n\033[91mError in {name}: {str(e)}\033[0m")

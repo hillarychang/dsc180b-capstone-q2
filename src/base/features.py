@@ -20,6 +20,8 @@ def get_transaction_categories(transactions, categories):
     )
     transaction_categories = transaction_categories.drop(columns=["category_x"])
     transaction_categories.rename(columns={"category_y": "category"}, inplace=True)
+    transaction_categories['prism_consumer_id'] = transaction_categories['prism_consumer_id'].astype(int)
+    
     return transaction_categories
 
 
@@ -258,6 +260,7 @@ def get_categorical_features(all_features, transaction_categories, acct):
     pivot_df = pivot_df.merge(acct_on_cons, on="prism_consumer_id", how="left")
 
     all_features = all_features.merge(pivot_df, on="prism_consumer_id", how="left")
+
     return all_features
 
 
@@ -396,5 +399,18 @@ def get_categorical_features2(all_features, transaction_categories, acct):
     all_features = all_features.merge(
         pivot_df, on="prism_consumer_id", how="left"
     ).fillna(0)
+
+    return all_features
+
+def get_total_transactions(all_features, transaction_categories, transactions_needed = 25):
+    transaction_totals = transaction_categories.groupby("prism_consumer_id")[
+        "category"
+    ].count()
+
+    all_features = pd.concat([all_features, transaction_totals], axis=1)
+    all_features = all_features.dropna(subset=["prism_consumer_id"])
+    all_features = all_features.set_index("prism_consumer_id")
+    all_features = all_features.rename(columns={"category": "transactions"})
+    all_features = all_features[all_features["transactions"] > transactions_needed]
 
     return all_features

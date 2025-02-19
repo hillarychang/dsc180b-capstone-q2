@@ -38,6 +38,8 @@ from imblearn.ensemble import (
     EasyEnsembleClassifier,
     RUSBoostClassifier,
 )
+from imblearn.over_sampling import SMOTE
+from imblearn.under_sampling import TomekLinks
 from imblearn.combine import SMOTETomek
 
 # XGBoost
@@ -77,11 +79,11 @@ def preprocess_features(feature_column, target_column, dataset, test_size = 0.2,
 
     # Train-test split
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=test_size, random_state=random_state
+        X, y, test_size=test_size, random_state=42
     )
 
-    # Balance and scale data
-    resampler = SMOTETomek(random_state=random_state)
+    
+    resampler = SMOTETomek(sampling_strategy = 1.0, random_state=random_state)
     X_train, y_train = resampler.fit_resample(X_train, y_train)
     train_id = X_train.index
     test_id = X_test.index
@@ -218,7 +220,8 @@ def run_classification(
 
     # Plot all AUC-ROC curves
     plt.figure(figsize=(8, 6))
-    for fpr, tpr, name, auc in roc_curves:
+    roc_curves_sorted = sorted(roc_curves, key=lambda x: x[3], reverse=True)
+    for fpr, tpr, name, auc in roc_curves_sorted:
         plt.plot(fpr, tpr, label=f"{name} (AUC = {auc:.3f})")
     plt.plot([0, 1], [0, 1], linestyle="--", color="gray")
     plt.xlabel("False Positive Rate")

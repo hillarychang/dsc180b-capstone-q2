@@ -140,8 +140,6 @@ def run_classification(
 
     def evaluate_model(model, name):
         try:
-            if name != "XGBoost":
-                return
             start_time = time.time()
             model.fit(X_train, y_train)
             train_time_end = time.time()
@@ -193,20 +191,25 @@ def run_classification(
             X_train_sampled = shap.utils.sample(X_train, 100, random_state=42)
             explainer = shap.KernelExplainer(model.predict_proba, X_train_sampled)
             
-            shap_values = explainer.shap_values(X_test[:100])
+            shap_values = explainer.shap_values(X_test[:10])
             
             shap_values = shap_values[:,:,:1].squeeze()
 
-            shap.summary_plot(shap_values, X_test[:100], feature_names=feature_column, max_display=10)
-            
+            shap.summary_plot(shap_values, X_test[:10], feature_names=feature_column, max_display=10)
+
+            max_shap_per_user = np.max(np.abs(shap_values), axis=1) 
+            feature_index_with_max_shap = np.argmax(np.abs(shap_values), axis=1)
+            max_shap_feature_per_user = [feature_column[i] for i in feature_index_with_max_shap]
 
         except Exception as e:
             print(f"\n\033[91mError in {name}: {str(e)}\033[0m")
-        return (test_id, y_proba)
+        return (test_id, y_proba, max_shap_feature_per_user, max_shap_per_user)
 
     # Execute all models
     for model, name in models:
-        evaluate_model(model, name)
+        #user_data = evaluate_model(model, name)
+        
+        user_data = evaluate_model(model, name)
 
     # Results analysis
     results_df = pd.DataFrame(model_results).sort_values("roc_auc", ascending=False)
@@ -239,6 +242,7 @@ def run_classification(
     plt.title("AUC-ROC Curve for All Models")
     plt.legend()
     plt.show()
+    return user_data
 
 
 def get_best_features(
@@ -584,7 +588,7 @@ def run_classification_plotly(feature_column, target_column, dataset, random_sta
 
     # Execute all models
     for model, name in models:
-        evaluate_model(model, name)
+        user_data = evaluate_model(model, name)
 
     # Create final results visualization
     results_df = pd.DataFrame(model_results).sort_values("roc_auc", ascending=False)

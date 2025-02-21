@@ -91,18 +91,54 @@ def preprocess_features(feature_column, target_column, dataset, test_size = 0.2,
     scaler = StandardScaler()
     X_train = scaler.fit_transform(X_train)
     X_test = scaler.transform(X_test)
-
+    dump(scaler, filename="scaler.joblib")
     return X_train, X_test, y_train, y_test, train_id, test_id
 
-def individual_test(feature_column, dataset, random_state=42):
-    trained_model = load("Random Forest.joblib")
+def individual_test(feature_column, name, dataset, random_state=42):
+    consumer_id = dataset.index
+    trained_model = load(f"{name}.joblib")
     scaler = load('scaler.joblib')
     X = dataset[feature_column]
     X = preprocess(X)
     X = scaler.transform(X)
     probabilities = trained_model.predict_proba(X)[:, 1]
+<<<<<<< HEAD
     scaled_probabilities = 1 + probabilities * (999 - 1)
     return scaled_probabilities
+=======
+    probabilities = np.round(1 + probabilities * (999 - 1)).astype(int)
+    feature, shap_score = shap_values(trained_model, X, feature_column)
+    scores_df = pd.DataFrame({
+    'probability': probabilities,
+    'most_important_feature': feature,
+    'score': shap_score
+    }, index=consumer_id)
+    return scores_df
+
+def shap_values(model, X_train, feature_column):
+        explainer = shap.TreeExplainer(model)
+            
+        shap_values = explainer.shap_values(X_train)
+            
+        #shap_values = shap_values[:,:,:1].squeeze()
+        if isinstance(shap_values, list):
+            shap_values = shap_values[0]
+        shap.summary_plot(shap_values, X_train, feature_names=feature_column, max_display=10)
+
+        #X_train_sampled = shap.utils.sample(X_train, 100, random_state=42)
+        #explainer = shap.TreeExplainer(model, X_train)
+            
+        #shap_values = explainer.shap_values(X_train)
+            
+        #shap_values = shap_values[:,:,:1].squeeze()
+
+        #shap.summary_plot(shap_values, X_train, feature_names=feature_column, max_display=10)
+
+        max_shap_per_user = np.max(np.abs(shap_values), axis=1) 
+        feature_index_with_max_shap = np.argmax(np.abs(shap_values), axis=1)
+        max_shap_feature_per_user = [feature_column[i] for i in feature_index_with_max_shap]
+        return (max_shap_feature_per_user, max_shap_per_user)
+>>>>>>> refs/remotes/origin/main
 
 # run_classification models
 def run_classification(
@@ -145,6 +181,7 @@ def run_classification(
         try:
             start_time = time.time()
             model.fit(X_train, y_train)
+            dump(model, filename=f"{name}.joblib")
             train_time_end = time.time()
             y_pred = model.predict(X_test)
             y_proba = model.predict_proba(X_test)[:, 1]
@@ -191,28 +228,13 @@ def run_classification(
             plt.title(f"{name} - Confusion Matrix")
             plt.show()
 
-            # X_train_sampled = shap.utils.sample(X_train, 100, random_state=42)
-            # explainer = shap.KernelExplainer(model.predict_proba, X_train_sampled)
-            
-            # shap_values = explainer.shap_values(X_test[:10])
-            
-            # shap_values = shap_values[:,:,:1].squeeze()
-
-            # shap.summary_plot(shap_values, X_test[:10], feature_names=feature_column, max_display=10)
-
-            # max_shap_per_user = np.max(np.abs(shap_values), axis=1) 
-            # feature_index_with_max_shap = np.argmax(np.abs(shap_values), axis=1)
-            # max_shap_feature_per_user = [feature_column[i] for i in feature_index_with_max_shap]
-
         except Exception as e:
             print(f"\n\033[91mError in {name}: {str(e)}\033[0m")
-        # return (test_id, y_proba, max_shap_feature_per_user, max_shap_per_user)
 
     # Execute all models
     for model, name in models:
-        #user_data = evaluate_model(model, name)
-        
-        user_data = evaluate_model(model, name)
+        if name == "LightGBM":
+            evaluate_model(model, name)
 
     # Results analysis
     results_df = pd.DataFrame(model_results).sort_values("roc_auc", ascending=False)
@@ -246,7 +268,7 @@ def run_classification(
     plt.title("AUC-ROC Curve for All Models")
     plt.legend()
     plt.show()
-    return user_data
+    #return user_data
 
 
 def get_best_features(

@@ -101,7 +101,8 @@ def individual_test(feature_column, dataset, random_state=42):
     X = preprocess(X)
     X = scaler.transform(X)
     probabilities = trained_model.predict_proba(X)[:, 1]
-    return probabilities
+    scaled_probabilities = 1 + probabilities * (999 - 1)
+    return scaled_probabilities
 
 # run_classification models
 def run_classification(

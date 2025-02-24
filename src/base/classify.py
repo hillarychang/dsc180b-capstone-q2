@@ -102,10 +102,6 @@ def individual_test(feature_column, name, dataset, random_state=42):
     X = preprocess(X)
     X = scaler.transform(X)
     probabilities = trained_model.predict_proba(X)[:, 1]
-<<<<<<< HEAD
-    scaled_probabilities = 1 + probabilities * (999 - 1)
-    return scaled_probabilities
-=======
     probabilities = np.round(1 + probabilities * (999 - 1)).astype(int)
     feature, shap_score = shap_values(trained_model, X, feature_column)
     scores_df = pd.DataFrame({
@@ -138,7 +134,6 @@ def shap_values(model, X_train, feature_column):
         feature_index_with_max_shap = np.argmax(np.abs(shap_values), axis=1)
         max_shap_feature_per_user = [feature_column[i] for i in feature_index_with_max_shap]
         return (max_shap_feature_per_user, max_shap_per_user)
->>>>>>> refs/remotes/origin/main
 
 # run_classification models
 def run_classification(

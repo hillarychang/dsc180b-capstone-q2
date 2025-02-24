@@ -40,20 +40,38 @@ This project implements a data pipeline for our DSC Capstone. For this project s
 │   ├── ucsd-inflows.pqt                       <- Inflow data (money getting put into bank)
 │   └── ucsd-outflows.pqt                      <- Outflow data (money getting out of bank)   
 │
+├── poster                                     <- used to keep the poster
+│   ├── figure                                 <- additional figures for the poster
+│   │   ├── auc_roc_all_models.png
+│   │   ├── balance_delinquent.png
+│   │   ├── balance_single_delinquent.png
+│   │   ├── classification_report_xgboost.png
+│   │   └── confusion_xgboost.png    
+│   │   
+│   └── poster.tex                             <- Final Project Poster
+│
 ├── report                                     <- used to keep the report LaTeX pdf
 │   ├── figure                                 <- figures for the report
 │   │   ├── amt_category.png       
-│   │   ├── category_time.png
-│   │   ├── clean_df.jpeg
-│   │   ├── inflow.png
-│   │   ├── nonclean_df.png  
-│   │   └── outflow.png        
-│   ├── report.tex                             <- Quarter 1 report
-│   └── reportq2.tex                           <- Quarter 2 report
+│   │   ├── auc_roc_all_models.png
+│   │   ├── balance_delinquent.png
+│   │   ├── balance_non_delinquent.png
+│   │   ├── balance_single_delinquent.png
+│   │   ├── balance_single_non_deliquent.png
+│   │   ├── categories_df.png
+│   │   ├── consumer_df.jpeg
+│   │   ├── final_transaction_balance.png
+│   │   ├── spending_balance_ratio.png  
+│   │   └── standardized_credit_balance.png        
+│   │   └── transactions_df.png     
+│   │   
+│   └── report.tex                             <- Quarter 2 report
 │
 ├── src                                        <- src files for the creation of features, model training, and more
 │   ├── base                                   <- Baseline Classes
+│   │   ├── classify.py                        <- Classification module for all models
 │   │   ├── config.py                          <- Creates a configuration for all models
+│   │   ├── features.py                        <- Creates all the features for classify.py
 │   │   └── model.py                           <- Creates a Baseline Model
 │   ├── configs                                <- Used to create baseline configurations for different models
 │   │   └── transformer.yml                    <- Creates baseline parameters for the transformer model
@@ -66,18 +84,15 @@ This project implements a data pipeline for our DSC Capstone. For this project s
 │   ├── notebooks                              <- Jupyter notebooks for data analysis and feature creation
 │   │   ├── catboost_info                      <- CatBoost Model
 │   │   ├── plots                              <- Visualizations for Report, Poster, and Website
-│   │   │   ├── feature_plot_credit_score.png  <- Feature plot of Delinquency vs Credit Score  
+│   │   │   ├── balance_plot1.png              <- Plot of balance for 5 random consumers      
+│   │   │   └── feature_plot_credit_score.png  <- Feature plot of Delinquency vs Credit Score  
 │   │   ├── baseline_models.ipynb              <- Perform logistic regression and random forest with tf-idf
-│   │   ├── hillary_data_exploration.ipynb     <- Hillary Chang's Data Analysis Notebook
-│   │   ├── hillary_q2.ipynb                   <- Hillary Chang's Q2 Data Analysis Notebook
-│   │   ├── kevin_data_exploration.ipynb       <- Kevin Wong's Data Analysis Notebook
-│   │   ├── kevin_inflows_exploration.ipynb    <- Kevin Wong's Data Analysis Notebook
-│   │   ├── kevin_q2_eda.ipynb                 <- Kevin Wong's Q2 Data Analysis Notebook
-│   │   ├── kurumi_data_exploration.ipynb      <- Kurumi Kaneko's Data Analysis Notebook
-│   │   ├── kurumi_feature_engineering.ipynb   <- Kurumi Kaneko's Notebook
-│   │   ├── kurumi_inflows_eda.ipynb           <- Kurumi Kaneko's Notebook
-│   │   ├── kurumi_q2_eda.ipynb                <- Kurumi Kaneko's Q2 Data Analysis Notebook
-│   │   └── jevan_quarter1_project.ipynb       <- Jevan Chahal's Notebook
+│   │   ├── feature_engineering.ipynb          <- Feature Engineering Notebook for Q2
+│   │   ├── inflows_exploration.ipynb          <- Exploration of Consumer Inflows for Q2
+│   │   ├── q1_project.ipynb                   <- Q1 Project Analysis
+│   │   ├── q2_data_exploration.ipynb          <- Data exploration notebook for Q2
+│   │   ├── q2_eda             .ipynb          <- Exploratory Data Analysis Notebook for Q2
+│   │   └── q2_feature_training.ipynb          <- Feature Training for Models in Q2
 │   ├── etl.py       
 │   ├── features.py                            <- Used to create features
 │   ├── text_cleaner.py                        <- Used to clean the data 

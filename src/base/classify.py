@@ -103,11 +103,15 @@ def individual_test(feature_column, name, dataset, random_state=42):
     X = scaler.transform(X)
     probabilities = trained_model.predict_proba(X)[:, 1]
     probabilities = np.round(1 + probabilities * (999 - 1)).astype(int)
-    feature, shap_score = shap_values(trained_model, X, feature_column)
+    top_3_features, top_3_scores = shap_values(trained_model, X, feature_column)
     scores_df = pd.DataFrame({
-    'probability': probabilities,
-    'most_important_feature': feature,
-    'score': shap_score
+        'probability': probabilities,
+        'top_1_feature': [features[0] for features in top_3_features],
+        'top_1_score': [scores[0] for scores in top_3_scores],
+        'top_2_feature': [features[1] for features in top_3_features],
+        'top_2_score': [scores[1] for scores in top_3_scores],
+        'top_3_feature': [features[2] for features in top_3_features],
+        'top_3_score': [scores[2] for scores in top_3_scores]
     }, index=consumer_id)
     return scores_df
 
@@ -130,10 +134,17 @@ def shap_values(model, X_train, feature_column):
 
         #shap.summary_plot(shap_values, X_train, feature_names=feature_column, max_display=10)
 
-        max_shap_per_user = np.max(np.abs(shap_values), axis=1) 
-        feature_index_with_max_shap = np.argmax(np.abs(shap_values), axis=1)
-        max_shap_feature_per_user = [feature_column[i] for i in feature_index_with_max_shap]
-        return (max_shap_feature_per_user, max_shap_per_user)
+        import numpy as np
+
+# Assuming shap_values is your numpy array
+        top_3_indices = np.argsort(shap_values, axis=1)[:, -3:]  # Get the indices of the top 3 values
+
+        top_3_values = np.take_along_axis(shap_values, top_3_indices, axis=1)  # Get the corresponding top 3 values
+        max_shap_feature_per_user = [[feature_column[i] for i in user_indices] for user_indices in top_3_indices]
+        
+        print(max_shap_feature_per_user)
+        #top_3_features = feature_column[np.arange(feature_column.shape[0]), top_3_important]
+        return (max_shap_feature_per_user, top_3_values)
 
 # run_classification models
 def run_classification(

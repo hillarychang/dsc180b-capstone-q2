@@ -106,13 +106,26 @@ def individual_test(feature_column, name, dataset, random_state=42):
     top_3_features, top_3_scores = shap_values(trained_model, X, feature_column)
     scores_df = pd.DataFrame({
         'probability': probabilities,
-        'top_1_feature': [features[0] for features in top_3_features],
-        'top_1_score': [scores[0] for scores in top_3_scores],
+        'top_1_feature': [features[2] for features in top_3_features],
+        'top_1_score': [scores[2] for scores in top_3_scores],
         'top_2_feature': [features[1] for features in top_3_features],
         'top_2_score': [scores[1] for scores in top_3_scores],
-        'top_3_feature': [features[2] for features in top_3_features],
-        'top_3_score': [scores[2] for scores in top_3_scores]
+        'top_3_feature': [features[0] for features in top_3_features],
+        'top_3_score': [scores[0] for scores in top_3_scores]
     }, index=consumer_id)
+
+    value_counts_plot = (scores_df.top_1_feature.value_counts()
+    .add(scores_df.top_2_feature.value_counts(), fill_value=0)
+    .add(scores_df.top_3_feature.value_counts(), fill_value=0))
+
+    value_counts_plot = value_counts_plot.sort_values(ascending=False)
+    plt.figure(figsize=(8, 5))
+    plt.bar(value_counts_plot.index[:5], value_counts_plot[:5])
+    plt.xlabel('Feature')
+    plt.ylabel('Top Three Features Count')
+    plt.title(f'Top {5} Features by Top Three Count')
+    plt.xticks(rotation=45, ha='right')
+    plt.show()
     return scores_df
 
 def shap_values(model, X_train, feature_column):
@@ -120,30 +133,36 @@ def shap_values(model, X_train, feature_column):
             
         shap_values = explainer.shap_values(X_train)
             
-        #shap_values = shap_values[:,:,:1].squeeze()
         if isinstance(shap_values, list):
             shap_values = shap_values[0]
         shap.summary_plot(shap_values, X_train, feature_names=feature_column, max_display=10)
 
-        #X_train_sampled = shap.utils.sample(X_train, 100, random_state=42)
-        #explainer = shap.TreeExplainer(model, X_train)
-            
-        #shap_values = explainer.shap_values(X_train)
-            
-        #shap_values = shap_values[:,:,:1].squeeze()
-
-        #shap.summary_plot(shap_values, X_train, feature_names=feature_column, max_display=10)
-
         import numpy as np
 
-# Assuming shap_values is your numpy array
-        top_3_indices = np.argsort(shap_values, axis=1)[:, -3:]  # Get the indices of the top 3 values
 
-        top_3_values = np.take_along_axis(shap_values, top_3_indices, axis=1)  # Get the corresponding top 3 values
+        top_3_indices = np.argsort(shap_values, axis=1)[:, -3:] 
+        top_3_values = np.take_along_axis(shap_values, top_3_indices, axis=1)  
         max_shap_feature_per_user = [[feature_column[i] for i in user_indices] for user_indices in top_3_indices]
         
-        print(max_shap_feature_per_user)
-        #top_3_features = feature_column[np.arange(feature_column.shape[0]), top_3_important]
+        shap_value_means = np.mean(np.abs(shap_values), axis=0)  # axis=0 to get feature-wise means
+
+        # Get indices of top 3 features
+        top_x_indices_mean = np.argsort(shap_value_means)[-5:] # Last 3 (highest values)
+
+        # Get the top 3 feature names and values
+        top_x_features_mean = feature_column[top_x_indices_mean]
+        top_x_values_mean = shap_value_means[top_x_indices_mean]
+
+        # Plot
+        plt.figure(figsize=(8, 5))
+        plt.bar(np.flip(top_x_features_mean), np.flip(top_x_values_mean))
+        plt.xlabel('Feature')
+        plt.ylabel('Absolute Mean SHAP Value')
+        plt.title(f'Top {5} Features by Absolute Mean SHAP Value')
+        plt.xticks(rotation=45, ha='right')
+        plt.show()
+
+
         return (max_shap_feature_per_user, top_3_values)
 
 # run_classification models

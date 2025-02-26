@@ -6,7 +6,7 @@ import polars as pl
 def get_datasets():
     categories = pd.read_csv("../../data_q2/q2-ucsd-cat-map.csv")
     consumer = pd.read_parquet("../../data_q2/q2-ucsd-consDF.pqt")
-    acct = pd.read_parquet("../../data_q2/q2-ucsd-acctDF.pqt")
+    acct = pd.read_parquet("../../data_q2/q2-ucsd-acctIDF.pqt")
     transactions = pd.read_parquet("../../data_q2/q2-ucsd-trxnDF.pqt")
     transactions["amount"] = transactions["amount"].where(
         transactions["credit_or_debit"] == "DEBIT", -transactions["amount"]
@@ -418,10 +418,65 @@ def get_total_transactions(all_features, transaction_categories, transactions_ne
         "category"
     ].count()
 
-    all_features = pd.concat([all_features, transaction_totals], axis=1)
-    all_features = all_features.dropna(subset=["prism_consumer_id"])
-    all_features = all_features.set_index("prism_consumer_id")
+    all_features = all_features.merge(transaction_totals, on = 'prism_consumer_id', how = 'left')
     all_features = all_features.rename(columns={"category": "transactions"})
-    all_features = all_features[all_features["transactions"] > transactions_needed]
+    all_features['transactions'] = all_features['transactions'].fillna(0)
+    # all_features = all_features[all_features["transactions"] > transactions_needed]
 
+    return all_features
+
+
+def get_income(all_features, df, tolerance=5):
+    def calculate_time_diff(dates):
+        dates = pd.to_datetime(dates)
+        sorted_dates = dates.sort_values()
+        time_diff = sorted_dates.diff().dropna()
+        return time_diff
+
+    def is_regular(time_diffs):
+        week_range = (7 - tolerance, 7 + tolerance)
+        bi_week_range = (14 - tolerance, 14 + tolerance)
+        month_range = (30 - tolerance, 30 + tolerance)
+
+        regular_intervals = time_diffs.apply(lambda x: 
+            (week_range[0] <= x.days <= week_range[1]) or
+            (bi_week_range[0] <= x.days <= bi_week_range[1]) or
+            (month_range[0] <= x.days <= month_range[1])
+        )
+        
+        return regular_intervals.all()
+
+    regular_transactions = []
+    df['posted_date'] = pd.to_datetime(df['posted_date'])
+
+    for (user, category), group in df.groupby(['prism_consumer_id', 'category']):
+        date_list = group['posted_date']
+        time_diffs = calculate_time_diff(date_list)
+
+        if len(time_diffs) < 2:
+            regular_transactions.append((user, category, False))
+            continue
+
+        is_reg = is_regular(time_diffs)
+        regular_transactions.append((user, category, is_reg))
+    
+    reg_df = pd.DataFrame(regular_transactions, columns=['prism_consumer_id', 'category', 'is_regular'])
+
+    df = df.merge(reg_df, on=['prism_consumer_id', 'category'], how='left')
+
+    df['is_income'] = (df['is_regular'] & (df['credit_or_debit'] == 'CREDIT'))
+
+    days_df = df.groupby('prism_consumer_id').agg(first_posted_date=('posted_date', 'min'),
+                                                   last_posted_date=('posted_date', 'max')).reset_index()
+    days_df['days'] = (pd.to_datetime(days_df['last_posted_date']) - pd.to_datetime(days_df['first_posted_date'])).dt.days
+
+    
+
+    income_df = df[df['is_income']].groupby('prism_consumer_id')['amount'].sum().reset_index()
+    income_df = income_df.rename(columns={'amount': 'income'})
+
+    income_df = income_df.merge(days_df[['prism_consumer_id', 'days']], on='prism_consumer_id', how='left')
+    income_df['income_per_day'] = income_df['income'] / income_df['days']
+    all_features = all_features.merge(income_df[['prism_consumer_id', 'income_per_day']], on ='prism_consumer_id')
+    all_features['income_per_day'] *= -1
     return all_features

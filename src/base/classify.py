@@ -181,26 +181,56 @@ def run_classification(
             "Logistic Regression",
         ),
         (RandomForestClassifier(random_state=random_state), "Random Forest"),
-        (lgb.LGBMClassifier(objective="binary", verbose = -1, force_row_wise=True), "LightGBM"),
+        (
+            lgb.LGBMClassifier(
+                objective="binary",
+                verbose=-1,
+                force_row_wise=True,
+                n_estimators=200,
+                learning_rate=0.05,
+                num_leaves=31,
+                subsample=0.8,
+                colsample_bytree=0.8,
+            ),
+            "LightGBM",
+        ),
         (BalancedRandomForestClassifier(random_state=random_state), "Balanced RF"),
         # Gradient Boosting Family
         (
             XGBClassifier(
-                learning_rate=0.08,
-                max_depth=7,
-                n_estimators=100,
+                learning_rate=0.05,
+                max_depth=6,
+                n_estimators=200,
+                subsample=0.8,
+                colsample_bytree=0.8,
                 objective="binary:logistic",
             ),
             "XGBoost",
         ),
-        (CatBoostClassifier(silent=True), "CatBoost"),
-        (HistGradientBoostingClassifier(), "HistGB"),
-        (RUSBoostClassifier(random_state=random_state), "RUSBoost"),
+        (
+            CatBoostClassifier(
+                iterations=200, learning_rate=0.05, depth=6, l2_leaf_reg=3, silent=True
+            ),
+            "CatBoost",
+        ),
+        (
+            HistGradientBoostingClassifier(
+                max_iter=200, learning_rate=0.05, max_depth=6
+            ),
+            "HistGB",
+        ),
+        (
+            RUSBoostClassifier(
+                n_estimators=200, learning_rate=0.05, random_state=random_state
+            ),
+            "RUSBoost",
+        ),
     ]
 
     # Model evaluation framework
     model_results = []
     roc_curves = []
+    model_predictions = {}
 
     def evaluate_model(model, name):
         try:
@@ -210,6 +240,7 @@ def run_classification(
             train_time_end = time.time()
             y_pred = model.predict(X_test)
             y_proba = model.predict_proba(X_test)[:, 1]
+            model_predictions[name] = y_proba
 
             # Calculate metrics
             metrics = {
@@ -258,11 +289,49 @@ def run_classification(
 
     # Execute all models
     for model, name in models:
-        if name == "LightGBM":
-            evaluate_model(model, name)
+        evaluate_model(model, name)
+        # if name in ["LightGBM", "XGBoost", "HistGB", "CatBoost"]:
+            # evaluate_model(model, name)
 
     # Results analysis
     results_df = pd.DataFrame(model_results).sort_values("roc_auc", ascending=False)
+
+    if model_predictions:
+        y_proba_ensemble = np.max(np.array(list(model_predictions.values())), axis=0)
+        y_pred_ensemble = (y_proba_ensemble > 0.5).astype(int)
+
+        # Evaluate ensemble performance
+        ensemble_metrics = {
+            "model": "Ensemble (Max Prob)",
+            "roc_auc": roc_auc_score(y_test, y_proba_ensemble),
+            "accuracy": accuracy_score(y_test, y_pred_ensemble),
+        }
+
+        # Add ensemble results to dataframe
+        results_df = pd.DataFrame(model_results)
+        results_df = pd.concat(
+            [results_df, pd.DataFrame([ensemble_metrics])], ignore_index=True
+        ).sort_values("roc_auc", ascending=False)
+    ensemble_clf_report = classification_report(y_test, y_pred_ensemble, output_dict=True)
+
+    # Convert the classification report metrics into the ensemble_metrics dictionary
+    ensemble_metrics.update({
+        "accuracy": accuracy_score(y_test, y_pred_ensemble),
+        "precision": ensemble_clf_report["weighted avg"]["precision"],
+        "recall": ensemble_clf_report["weighted avg"]["recall"],
+        "f1-score": ensemble_clf_report["weighted avg"]["f1-score"],
+    })
+
+    # Add ensemble results to dataframe
+    results_df = pd.concat(
+        [results_df, pd.DataFrame([ensemble_metrics])], ignore_index=True
+    ).sort_values("roc_auc", ascending=False)
+
+    # Print classification report for ensemble
+    print(f"\n\033[1mEnsemble Model Results\033[0m")
+    print(f"ROC-AUC: {ensemble_metrics['roc_auc']:.3f} | Accuracy: {ensemble_metrics['accuracy']:.3f}")
+    print(f"Precision: {ensemble_metrics['precision']:.3f} | Recall: {ensemble_metrics['recall']:.3f} | F1-score: {ensemble_metrics['f1-score']:.3f}")
+    print(classification_report(y_test, y_pred_ensemble))
 
     print("\n\033[1m" + "=" * 40 + " FINAL RESULTS " + "=" * 40 + "\033[0m")
     print(
@@ -287,12 +356,35 @@ def run_classification(
     roc_curves_sorted = sorted(roc_curves, key=lambda x: x[3], reverse=True)
     for fpr, tpr, name, auc in roc_curves_sorted:
         plt.plot(fpr, tpr, label=f"{name} (AUC = {auc:.3f})")
+
+    # Compute and plot ensemble ROC
+    if model_predictions:
+        fpr_ensemble, tpr_ensemble, _ = roc_curve(y_test, y_proba_ensemble)
+        plt.plot(
+            fpr_ensemble,
+            tpr_ensemble,
+            label=f"Ensemble (AUC = {ensemble_metrics['roc_auc']:.3f})",
+            linestyle="--",
+            color="black",
+        )
+
     plt.plot([0, 1], [0, 1], linestyle="--", color="gray")
     plt.xlabel("False Positive Rate")
     plt.ylabel("True Positive Rate")
-    plt.title("AUC-ROC Curve for All Models")
+    plt.title("AUC-ROC Curve for All Models (With Ensemble)")
     plt.legend()
     plt.show()
+    # # Plot all AUC-ROC curves
+    # plt.figure(figsize=(8, 6))
+    # roc_curves_sorted = sorted(roc_curves, key=lambda x: x[3], reverse=True)
+    # for fpr, tpr, name, auc in roc_curves_sorted:
+    #     plt.plot(fpr, tpr, label=f"{name} (AUC = {auc:.3f})")
+    # plt.plot([0, 1], [0, 1], linestyle="--", color="gray")
+    # plt.xlabel("False Positive Rate")
+    # plt.ylabel("True Positive Rate")
+    # plt.title("AUC-ROC Curve for All Models")
+    # plt.legend()
+    # plt.show()
     #return user_data
 
 
@@ -487,7 +579,7 @@ def run_classification_plotly(feature_column, target_column, dataset, random_sta
     """
     Enhanced classification analysis with multiple models and comprehensive reporting using Plotly visualizations.
     """
-    X_train, X_test, y_train, y_test = preprocess_features(
+    X_train, X_test, y_train, y_test, train_id, test_id = preprocess_features(
         feature_column, target_column, dataset
     )
 
@@ -720,4 +812,290 @@ def run_classification_plotly(feature_column, target_column, dataset, random_sta
         ]
         .sort_values("roc_auc", ascending=False)
         .to_string(index=False)
+    )
+
+class WeightedEnsembleModel:
+    def __init__(self, models, weights):
+        self.models = models
+        self.weights = weights
+
+    def predict(self, X):
+        probas = self.predict_proba(X)
+        return (probas > 0.5).astype(int)
+
+    def predict_proba(self, X):
+        ensemble_proba = np.zeros((X.shape[0]))
+        for name, weight in self.weights.items():
+            model = self.models[name]
+            proba = model.predict_proba(X)[:, 1]
+            ensemble_proba += weight * proba
+        return np.vstack((1 - ensemble_proba, ensemble_proba)).T
+    
+def run_classification2(feature_column, target_column, dataset, random_state=42):
+    """
+    Enhanced classification analysis with multiple models and comprehensive reporting.
+    Includes ensemble model saving and optimizations for maximizing AUC-ROC.
+    """
+    X_train, X_test, y_train, y_test, train_id, test_id = preprocess_features(
+        feature_column, target_column, dataset
+    )
+
+    # Hyperparameter optimization settings for key models
+    models = [
+        # Core Models
+        (
+            LogisticRegression(
+                class_weight="balanced", max_iter=1000, C=0.1, solver="liblinear"
+            ),
+            "Logistic Regression",
+        ),
+        (
+            RandomForestClassifier(
+                n_estimators=200,
+                max_depth=10,
+                min_samples_split=5,
+                min_samples_leaf=2,
+                random_state=random_state,
+            ),
+            "Random Forest",
+        ),
+        (
+            lgb.LGBMClassifier(
+                objective="binary",
+                verbose=-1,
+                force_row_wise=True,
+                n_estimators=200,
+                learning_rate=0.05,
+                num_leaves=31,
+                subsample=0.8,
+                colsample_bytree=0.8,
+            ),
+            "LightGBM",
+        ),
+        (
+            BalancedRandomForestClassifier(n_estimators=200, random_state=random_state),
+            "Balanced RF",
+        ),
+        # Gradient Boosting Family
+        (
+            XGBClassifier(
+                learning_rate=0.05,
+                max_depth=6,
+                n_estimators=200,
+                subsample=0.8,
+                colsample_bytree=0.8,
+                objective="binary:logistic",
+                scale_pos_weight=sum(y_train == 0)
+                / sum(y_train == 1),  # Handle class imbalance
+            ),
+            "XGBoost",
+        ),
+        (
+            CatBoostClassifier(
+                iterations=200, learning_rate=0.05, depth=6, l2_leaf_reg=3, silent=True
+            ),
+            "CatBoost",
+        ),
+        (
+            HistGradientBoostingClassifier(
+                max_iter=200, learning_rate=0.05, max_depth=6
+            ),
+            "HistGB",
+        ),
+        (
+            RUSBoostClassifier(
+                n_estimators=200, learning_rate=0.05, random_state=random_state
+            ),
+            "RUSBoost",
+        ),
+    ]
+
+    # Model evaluation framework
+    model_results = []
+    roc_curves = []
+    model_predictions = {}
+    fitted_models = {}  # Store fitted models for ensemble creation
+
+    def evaluate_model(model, name):
+        try:
+            start_time = time.time()
+            model.fit(X_train, y_train)
+            fitted_models[name] = model  # Store fitted model
+            dump(model, filename=f"{name}.joblib")
+            train_time_end = time.time()
+            y_pred = model.predict(X_test)
+            y_proba = model.predict_proba(X_test)[:, 1]
+            model_predictions[name] = y_proba
+
+            # Calculate metrics
+            metrics = {
+                "model": name,
+                "roc_auc": roc_auc_score(y_test, y_proba),
+                "accuracy": accuracy_score(y_test, y_pred),
+                "train_time": train_time_end - start_time,
+                "predict_time": (time.time() - train_time_end) / X_test.shape[0],
+            }
+
+            # Add classification report metrics
+            clf_report = classification_report(y_test, y_pred, output_dict=True)
+            for k, v in clf_report["weighted avg"].items():
+                metrics[k] = v
+            model_results.append(metrics)
+
+            # Print model report
+            print(f"\n\033[1m{name} Results\033[0m")
+            print(
+                f"ROC-AUC: {metrics['roc_auc']:.3f} | Accuracy: {metrics['accuracy']:.3f}"
+            )
+            print(
+                f"Training Time: {metrics['train_time']:.1f}s | Predicting Time: {metrics['predict_time']:.6f}s"
+            )
+            print(classification_report(y_test, y_pred))
+
+            fpr, tpr, _ = roc_curve(y_test, y_proba)
+            roc_curves.append((fpr, tpr, name, metrics["roc_auc"]))
+
+            # Plot Confusion Matrix
+            cm = confusion_matrix(y_test, y_pred)
+            plt.figure(figsize=(5, 4))
+            sns.heatmap(
+                cm,
+                annot=True,
+                fmt="d",
+                cmap="Blues",
+                xticklabels=["Negative", "Positive"],
+                yticklabels=["Negative", "Positive"],
+            )
+            plt.xlabel("Predicted Label")
+            plt.ylabel("True Label")
+            plt.title(f"{name} - Confusion Matrix")
+            plt.show()
+
+        except Exception as e:
+            print(f"\n\033[91mError in {name}: {str(e)}\033[0m")
+
+    # Execute all models
+    for model, name in models:
+        # evaluate_model(model, name)
+        if name in ["LightGBM", "XGBoost", "CatBoost"]:
+            evaluate_model(model, name)
+
+    # Results analysis
+    results_df = pd.DataFrame(model_results).sort_values("roc_auc", ascending=False)
+
+    # Create and save the ensemble model
+    if model_predictions:
+        # Create a more sophisticated ensemble - weighted average based on individual model performance
+        weights = {
+            name: score
+            for name, score in zip(
+                [model[1] for model in models if model[1] in model_predictions.keys()],
+                [
+                    results_df[results_df["model"] == name]["roc_auc"].values[0]
+                    for name in model_predictions.keys()
+                ],
+            )
+        }
+
+        total_weight = sum(weights.values())
+        normalized_weights = {k: v / total_weight for k, v in weights.items()}
+
+        # Calculate weighted ensemble predictions
+        y_proba_ensemble = np.zeros_like(list(model_predictions.values())[0])
+        for name, weight in normalized_weights.items():
+            y_proba_ensemble += weight * model_predictions[name]
+
+        y_pred_ensemble = (y_proba_ensemble > 0.5).astype(int)
+
+        # Evaluate ensemble performance
+        ensemble_metrics = {
+            "model": "Weighted Ensemble",
+            "roc_auc": roc_auc_score(y_test, y_proba_ensemble),
+            "accuracy": accuracy_score(y_test, y_pred_ensemble),
+        }
+
+        # Create the ensemble model
+        ensemble_model = WeightedEnsembleModel(fitted_models, normalized_weights)
+
+        # Save the ensemble model
+        dump(ensemble_model, filename="WeightedEnsemble.joblib")
+        print("\n\033[1mEnsemble model saved as 'WeightedEnsemble.joblib'\033[0m")
+
+        # Add ensemble results to dataframe
+        results_df = pd.DataFrame(model_results)
+        ensemble_clf_report = classification_report(
+            y_test, y_pred_ensemble, output_dict=True
+        )
+
+        # Convert the classification report metrics into the ensemble_metrics dictionary
+        ensemble_metrics.update(
+            {
+                "accuracy": accuracy_score(y_test, y_pred_ensemble),
+                "precision": ensemble_clf_report["weighted avg"]["precision"],
+                "recall": ensemble_clf_report["weighted avg"]["recall"],
+                "f1-score": ensemble_clf_report["weighted avg"]["f1-score"],
+            }
+        )
+
+        # Add ensemble results to dataframe
+        results_df = pd.concat(
+            [results_df, pd.DataFrame([ensemble_metrics])], ignore_index=True
+        ).sort_values("roc_auc", ascending=False)
+
+        # Print classification report for ensemble
+        print(f"\n\033[1mEnsemble Model Results\033[0m")
+        print(
+            f"ROC-AUC: {ensemble_metrics['roc_auc']:.3f} | Accuracy: {ensemble_metrics['accuracy']:.3f}"
+        )
+        print(
+            f"Precision: {ensemble_metrics['precision']:.3f} | Recall: {ensemble_metrics['recall']:.3f} | F1-score: {ensemble_metrics['f1-score']:.3f}"
+        )
+        print(classification_report(y_test, y_pred_ensemble))
+
+    print("\n\033[1m" + "=" * 40 + " FINAL RESULTS " + "=" * 40 + "\033[0m")
+    print(
+        results_df[
+            [
+                "model",
+                "roc_auc",
+                "accuracy",
+                "precision",
+                "recall",
+                "f1-score",
+                "train_time",
+                "predict_time",
+            ]
+        ]
+        .sort_values("roc_auc", ascending=False)
+        .to_string(index=False)
+    )
+
+    # Plot all AUC-ROC curves
+    plt.figure(figsize=(8, 6))
+    roc_curves_sorted = sorted(roc_curves, key=lambda x: x[3], reverse=True)
+    for fpr, tpr, name, auc in roc_curves_sorted:
+        plt.plot(fpr, tpr, label=f"{name} (AUC = {auc:.3f})")
+
+    # Compute and plot ensemble ROC
+    if model_predictions:
+        fpr_ensemble, tpr_ensemble, _ = roc_curve(y_test, y_proba_ensemble)
+        plt.plot(
+            fpr_ensemble,
+            tpr_ensemble,
+            label=f"Weighted Ensemble (AUC = {ensemble_metrics['roc_auc']:.3f})",
+            linestyle="--",
+            color="black",
+        )
+
+    plt.plot([0, 1], [0, 1], linestyle="--", color="gray")
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.title("AUC-ROC Curve for All Models (With Ensemble)")
+    plt.legend()
+    plt.show()
+
+    return (
+        results_df,
+        fitted_models,
+        ensemble_model if "ensemble_model" in locals() else None,
     )

@@ -120,10 +120,10 @@ def individual_test(feature_column, name, dataset, random_state=42):
 
     value_counts_plot = value_counts_plot.sort_values(ascending=False)
     plt.figure(figsize=(8, 5))
-    plt.bar(value_counts_plot.index[:5], value_counts_plot[:5])
+    plt.bar(value_counts_plot.index[:7], value_counts_plot[:7])
     plt.xlabel('Feature')
     plt.ylabel('Top Three Features Count')
-    plt.title(f'Top {5} Features by Top Three Count')
+    plt.title(f'Top {7} Features by Top Three Count')
     plt.xticks(rotation=45, ha='right')
     plt.show()
     return scores_df

@@ -46,7 +46,12 @@ def one_hot_accounts(acct, consumer_features):
         .sum()
     )
 
-    all_features = consumer_features.merge(one_hot_aggregated, on="prism_consumer_id")
+    all_features = consumer_features.merge(one_hot_aggregated, on="prism_consumer_id", how = 'left')
+    # all_features = consumer_features.merge(one_hot_aggregated, on="prism_consumer_id")
+    all_features.loc[:, all_features.columns != "DQ_TARGET"] = all_features.loc[:, all_features.columns != "DQ_TARGET"].fillna(
+        0
+    )
+
     return all_features
 
 def count_account_types(acct, consumer_features):

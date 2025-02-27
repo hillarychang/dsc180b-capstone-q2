@@ -424,7 +424,7 @@ def get_best_features(
 
     for model in [
         RandomForestClassifier(),
-        BalancedRandomForestClassifier(),
+        lgb.LGBMClassifier(),
         XGBClassifier(
             objective="binary:logistic",
         ),

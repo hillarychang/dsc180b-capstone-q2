@@ -1,0 +1,289 @@
+:root {
+    --primary-color: #0D5C77;
+    --secondary-color: #8EC4BB;
+    --text-color: #1A596E;
+    --background-color: #F5F5F5;
+    --font-main: "Open Sans", sans-serif;
+    --font-title: "Red Hat Display", sans-serif;
+    --font-accent: "Tilt Warp", sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--font-main);
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+:target {
+    scroll-margin-top: 80px;
+}
+
+header {
+    height: 50vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-top: 60px;
+}
+
+header h1 {
+    font-size: 3rem;
+    font-family: var(--font-accent);
+}
+
+header h2 {
+    font-size: 2rem;
+    font-family: var(--font-title);
+    font-weight: 500;
+}
+
+header nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: var(--primary-color);
+    padding: 1rem 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+header nav ul {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    list-style: none;
+}
+
+header nav ul li a {
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+    border-radius: 5px;
+}
+
+header nav ul li a:hover {
+    background-color: var(--secondary-color);
+}
+
+.authors, .links {
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.authors p a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.authors p a:hover {
+    text-decoration: underline;
+}
+
+.links {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.resource-links {
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    color: var(--text-color);
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.resource-links:hover {
+    background-color: var(--secondary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+main {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 20px;
+}
+
+section {
+    margin-bottom: 2rem;
+}
+
+h3 {
+    font-family: var(--font-accent);
+    font-size: 1.8rem;
+    color: var(--text-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+p {
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+    margin: 10px auto;
+    border-radius: 5px;
+}
+
+footer {
+    background-color: var(--primary-color);
+    color: white;
+    text-align: center;
+    padding: 1.5rem 0;
+}
+
+.contact {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.contact a {
+    color: white;
+    text-decoration: none;
+}
+
+.contact a:hover {
+    text-decoration: underline;
+}
+
+#top-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 0.7rem 1rem;
+    background: var(--secondary-color);
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+#top-btn:hover {
+    background: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+    header {
+        height: auto;
+        padding: 2rem 0;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    header h2 {
+        font-size: 1.5rem;
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .links {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .contact {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+figcaption {
+    text-align: center;
+    font-style: italic; /* Optional: To make it look like a typical caption */
+}
+
+/* Increase font size for Feature Creation and Selection */
+.feature-title {
+    font-size: 1.8rem; 
+    font-weight: bold; 
+    margin-top: 1.5rem;
+}
+
+/* Increase font size for Token Augmentation (inside details/summary) */
+.expandable-section summary {
+    font-size: 1.5rem; 
+    font-weight: bold;
+    cursor: pointer; 
+    margin-bottom: 0.5rem;
+}
+
+/* Increase font size for process explanation */
+.process-intro {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-top: 1rem;
+}
+
+/* Styling for the math equation display */
+.math-equation {
+    font-family: monospace;
+    font-size: 1.2rem;
+    background-color: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.transformation-intro {
+    font-size: 1.4rem; /* Make it larger */
+    font-weight: bold;
+    margin-top: 1.5rem;
+}
+
+.confusion-matrix-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns */
+    gap: 20px; /* Adjust spacing between figures */
+    justify-content: center;
+    align-items: center;
+}
+
+.confusion-matrix-grid figure {
+    text-align: center;
+}
+
+.confusion-matrix-grid .full-width {
+    grid-column: span 2; /* Makes the last figure take the full row */
+    justify-self: center;
+}
+
+
+.center-table {
+    margin: auto; /* Centers the table */
+    text-align: center; /* Centers the text inside the table */
+    border-collapse: collapse; /* Optional: Makes borders cleaner */
+    width: 80%; /* Adjust the width as needed */
+}
+
+.center-table th, .center-table td {
+    padding: 10px; /* Adds spacing inside cells */
+    text-align: center; /* Centers text inside cells */
+    border: 1px solid #ddd; /* Optional: Adds border */
+}

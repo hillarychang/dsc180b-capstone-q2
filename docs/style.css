@@ -1,8 +1,8 @@
 :root {
-    --primary-color: #0D5C77;
-    --secondary-color: #8EC4BB;
-    --text-color: #1A596E;
-    --background-color: #F5F5F5;
+    --primary-color: #173D6E; /* Dark navy blue */
+    --secondary-color: #8EC4BB; /* Keep as is, or change */
+    --text-color: #173D6E; /* Set text color to match navy blue */
+    --background-color: #FFFFFF; /* Set background to white */
     --font-main: "Open Sans", sans-serif;
     --font-title: "Red Hat Display", sans-serif;
     --font-accent: "Tilt Warp", sans-serif;

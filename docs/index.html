@@ -360,9 +360,14 @@
                             <li><strong>Income Estimation:</strong> Estimated consumer income based on recurring transactions such as payroll deposits, rent, and utility payments.</li>
                             <li><strong>Impact of Fees & Overdrafts:</strong> Analyzed the effects of account fees, buy-now-pay-later (BNPL) transactions, and overdraft occurrences on overall financial stability.</li>
                         </ul>
+                    
+                        <figure style="text-align: center;">
+                            <img src="figure/feature_plot_credit_score-2.png" alt="Delinquency Percentage vs Credit Score" style="max-width: 100%; height: auto;">
+                            <figcaption>Figure: Delinquency Percentage vs Credit Score.</figcaption>
+                        </figure>
+                    
                     </details>
 
-            
                     <!-- Balance Trends for Delinquent vs. Non-Delinquent Consumers -->
                     <details class="expandable-section">
                         <summary>Comparing Delinquent and Non-Delinquent Consumers</summary>
@@ -426,19 +431,6 @@
                             <img src="figure/standardized_credit_balance.png" alt="Standardized Credit and Balance">
                             <figcaption>Figure: Feature engineering step where credit and balance were standardized to allow for easier model interpretability and comparisons across different financial profiles.</figcaption>
                         </figure>
-                    
-                        <!-- Container for side-by-side plots -->
-                        <div style="display: flex; justify-content: space-between; gap: 10px;">
-                            <figure style="flex: 1; text-align: center;">
-                                <img src="figure/shap_values2.png" alt="Feature Importance using Shap Values" style="max-width: 100%; height: auto;">
-                                <figcaption>Figure: Feature Importance using Shap Values.</figcaption>
-                            </figure>
-                    
-                            <figure style="flex: 1; text-align: center;">
-                                <img src="figure/feature_plot_credit_score.png" alt="Delinquency Percentage vs Credit Score" style="max-width: 100%; height: auto;">
-                                <figcaption>Figure: Delinquency Percentage vs Credit Score.</figcaption>
-                            </figure>
-                        </div>
                     
                     </details>
                 </section>
@@ -508,17 +500,9 @@
                     <details class="expandable-section">
                         <summary>Feature Importance</summary>
                         <p>Top predictive features for different models:</p>
-                        <figure>
-                            <img src="figure/feature_importance_rf.png" alt="Random Forest Feature Importance">
-                            <figcaption>Figure: Feature importance from Random Forest.</figcaption>
-                        </figure>
-                        <figure>
-                            <img src="figure/feature_importance_xgb.png" alt="XGBoost Feature Importance">
-                            <figcaption>Figure: Feature importance from XGBoost.</figcaption>
-                        </figure>
-                        <figure>
-                            <img src="figure/feature_importance_brf.png" alt="Balanced Random Forest Feature Importance">
-                            <figcaption>Figure: Feature importance from Balanced Random Forest</figcaption>
+                        <figure style="text-align: center;">
+                            <img src="figure/shap_values2.png" alt="Feature Importance using Shap Values" style="max-width: 100%; height: auto;">
+                            <figcaption>Figure: Feature Importance using SHAP Values.</figcaption>
                         </figure>
                     </details>
                     

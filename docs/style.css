@@ -279,6 +279,32 @@ figcaption {
     padding-bottom: 20px;
 }
 
+
+.confusion-matrix-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* First row: 3 columns */
+    gap: 20px; /* Space between figures */
+    justify-content: center;
+    align-items: center;
+}
+
+.confusion-matrix-grid figure {
+    text-align: center;
+}
+
+/* Target the last four figures and make them fit in a four-column row */
+.confusion-matrix-grid figure:nth-child(n+4) {
+    grid-column: span 1; /* Ensures four figures on the second row */
+}
+
+@media (max-width: 768px) {
+    .confusion-matrix-grid {
+        grid-template-columns: repeat(2, 1fr); /* Switch to 2 columns on smaller screens */
+    }
+}
+
+
+/* 
 /* Confusion Matrix Grid */
 .confusion-matrix-grid {
     display: grid;
@@ -314,6 +340,8 @@ figcaption {
     display: block;
     margin: 0 auto;
 }
+ */
+
 
 /* Space Between Table and Last Figure */
 .center-table {

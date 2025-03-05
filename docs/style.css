@@ -287,3 +287,8 @@ figcaption {
     text-align: center; /* Centers text inside cells */
     border: 1px solid #ddd; /* Optional: Adds border */
 }
+
+.expandable-section {
+    padding-bottom: 20px; /* Adds space only at the end when expanded */
+}
+

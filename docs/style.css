@@ -292,6 +292,13 @@ figcaption {
     text-align: center;
 }
 
+/* Increase font size for Feature Creation and Selection */
+.feature-title {
+    font-size: 1.8rem; 
+    font-weight: bold; 
+    margin-top: 1.5rem;
+}
+
 /* Center Last Figure */
 .confusion-matrix-grid figure:last-child {
     margin: 20px auto;

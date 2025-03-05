@@ -423,11 +423,30 @@
                     <details class="expandable-section">
                         <summary>Feature Importance</summary>
                         <p>Top predictive features for different models:</p>
+                        
                         <figure style="text-align: center;">
                             <img src="figure/shap_values.png" alt="Feature Importance using Shap Values" style="max-width: 100%; height: auto;">
                             <figcaption>Figure: Feature Importance using SHAP Values.</figcaption>
                         </figure>
+                    
+                        <p>The following are the top 10 most important features influencing delinquency prediction, as identified by SHAP values:</p>
+                        
+                        <ul>
+                            <li><strong>account_type_SAVINGS:</strong> Indicates whether a user has a savings account. A savings account is often associated with financial stability, reducing the risk of delinquency.</li>
+                            <li><strong>balance:</strong> Represents the consumer's total account balance. Lower balances correlate with higher delinquency risk, while higher balances suggest financial security.</li>
+                            <li><strong>ACCOUNT_FEES_median:</strong> Measures the median account fees incurred. Frequent fees may indicate financial strain or poor account management.</li>
+                            <li><strong>LOAN_std (Loan Standard Deviation):</strong> Represents the variability in loan-related transactions. High fluctuations may indicate inconsistent repayments and financial instability.</li>
+                            <li><strong>OVERDRAFT_count:</strong> Tracks the number of overdraft occurrences. A higher count strongly correlates with financial distress and increased risk of delinquency.</li>
+                            <li><strong>REFUND_skewness:</strong> Measures the asymmetry in refund transactions. Unusual refund patterns may suggest erratic cash flow or financial instability.</li>
+                            <li><strong>ACCOUNT_FEES_count:</strong> The total number of account fees charged. Higher counts may indicate insufficient funds or excessive financial penalties.</li>
+                            <li><strong>INVESTMENT_INCOME_std (Investment Income Standard Deviation):</strong> Measures fluctuations in investment income. High variation could indicate unreliable financial inflows.</li>
+                            <li><strong>SELF_TRANSFER_iqr (Interquartile Range of Self-Transfers):</strong> Measures variability in self-transfers between accounts. A high IQR may indicate inconsistent cash flow management.</li>
+                            <li><strong>ATM_CASH_median:</strong> The median amount of cash withdrawn from ATMs. Frequent and high cash withdrawals may suggest reliance on liquid cash, which could relate to financial instability.</li>
+                        </ul>
+                    
+                        <p>These features provide critical insights into financial behavior and help the model better assess delinquency risk.</p>
                     </details>
+
                     
                 </section>
             

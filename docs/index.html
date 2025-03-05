@@ -418,29 +418,49 @@
                         </figure>
                     
                     </details>
+
+                    <!-- Feature Importance for Different Models -->
+                    <details class="expandable-section">
+                        <summary>Feature Importance</summary>
+                        <p>Top predictive features for different models:</p>
+                        <figure style="text-align: center;">
+                            <img src="figure/shap_values.png" alt="Feature Importance using Shap Values" style="max-width: 100%; height: auto;">
+                            <figcaption>Figure: Feature Importance using SHAP Values.</figcaption>
+                        </figure>
+                    </details>
+                    
                 </section>
             
                 <!-- Models and Results -->
                 <section id="models-results">
-                    <h4 class="feature-title"><strong>Models and Results</strong></h4>                    
-                    <!-- Model Training -->
+                    <h4 class="feature-title"><strong>Models and Results</strong></h4>
                     <details class="expandable-section">
                         <summary>Model Training</summary>
-                        
-                        <p>We trained multiple machine learning models to predict delinquency risk. These models range from simple interpretable baselines to advanced gradient boosting and ensemble methods, each chosen for its ability to capture different aspects of financial behavior.</p>
-                        
+                    
+                        <p>We trained multiple machine learning models to predict delinquency risk, focusing on maximizing performance while maintaining interpretability and efficiency.</p>
+                    
                         <ul>
-                            <li><strong>Logistic Regression:</strong> A simple, interpretable baseline model.</li>
-                            <li><strong>Random Forest:</strong> Captures non-linear financial relationships.</li>
-                            <li><strong>XGBoost:</strong> Optimized for structured financial data.</li>
-                            <li><strong>LightGBM:</strong> Efficient with categorical features and handling imbalanced data.</li>
-                            <li><strong>Balanced RF:</strong> Handles class imbalance by weighting classes or resampling.</li>
-                            <li><strong>CatBoost:</strong> Handles categorical features automatically and is robust to overfitting.</li>
-                            <li><strong>HistGB:</strong> A histogram-based gradient boosting model.</li>
-                            <li><strong>RUSBoost:</strong> Combines Random Under-Sampling with boosting to address class imbalance while maintaining predictive performance.</li>
+                            <li><strong>Feature Selection:</strong> Used only the <b>top 75 most important features</b> to improve model interpretability and predictive power.</li>
+                            <li><strong>Scoring Exclusions:</strong> Consumers with <b>fewer than two transactions</b> were excluded to ensure meaningful behavioral patterns.</li>
                         </ul>
                     
-
+                        <p>To address the class imbalance issue (delinquent consumers make up only <b>8.4%</b> of the dataset), we applied:</p>
+                    
+                        <ul>
+                            <li><strong>SMOTE & SMOTEENN:</strong> Synthetic oversampling techniques to balance the dataset.</li>
+                            <li><strong>Feature Normalization:</strong> Standardization of key numerical variables to improve model performance.</li>
+                        </ul>
+                    
+                        <p>To optimize the <b>ROC-AUC score</b>, we trained five primary models:</p>
+                        
+                        <ul>
+                            <li><strong>XGBoost:</strong> High-performance gradient boosting model with extensive hyperparameter tuning.</li>
+                            <li><strong>LightGBM:</strong> Fast and efficient for large datasets, especially with categorical features.</li>
+                            <li><strong>CatBoost:</strong> Optimized for categorical data, reducing the need for preprocessing.</li>
+                            <li><strong>Balanced Random Forest:</strong> Addresses class imbalance by appropriately weighting samples.</li>
+                            <li><strong>Weighted Ensemble:</strong> Combines top models for an optimal balance of accuracy, interpretability, and efficiency.</li>
+                        </ul>
+                    
                     </details>
                     
                     <!-- Model Evaluation -->
@@ -457,16 +477,6 @@
                             <li><strong>Prediction Time:</strong> Measures how efficiently models generate predictions for new consumers.</li>
                         </ul>
                     
-                    </details>
-
-                    <!-- Feature Importance for Different Models -->
-                    <details class="expandable-section">
-                        <summary>Feature Importance</summary>
-                        <p>Top predictive features for different models:</p>
-                        <figure style="text-align: center;">
-                            <img src="figure/shap_values.png" alt="Feature Importance using Shap Values" style="max-width: 100%; height: auto;">
-                            <figcaption>Figure: Feature Importance using SHAP Values.</figcaption>
-                        </figure>
                     </details>
                     
                     <details class="expandable-section">                        
@@ -610,7 +620,7 @@
                     <details class="expandable-section">
                         <summary>Conclusion</summary>
                     
-                        <p>Our analysis highlights the effectiveness of different machine learning models in predicting delinquency risk. Among them, LightGBM demonstrated the highest ROC-AUC score, making it the most effective model for our use case.</p>
+                        <p>Our analysis highlights the effectiveness of different machine learning models in predicting delinquency risk. Among them, weighted ensemble demonstrated the highest ROC-AUC score, making it the most effective model for our use case.</p>
                         <figure>
                             <img src="figure/auc_roc_curve.png" alt="AUC-ROC Scores">
                             <figcaption>Figure: ROC-AUC curve comparison for all models.</figcaption>

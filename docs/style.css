@@ -1,13 +1,14 @@
 :root {
     --primary-color: #173D6E; /* Dark navy blue */
-    --secondary-color: #8EC4BB; /* Keep as is, or change */
-    --text-color: #173D6E; /* Set text color to match navy blue */
-    --background-color: #FFFFFF; /* Set background to white */
+    --secondary-color: #8EC4BB; /* Accent color */
+    --text-color: #173D6E; /* Navy blue text */
+    --background-color: #FFFFFF; /* White background */
     --font-main: "Open Sans", sans-serif;
     --font-title: "Red Hat Display", sans-serif;
     --font-accent: "Tilt Warp", sans-serif;
 }
 
+/* Global Reset */
 * {
     margin: 0;
     padding: 0;
@@ -15,16 +16,19 @@
     font-family: var(--font-main);
 }
 
+/* Body */
 body {
     background-color: var(--background-color);
     color: var(--text-color);
     line-height: 1.6;
 }
 
+/* Fix for scrolling to anchors */
 :target {
     scroll-margin-top: 80px;
 }
 
+/* Header */
 header {
     height: 50vh;
     display: flex;
@@ -38,14 +42,17 @@ header {
 header h1 {
     font-size: 3rem;
     font-family: var(--font-accent);
+    color: var(--primary-color);
 }
 
 header h2 {
     font-size: 2rem;
     font-family: var(--font-title);
     font-weight: 500;
+    color: var(--primary-color);
 }
 
+/* Navigation Bar */
 header nav {
     position: fixed;
     top: 0;
@@ -76,6 +83,7 @@ header nav ul li a:hover {
     background-color: var(--secondary-color);
 }
 
+/* Author Section */
 .authors, .links {
     text-align: center;
     margin: 1.5rem 0;
@@ -91,6 +99,7 @@ header nav ul li a:hover {
     text-decoration: underline;
 }
 
+/* Links */
 .links {
     display: flex;
     justify-content: center;
@@ -99,30 +108,32 @@ header nav ul li a:hover {
 
 .resource-links {
     background-color: white;
-    border: 1px solid #ddd;
+    border: 1px solid var(--primary-color);
     padding: 0.5rem 1rem;
     text-decoration: none;
-    color: var(--text-color);
+    color: var(--primary-color);
     border-radius: 5px;
     transition: all 0.3s ease;
 }
 
 .resource-links:hover {
-    background-color: var(--secondary-color);
+    background-color: var(--primary-color);
     color: white;
-    border-color: var(--primary-color);
 }
 
+/* Main Content */
 main {
     max-width: 1000px;
     margin: 2rem auto;
     padding: 0 20px;
 }
 
+/* Sections */
 section {
     margin-bottom: 2rem;
 }
 
+/* Titles */
 h3 {
     font-family: var(--font-accent);
     font-size: 1.8rem;
@@ -137,6 +148,7 @@ p {
     font-size: 1rem;
 }
 
+/* Images */
 img {
     max-width: 100%;
     display: block;
@@ -144,6 +156,7 @@ img {
     border-radius: 5px;
 }
 
+/* Footer */
 footer {
     background-color: var(--primary-color);
     color: white;
@@ -167,6 +180,7 @@ footer {
     text-decoration: underline;
 }
 
+/* Back to Top Button */
 #top-btn {
     position: fixed;
     bottom: 20px;
@@ -183,6 +197,7 @@ footer {
     background: var(--primary-color);
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
     header {
         height: auto;
@@ -214,68 +229,61 @@ footer {
     }
 }
 
+/* Figure Captions */
 figcaption {
     text-align: center;
-    font-style: italic; /* Optional: To make it look like a typical caption */
+    font-style: italic;
+    color: var(--primary-color);
 }
 
-/* Increase font size for Feature Creation and Selection */
-.feature-title {
-    font-size: 1.8rem; 
-    font-weight: bold; 
-    margin-top: 1.5rem;
-}
-
-/* Increase font size for Token Augmentation (inside details/summary) */
+/* Expandable Sections */
 .expandable-section summary {
-    font-size: 1.5rem; 
+    font-size: 1.5rem;
     font-weight: bold;
-    cursor: pointer; 
+    cursor: pointer;
     margin-bottom: 0.5rem;
 }
 
-/* Increase font size for process explanation */
-.process-intro {
-    font-size: 1.3rem;
-    font-weight: bold;
-    margin-top: 1rem;
-}
-
-/* Styling for the math equation display */
-/* .math-equation {
-    font-family: monospace;
-    font-size: 1.2rem;
-/*     background-color: #f8f9fa;
-    padding: 0.5rem; */
-    border-radius: 5px;
-    display: inline-block;
-} */
-
+/* Math Equation Styling */
 .math-equation {
-    font-family: "Courier New", monospace; /* Classic code-like font */
-    font-size: 1.4rem; /* Slightly larger for emphasis */
-    font-weight: bold; /* Make it stand out */
-    color: #333; /* Darker color for better readability */
-    text-align: center; /* Centers the text */
-    display: block; /* Allows proper centering */
-    margin: 20px auto; /* Adds spacing above and below */
-    padding: 10px 20px; /* Adds some space inside */
-    background: #f4f4f4; /* Light gray background for contrast */
-    border-radius: 8px; /* Soft rounded edges */
-    width: fit-content; /* Shrinks box to content */
-    border-left: 5px solid #007BFF; /* Adds a left color accent */
-}
-
-.transformation-intro {
-    font-size: 1.4rem; /* Make it larger */
+    font-family: "Courier New", monospace;
+    font-size: 1.4rem;
     font-weight: bold;
-    margin-top: 1.5rem;
+    color: var(--primary-color);
+    text-align: center;
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background: #f4f4f4;
+    border-radius: 8px;
+    width: fit-content;
+    border-left: 5px solid #007BFF;
 }
 
+/* Tables */
+.center-table {
+    margin: auto;
+    text-align: center;
+    border-collapse: collapse;
+    width: 80%;
+}
+
+.center-table th, .center-table td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid var(--primary-color);
+}
+
+/* Expandable Sections Spacing */
+.expandable-section {
+    padding-bottom: 20px;
+}
+
+/* Confusion Matrix Grid */
 .confusion-matrix-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Two columns */
-    gap: 20px; /* Adjust spacing between figures */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
     justify-content: center;
     align-items: center;
 }
@@ -284,47 +292,23 @@ figcaption {
     text-align: center;
 }
 
-.confusion-matrix-grid .full-width {
-    grid-column: span 2; /* Makes the last figure take the full row */
-    justify-self: center;
-}
-
-
-.center-table {
-    margin: auto; /* Centers the table */
-    text-align: center; /* Centers the text inside the table */
-    border-collapse: collapse; /* Optional: Makes borders cleaner */
-    width: 80%; /* Adjust the width as needed */
-}
-
-.center-table th, .center-table td {
-    padding: 10px; /* Adds spacing inside cells */
-    text-align: center; /* Centers text inside cells */
-    border: 1px solid #ddd; /* Optional: Adds border */
-}
-
-.expandable-section {
-    padding-bottom: 20px; /* Adds space only at the end when expanded */
-}
-
-/* Ensure the last figure inside the .confusion-matrix-grid is centered */
+/* Center Last Figure */
 .confusion-matrix-grid figure:last-child {
-    margin: 20px auto;  /* Adds space above it and centers it */
-    text-align: center; /* Ensures caption is centered */
-    display: flex; /* Enables flexbox for centering */
-    flex-direction: column; /* Keeps image and caption stacked */
-    align-items: center; /* Centers content horizontally */
+    margin: 20px auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
 }
 
-/* Ensure the image itself is centered */
+/* Center Image Inside Figure */
 .confusion-matrix-grid figure:last-child img {
     display: block;
-    margin: 0 auto; /* Centers image inside figure */
+    margin: 0 auto;
 }
 
-/* Add spacing between table and last figure */
+/* Space Between Table and Last Figure */
 .center-table {
-    margin-bottom: 40px; /* Creates space between the table and the last figure */
+    margin-bottom: 40px;
 }
-

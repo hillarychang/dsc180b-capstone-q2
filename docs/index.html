@@ -467,22 +467,43 @@
                     <!-- Model Evaluation -->
                     <details class="expandable-section">
                         <summary>Model Evaluation</summary>
-                        <p>We evaluated model performance using key classification metrics:</p>
+                        
+                        <p>We evaluated model performance using several key classification metrics:</p>
+                        
                         <ul>
-                            <li><strong>Accuracy and F1-Score:</strong> Measures overall classification performance.</li>
-                            <li><strong>ROC-AUC:</strong> Evaluates the model's ability to differentiate between delinquent and non-delinquent users.</li>
-                            <li><strong>Precision and Recall:</strong> Measures positive case identification accuracy.</li>
-                            <li><strong>Training Time:</strong> Measures how long each model takes to train.</li>
-                            <li><strong>Prediction Time:</strong> Measures the time taken to make predictions on new data.</li>
+                            <li><strong>ROC-AUC:</strong> Measures the model’s ability to differentiate between delinquent and non-delinquent users.</li>
+                            <li><strong>Precision and Recall:</strong> Precision measures the percentage of correctly predicted delinquents, while recall captures the proportion of actual delinquents that were correctly identified.</li>
+                            <li><strong>F1-Score:</strong> Provides a balance between precision and recall, ensuring both false positives and false negatives are considered.</li>
+                            <li><strong>Training Time:</strong> Evaluates how long each model takes to train, an essential factor for scalability.</li>
+                            <li><strong>Prediction Time:</strong> Measures how efficiently models generate predictions for new consumers.</li>
                         </ul>
-
-                        <p>To mitigate the class imbalance (delinquents only 8.4% of dataset), we used:</p>
-                        <ul>
-                            <li><strong>SMOTE & SMOTEENN:</strong> Oversampling techniques.</li>
-                            <li><strong>Feature Normalization:</strong> Standardization of key variables.</li>
-                        </ul>
-                    </details>
                     
+                        <p>To address the class imbalance issue (delinquent consumers only make up 8.4% of the dataset), we applied:</p>
+                        
+                        <ul>
+                            <li><strong>SMOTE & SMOTEENN:</strong> Synthetic oversampling techniques to balance the dataset.</li>
+                            <li><strong>Feature Normalization:</strong> Standardization of key numerical variables to improve model performance.</li>
+                        </ul>
+                    
+                        <p>Additionally, to improve generalization and the predictive power of our best models, we:</p>
+                    
+                        <ul>
+                            <li><strong>Feature Selection:</strong> We trained models using only the **top 75 most important features** to enhance interpretability and performance.</li>
+                            <li><strong>Scoring Exclusions:</strong> Consumers with fewer than **two transactions** were excluded from training to ensure meaningful patterns in spending behavior.</li>
+                        </ul>
+                    
+                        <p>To maximize the **ROC-AUC score**, we trained on five primary models:</p>
+                        
+                        <ul>
+                            <li><strong>XGBoost:</strong> A high-performance gradient boosting model that allowed for extensive hyperparameter tuning.</li>
+                            <li><strong>LightGBM:</strong> A lightweight and efficient boosting model, ideal for handling large datasets.</li>
+                            <li><strong>CatBoost:</strong> Optimized for categorical data, reducing the need for extensive preprocessing.</li>
+                            <li><strong>Balanced Random Forest:</strong> Well-suited for handling imbalanced classes by weighting samples appropriately.</li>
+                            <li><strong>Weighted Ensemble:</strong> A combination of our best-performing models, striking a balance between accuracy, interpretability, and efficiency.</li>
+                        </ul>
+                    
+                    </details>
+
                     <!-- Feature Importance for Different Models -->
                     <details class="expandable-section">
                         <summary>Feature Importance</summary>
@@ -535,7 +556,6 @@
                         </div>
                     
                         <summary>Model Performance</summary>
-                        
                         <table class="center-table">
                             <tr>
                                 <th>Model</th>
@@ -549,13 +569,53 @@
                             </tr>
                             <tr>
                                 <td>LightGBM</td>
-                                <td>0.832</td>
-                                <td>0.914</td>
-                                <td>0.889</td>
-                                <td>0.914</td>
-                                <td>0.899</td>
-                                <td>2.208</td>
-                                <td>0.000018</td>
+                                <td>0.8221</td>
+                                <td>0.9031</td>
+                                <td>0.8739</td>
+                                <td>0.9031</td>
+                                <td>0.8814</td>
+                                <td>2.5050</td>
+                                <td>0.000019</td>
+                            </tr>
+                            <tr>
+                                <td>Weighted Ensemble</td>
+                                <td>0.8301</td>
+                                <td>0.9006</td>
+                                <td>0.8728</td>
+                                <td>0.9006</td>
+                                <td>0.8813</td>
+                                <td>0.0010</td>
+                                <td>0.000001</td>
+                            </tr>
+                            <tr>
+                                <td>XGBoost</td>
+                                <td>0.8232</td>
+                                <td>0.8962</td>
+                                <td>0.8677</td>
+                                <td>0.8962</td>
+                                <td>0.8778</td>
+                                <td>2.0606</td>
+                                <td>0.000006</td>
+                            </tr>
+                            <tr>
+                                <td>CatBoost</td>
+                                <td>0.8212</td>
+                                <td>0.8892</td>
+                                <td>0.8707</td>
+                                <td>0.8892</td>
+                                <td>0.8785</td>
+                                <td>3.0342</td>
+                                <td>0.000004</td>
+                            </tr>
+                            <tr>
+                                <td>Balanced RF</td>
+                                <td>0.8144</td>
+                                <td>0.8982</td>
+                                <td>0.8703</td>
+                                <td>0.8982</td>
+                                <td>0.8797</td>
+                                <td>26.2355</td>
+                                <td>0.000064</td>
                             </tr>
                             <tr>
                                 <td>HistGB</td>
@@ -568,26 +628,6 @@
                                 <td>0.000021</td>
                             </tr>
                             <tr>
-                                <td>CatBoost</td>
-                                <td>0.821</td>
-                                <td>0.917</td>
-                                <td>0.893</td>
-                                <td>0.917</td>
-                                <td>0.902</td>
-                                <td>14.511</td>
-                                <td>0.000005</td>
-                            </tr>
-                            <tr>
-                                <td>XGBoost</td>
-                                <td>0.818</td>
-                                <td>0.914</td>
-                                <td>0.893</td>
-                                <td>0.914</td>
-                                <td>0.902</td>
-                                <td>1.635</td>
-                                <td>0.000006</td>
-                            </tr>
-                            <tr>
                                 <td>RUSBoost</td>
                                 <td>0.802</td>
                                 <td>0.829</td>
@@ -596,16 +636,6 @@
                                 <td>0.859</td>
                                 <td>6.954</td>
                                 <td>0.000012</td>
-                            </tr>
-                            <tr>
-                                <td>Balanced RF</td>
-                                <td>0.800</td>
-                                <td>0.914</td>
-                                <td>0.890</td>
-                                <td>0.914</td>
-                                <td>0.900</td>
-                                <td>13.670</td>
-                                <td>0.000034</td>
                             </tr>
                             <tr>
                                 <td>Random Forest</td>
@@ -628,7 +658,6 @@
                                 <td>0.000003</td>
                             </tr>
                         </table>
-                    
                     </details>
                     
                     <details class="expandable-section">
@@ -647,27 +676,74 @@
                             <figcaption>Figure: ROC-AUC curve comparison for all models.</figcaption>
                         </figure>
                     
-                        <!-- Container for side-by-side plots -->
-                        <div style="display: flex; justify-content: space-between; gap: 10px;">
-                            <figure style="flex: 1; text-align: center;">
-                                <img src="figure/top_reasons.png" alt="Distribution of Common Reasons" style="max-width: 100%; height: auto;">
-                                <figcaption>Figure: Distribution of Common Reasons.</figcaption>
-                            </figure>
+                        <h4>Cash Score Results</h4>
+                        <ul>
+                            <li><strong>Best Model:</strong> LightGBM achieved the best overall performance.</li>
+                            <li><strong>Cash Scores outperform Credit Scores:</strong> Our analysis shows that transaction-based Cash Scores provide better delinquency predictions than traditional Credit Scores.</li>
+                        </ul>
                     
-                            <figure style="flex: 1; text-align: center;">
-                                <img src="figure/cash_score_dist2.png" alt="Distribution of Cash Scores" style="max-width: 100%; height: auto;">
-                                <figcaption>Figure: Distribution of Cash Scores.</figcaption>
-                            </figure>
-                        </div>
+                        <figure>
+                            <img src="figure/heatmap.png" alt="Heatmap of Delinquency Rates by Cash Score and Credit Score">
+                            <figcaption>Figure: Heatmap showing delinquency rates across Cash Scores and Credit Scores, highlighting the effectiveness of our model.</figcaption>
+                        </figure>
+                    
                     </details>
-                </section>
 
+                </section>
             </section>
 
             <section id="discussion">
                 <h3>Discussion</h3>
-                <p>Our model demonstrates the potential for alternative credit scoring methods but faces challenges such as data bias and class imbalance. Future work will focus on refining the fairness and interpretability of the Cash Score.</p>
+                
+                <p>
+                    Our project aims to create a <strong>fairer credit assessment system</strong> while maintaining accuracy and transparency. 
+                    The <strong>Cash Score</strong> model reduces reliance on traditional credit history and promotes <strong>financial inclusivity</strong>. 
+                    By leveraging transactional data, we provide a more equitable method of assessing credit risk, particularly for those with 
+                    limited or no credit history.
+                </p>
+            
+                <p>
+                    Our model demonstrates the potential for alternative credit scoring methods but faces challenges such as 
+                    <strong>data bias</strong> and <strong>class imbalance</strong>. Future work will focus on refining the fairness and 
+                    interpretability of the Cash Score while ensuring regulatory compliance.
+                </p>
+            
+                <h4>Ensuring Compliance with the Equal Credit Opportunity Act (ECOA)</h4>
+                <p>
+                    To make sure our model is <strong>fair and unbiased</strong>, we carefully removed features that could introduce 
+                    discrimination, aligning with the <strong>Equal Credit Opportunity Act (ECOA)</strong>. ECOA prevents creditors from making 
+                    lending decisions based on race, gender, age, marital status, and reliance on public assistance, among other 
+                    protected characteristics. Since some spending and income categories could act as indirect indicators of these 
+                    attributes, we excluded them from our feature set to avoid potential bias.
+                </p>
+            
+                <h4>Categories Removed for ECOA Compliance</h4>
+                <p>After reviewing our data, we decided to remove certain features that could disproportionately impact protected groups:</p>
+                
+                <ul>
+                    <li><strong>Unemployment Benefits:</strong> Could unfairly penalize people experiencing temporary job loss.</li>
+                    <li><strong>Education:</strong> Spending on tuition or student loans could indirectly reveal age or socioeconomic status.</li>
+                    <li><strong>Home Improvement:</strong> Homeownership status could create an unintended bias against renters.</li>
+                    <li><strong>Healthcare/Medical Expenses:</strong> High medical spending might reflect age or disability, which are protected attributes.</li>
+                    <li><strong>Child Dependence:</strong> Child-related expenses could be linked to marital status or family structure.</li>
+                    <li><strong>Pension & Retirement Benefits:</strong> Income from pensions or Social Security might unfairly disadvantage older consumers.</li>
+                </ul>
+            
+                <p>
+                    By removing these features, we made sure our <strong>Cash Score</strong> model stays focused on financial behavior rather than personal demographics. 
+                    Our goal is to create a <strong>fair and transparent</strong> way to assess credit risk without reinforcing systemic biases.
+                </p>
+            
+                <h3>Future Work</h3>
+                <p>Moving forward, we plan to enhance the Cash Score model with the following improvements:</p>
+                
+                <ul>
+                    <li><strong>Integrate Q1 Project:</strong> Leverage our categorization model to create a category column, enabling additional feature generation for the Cash Score model. The model categorizes transactions based on the memos column in our Q1 dataset.</li>
+                    <li><strong>Expand Dataset:</strong> Train and test a full-size dataset to improve model generalizability and robustness.</li>
+                </ul>
             </section>
+            
+                            
             <section id="contribution">
                 <h3>Contributions</h3>
                 <p>Our project aims to create a fairer credit assessment system while maintaining accuracy and transparency. The Cash Score model reduces reliance on traditional credit history and promotes financial inclusivity.</p>

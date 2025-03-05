@@ -439,6 +439,8 @@
                             <li><strong>HistGB:</strong> A histogram-based gradient boosting model.</li>
                             <li><strong>RUSBoost:</strong> Combines Random Under-Sampling with boosting to address class imbalance while maintaining predictive performance.</li>
                         </ul>
+                    
+
                     </details>
                     
                     <!-- Model Evaluation -->
@@ -453,30 +455,6 @@
                             <li><strong>F1-Score:</strong> Provides a balance between precision and recall, ensuring both false positives and false negatives are considered.</li>
                             <li><strong>Training Time:</strong> Evaluates how long each model takes to train, an essential factor for scalability.</li>
                             <li><strong>Prediction Time:</strong> Measures how efficiently models generate predictions for new consumers.</li>
-                        </ul>
-                    
-                        <p>To address the class imbalance issue (delinquent consumers only make up 8.4% of the dataset), we applied:</p>
-                        
-                        <ul>
-                            <li><strong>SMOTE & SMOTEENN:</strong> Synthetic oversampling techniques to balance the dataset.</li>
-                            <li><strong>Feature Normalization:</strong> Standardization of key numerical variables to improve model performance.</li>
-                        </ul>
-                    
-                        <p>Additionally, to improve generalization and the predictive power of our best models, we:</p>
-                    
-                        <ul>
-                            <li><strong>Feature Selection:</strong> We trained models using only the **top 75 most important features** to enhance interpretability and performance.</li>
-                            <li><strong>Scoring Exclusions:</strong> Consumers with fewer than **two transactions** were excluded from training to ensure meaningful patterns in spending behavior.</li>
-                        </ul>
-                    
-                        <p>To maximize the **ROC-AUC score**, we trained on five primary models:</p>
-                        
-                        <ul>
-                            <li><strong>XGBoost:</strong> A high-performance gradient boosting model that allowed for extensive hyperparameter tuning.</li>
-                            <li><strong>LightGBM:</strong> A lightweight and efficient boosting model, ideal for handling large datasets.</li>
-                            <li><strong>CatBoost:</strong> Optimized for categorical data, reducing the need for extensive preprocessing.</li>
-                            <li><strong>Balanced Random Forest:</strong> Well-suited for handling imbalanced classes by weighting samples appropriately.</li>
-                            <li><strong>Weighted Ensemble:</strong> A combination of our best-performing models, striking a balance between accuracy, interpretability, and efficiency.</li>
                         </ul>
                     
                     </details>

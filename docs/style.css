@@ -292,17 +292,24 @@ figcaption {
     padding-bottom: 20px; /* Adds space only at the end when expanded */
 }
 
-/* Make the last figure centered */
+/* Ensure the last figure inside the .confusion-matrix-grid is centered */
 .confusion-matrix-grid figure:last-child {
-    margin: 20px auto; /* Adds space above it and centers it */
+    margin: 20px auto;  /* Adds space above it and centers it */
     text-align: center; /* Ensures caption is centered */
-    display: block; /* Allows centering */
-    width: fit-content; /* Shrinks the figure to the image width */
+    display: flex; /* Enables flexbox for centering */
+    flex-direction: column; /* Keeps image and caption stacked */
+    align-items: center; /* Centers content horizontally */
+    justify-content: center;
+}
+
+/* Ensure the image itself is centered */
+.confusion-matrix-grid figure:last-child img {
+    display: block;
+    margin: 0 auto; /* Centers image inside figure */
 }
 
 /* Add spacing between table and last figure */
 .center-table {
     margin-bottom: 40px; /* Creates space between the table and the last figure */
 }
-
 

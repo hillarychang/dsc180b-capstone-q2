@@ -348,7 +348,7 @@ figcaption {
     margin-bottom: 40px;
 }
 
-
+/* 
 /* Container for TF-IDF and Logistic Regression */
 .model-container {
     display: flex;
@@ -394,6 +394,55 @@ figcaption {
     border-radius: 5px;
     font-weight: bold;
 }
+
+*/
+
+/* --- Styling Enhancements --- */
+
+/* Style for Model Sections */
+.model-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 15px;
+}
+
+/* Style for Model Hyperparameters Box */
+.model-box {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 5px solid var(--primary-color);
+    width: 50%;
+}
+
+/* Styling for Accuracy Box */
+.accuracy-box {
+    background: var(--secondary-color);
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    width: 50%;
+    color: white;
+}
+
+/* Styling for Highlighted Lists (Hyperparameters) */
+.highlight-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.highlight-list li {
+    background: #eaf2ff;
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-family: monospace;
+}
+
 
 /* Accuracy Box */
 .accuracy-box {

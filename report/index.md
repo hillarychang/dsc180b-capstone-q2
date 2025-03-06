@@ -89,11 +89,13 @@ Key engineered features for predicting delinquency:
 - **Balanced RF & CatBoost**: Handle class imbalance.
 
 ### Model Performance Comparison
-| Model | ROC-AUC | Accuracy | Precision | Recall | F1-Score |
-|--------|---------|-----------|------------|---------|------------|
-| HistGB | **0.8424** | 0.9135 | 0.8897 | 0.9135 | 0.8995 |
-| XGBoost | 0.8392 | 0.9101 | 0.8890 | 0.9101 | 0.8981 |
-| Balanced RF | 0.7916 | **0.9197** | **0.8925** | **0.9197** | **0.9022** |
+| Model | ROC-AUC | Accuracy | Precision | Recall | F1-Score | Training | Prediction
+|--------|---------|-----------|------------|---------|------------|-----------|------------|
+| HistGB | 0.8221 | **0.9031** | **0.8739** | **0.9031** | **0.8814** | 2.5050 | 0.000019 |
+| Weighted Ensemble | **0.8301** | 0.9006 | 0.8728 | 0.9006 | 0.8813 | **0.0010** | **0.000001** |
+| XGBoost | 0.8232 | 0.8962 | 0.8677 | 0.8962 | 0.8778 | 2.0606 | 0.000006 |
+| CatBoost | 0.8212 | 0.8892 | 0.8707 | 0.8892 | 0.8785 | 3.0342 | 0.000004 |
+| Balanced RF | 0.8144 | 0.8982 | 0.8703 | 0.8982 | 0.8797 | 26.2355 | 0.000064 |
 
 ### ROC-AUC Curve
 ![AUC-ROC Comparison](report/figure/auc_roc_all_models.png)

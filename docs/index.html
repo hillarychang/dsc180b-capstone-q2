@@ -205,7 +205,49 @@
                 <section id="models-results">
                     <h4 class="feature-title"><strong>Models and Results</strong></h4>
 
-                    <!-- Logistic Regression Section -->
+
+                    <!-- TF-IDF Vectorization and Logistic Regression -->
+                    <details class="expandable-section">
+                        <summary><strong>TF-IDF Vectorization & Logistic Regression Model</strong></summary>
+                    
+                        <div class="model-container">
+                            <!-- TF-IDF Vectorization -->
+                            <div class="tfidf-section">
+                                <h4>TF-IDF Vectorization</h4>
+                                <p>We transformed text data into numerical features using a TF-IDF vectorizer, allowing the model to analyze term frequency patterns.</p>
+                                <ul class="highlight-list">
+                                    <li><strong>Max Features = 5000:</strong> Limited to the top 5,000 most important terms.</li>
+                                    <li><strong>Max DF = 0.95:</strong> Ignored terms appearing in more than 95% of documents.</li>
+                                    <li><strong>Min DF = 5:</strong> Ignored terms appearing in fewer than 5 documents.</li>
+                                </ul>
+                                <figure>
+                                    <img src="figure/tfidf_visual.png" alt="TF-IDF Process Visualization">
+                                    <figcaption>Figure: How TF-IDF converts raw text into numerical features.</figcaption>
+                                </figure>
+                            </div>
+                    
+                            <!-- Logistic Regression Model -->
+                            <div class="logreg-section">
+                                <h4>Logistic Regression Model</h4>
+                                <p>The model was trained with the following hyperparameters:</p>
+                                <ul class="highlight-list">
+                                    <li><strong>Solver = 'saga':</strong> Optimized for large datasets with L2 regularization.</li>
+                                    <li><strong>Max Iterations = 200:</strong> Ensured convergence during training.</li>
+                                    <li><strong>Parallel Processing:</strong> Used all available CPU cores for efficient computation.</li>
+                                </ul>
+                                <div class="accuracy-box">
+                                    <p><strong>Model Accuracy:</strong> 96.15% on the test set.</p>
+                                </div>
+                                <figure>
+                                    <img src="figure/log_reg_confusion.png" alt="Logistic Regression Confusion Matrix">
+                                    <figcaption>Figure: Confusion Matrix for Logistic Regression Model.</figcaption>
+                                </figure>
+                            </div>
+                        </div>
+                    </details>
+
+<!--                     original log reg -->
+<!--                     <!-- Logistic Regression Section -->
                     <details class="expandable-section">
                         <summary><strong>Logistic Regression with TF-IDF Vectorization</strong></summary>
                         <p>
@@ -236,7 +278,7 @@
                             <img src="figure/log_reg_confusion.png" alt="Logistic Regression Confusion Matrix">
                             <figcaption>Figure: Confusion Matrix for Logistic Regression Model.</figcaption>
                         </figure>
-                    </details>
+                    </details> -->
                 
                     <!-- Random Forest Section -->
                     <details class="expandable-section">

@@ -201,6 +201,55 @@
                 </details>
                 </section>
 
+
+                <!-- TF-IDF Vectorization Section -->
+                <details class="expandable-section">
+                    <summary><strong>Logistic Regression with TF-IDF Vectorization</strong></summary>
+                    <div class="card-container">
+                        <!-- TF-IDF Card -->
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-chart-bar"></i> <!-- FontAwesome icon -->
+                                <h4>TF-IDF Vectorizer</h4>
+                            </div>
+                            <div class="card-body">
+                                <p>We transformed text data into a matrix of features using the following parameters:</p>
+                                <ul class="feature-list">
+                                    <li><strong>max_features=5000:</strong> Limited to the top 5,000 most important terms.</li>
+                                    <li><strong>max_df=0.95:</strong> Ignored terms appearing in more than 95% of documents.</li>
+                                    <li><strong>min_df=5:</strong> Ignored terms appearing in fewer than 5 documents.</li>
+                                </ul>
+                            </div>
+                        </div>
+                
+                        <!-- Logistic Regression Card -->
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-project-diagram"></i> <!-- FontAwesome icon -->
+                                <h4>Logistic Regression Model</h4>
+                            </div>
+                            <div class="card-body">
+                                <p>For classification, we configured the Logistic Regression model with:</p>
+                                <ul class="feature-list">
+                                    <li><strong>solver='saga':</strong> Efficient for large datasets and supports L2 regularization.</li>
+                                    <li><strong>max_iter=200:</strong> Ensured convergence.</li>
+                                    <li><strong>n_jobs=-1:</strong> Utilized all available CPU cores for parallel training.</li>
+                                </ul>
+                                <div class="accuracy-box">
+                                    <i class="fas fa-tachometer-alt"></i> <!-- FontAwesome icon -->
+                                    <p><strong>Accuracy:</strong> 96.15% on the test set.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Confusion Matrix -->
+                    <h4 class="process-intro">Confusion Matrix</h4>
+                    <figure>
+                        <img src="figure/log_reg_confusion.png" alt="Logistic Regression Confusion Matrix">
+                        <figcaption>Figure: Confusion Matrix for Logistic Regression Model.</figcaption>
+                    </figure>
+                </details>
                 <!-- Models and Results -->
                 <section id="tf-idf-vectorization">
                     <h3>TF-IDF Vectorization</h3>

@@ -11,7 +11,7 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 from joblib import dump
 from joblib import load
-import shap 
+import shap
 
 # Scikit-Learn Components
 from sklearn.model_selection import train_test_split, cross_val_score
@@ -62,14 +62,14 @@ def preprocess(dataset):
     dataset = dataset.replace([np.inf, -np.inf], np.nan)
 
     # Drop or fill NaN values
-    dataset = dataset.fillna(
-        dataset.median()
-    )  # Or use mean, or a specific strategy
+    dataset = dataset.fillna(dataset.median())  # Or use mean, or a specific strategy
 
     return dataset
 
 
-def preprocess_features(feature_column, target_column, dataset, test_size = 0.2, random_state = 42):
+def preprocess_features(
+    feature_column, target_column, dataset, test_size=0.2, random_state=42
+):
     warnings.filterwarnings(action="ignore", category=UndefinedMetricWarning)
     dataset = dataset.dropna()
 
@@ -83,8 +83,7 @@ def preprocess_features(feature_column, target_column, dataset, test_size = 0.2,
         X, y, test_size=test_size, random_state=42
     )
 
-    
-    resampler = SMOTETomek(sampling_strategy = 1.0, random_state=random_state)
+    resampler = SMOTETomek(sampling_strategy=1.0, random_state=random_state)
     X_train, y_train = resampler.fit_resample(X_train, y_train)
     train_id = X_train.index
     test_id = X_test.index
@@ -94,85 +93,99 @@ def preprocess_features(feature_column, target_column, dataset, test_size = 0.2,
     dump(scaler, filename="scaler.joblib")
     return X_train, X_test, y_train, y_test, train_id, test_id
 
-def individual_test(feature_column, name, dataset, random_state=42):
+
+def individual_test(feature_column, prob_name, shap_name, dataset, random_state=42):
     consumer_id = dataset.index
-    trained_model = load(f"{name}.joblib")
-    scaler = load('scaler.joblib')
+    prob_model = load(f"{prob_name}.joblib")
+    shap_model = load(f"{shap_name}.joblib")
+    scaler = load("scaler.joblib")
     X = dataset[feature_column]
     X = preprocess(X)
     X = scaler.transform(X)
-    probabilities = trained_model.predict_proba(X)[:, 1]
+    probabilities = prob_model.predict_proba(X)[:, 1]
     probabilities = np.round(1 + probabilities * (999 - 1)).astype(int)
-    top_3_features, top_3_scores = shap_values(trained_model, X, feature_column)
-    scores_df = pd.DataFrame({
-        'probability': probabilities,
-        'top_1_feature': [features[2] for features in top_3_features],
-        'top_1_score': [scores[2] for scores in top_3_scores],
-        'top_2_feature': [features[1] for features in top_3_features],
-        'top_2_score': [scores[1] for scores in top_3_scores],
-        'top_3_feature': [features[0] for features in top_3_features],
-        'top_3_score': [scores[0] for scores in top_3_scores]
-    }, index=consumer_id)
+    probabilities = np.round(1 + (999 - probabilities)).astype(int)
+    top_3_features, top_3_scores = shap_values(shap_model, X, feature_column)
+    scores_df = pd.DataFrame(
+        {
+            "probability": probabilities,
+            "top_1_feature": [features[2] for features in top_3_features],
+            "top_1_score": [scores[2] for scores in top_3_scores],
+            "top_2_feature": [features[1] for features in top_3_features],
+            "top_2_score": [scores[1] for scores in top_3_scores],
+            "top_3_feature": [features[0] for features in top_3_features],
+            "top_3_score": [scores[0] for scores in top_3_scores],
+        },
+        index=consumer_id,
+    )
 
-    value_counts_plot = (scores_df.top_1_feature.value_counts()
-    .add(scores_df.top_2_feature.value_counts(), fill_value=0)
-    .add(scores_df.top_3_feature.value_counts(), fill_value=0))
+    value_counts_plot = (
+        scores_df.top_1_feature.value_counts()
+        .add(scores_df.top_2_feature.value_counts(), fill_value=0)
+        .add(scores_df.top_3_feature.value_counts(), fill_value=0)
+    )
 
     value_counts_plot = value_counts_plot.sort_values(ascending=False)
     plt.figure(figsize=(8, 5))
     plt.bar(value_counts_plot.index[:7], value_counts_plot[:7])
-    plt.xlabel('Feature')
-    plt.ylabel('Top Three Features Count')
-    plt.title(f'Top {7} Features by Top Three Count')
-    plt.xticks(rotation=45, ha='right')
+    plt.xlabel("Feature")
+    plt.ylabel("Top Three Features Count")
+    plt.title(f"Top {7} Features by Top Three Count")
+    plt.xticks(rotation=45, ha="right")
     plt.show()
     return scores_df
 
+
 def shap_values(model, X_train, feature_column):
-        explainer = shap.TreeExplainer(model)
-            
-        shap_values = explainer.shap_values(X_train)
-            
-        if isinstance(shap_values, list):
-            shap_values = shap_values[0]
-        shap.summary_plot(shap_values, X_train, feature_names=feature_column, max_display=10)
+    explainer = shap.TreeExplainer(model)
 
-        import numpy as np
+    shap_values = explainer.shap_values(X_train)
 
+    if isinstance(shap_values, list):
+        shap_values = shap_values[0]
 
-        top_3_indices = np.argsort(shap_values, axis=1)[:, -3:] 
-        top_3_values = np.take_along_axis(shap_values, top_3_indices, axis=1)  
-        max_shap_feature_per_user = [[feature_column[i] for i in user_indices] for user_indices in top_3_indices]
-        
-        shap_value_means = np.mean(np.abs(shap_values), axis=0)  # axis=0 to get feature-wise means
+    shap_values = shap_values * -1
+    
+    shap.summary_plot(
+        shap_values, X_train, feature_names=feature_column, max_display=10
+    )
 
-        # Get indices of top 3 features
-        top_x_indices_mean = np.argsort(shap_value_means)[-5:] # Last 3 (highest values)
+    top_3_indices = np.argsort(shap_values, axis=1)[:, -3:]
+    top_3_values = np.take_along_axis(shap_values, top_3_indices, axis=1)
+    max_shap_feature_per_user = [
+        [feature_column[i] for i in user_indices] for user_indices in top_3_indices
+    ]
+    shap_value_means = np.mean(
+        np.abs(shap_values), axis=0
+    )  # axis=0 to get feature-wise means
 
-        # Get the top 3 feature names and values
-        top_x_features_mean = feature_column[top_x_indices_mean]
-        top_x_values_mean = shap_value_means[top_x_indices_mean]
+    # Get indices of top 3 features
+    top_x_indices_mean = np.argsort(shap_value_means)[-5:]  # Last 3 (highest values)
 
-        # Plot
-        plt.figure(figsize=(8, 5))
-        plt.bar(np.flip(top_x_features_mean), np.flip(top_x_values_mean))
-        plt.xlabel('Feature')
-        plt.ylabel('Absolute Mean SHAP Value')
-        plt.title(f'Top {5} Features by Absolute Mean SHAP Value')
-        plt.xticks(rotation=45, ha='right')
-        plt.show()
+    # Get the top 3 feature names and values
+    top_x_features_mean = feature_column[top_x_indices_mean]
+    top_x_values_mean = shap_value_means[top_x_indices_mean]
 
+    # Plot
+    plt.figure(figsize=(8, 5))
+    plt.bar(np.flip(top_x_features_mean), np.flip(top_x_values_mean))
+    plt.xlabel("Feature")
+    plt.ylabel("Absolute Mean SHAP Value")
+    plt.title(f"Top {5} Features by Absolute Mean SHAP Value")
+    plt.xticks(rotation=45, ha="right")
+    plt.show()
 
-        return (max_shap_feature_per_user, top_3_values)
+    return (max_shap_feature_per_user, top_3_values)
+
 
 # run_classification models
-def run_classification(
-    feature_column, target_column, dataset, random_state=42
-):
+def run_classification(feature_column, target_column, dataset, random_state=42):
     """
     Enhanced classification analysis with multiple models and comprehensive reporting.
     """
-    X_train, X_test, y_train, y_test, train_id, test_id = preprocess_features(feature_column, target_column, dataset)
+    X_train, X_test, y_train, y_test, train_id, test_id = preprocess_features(
+        feature_column, target_column, dataset
+    )
 
     models = [
         # Core Models
@@ -248,7 +261,7 @@ def run_classification(
                 "roc_auc": roc_auc_score(y_test, y_proba),
                 "accuracy": accuracy_score(y_test, y_pred),
                 "train_time": train_time_end - start_time,
-                "predict_time": (time.time() - train_time_end) / X_test.shape[0]
+                "predict_time": (time.time() - train_time_end) / X_test.shape[0],
             }
 
             # Add classification report metrics
@@ -262,7 +275,9 @@ def run_classification(
             print(
                 f"ROC-AUC: {metrics['roc_auc']:.3f} | Accuracy: {metrics['accuracy']:.3f}"
             )
-            print(f"Training Time: {metrics['train_time']:.1f}s | Predicting Time: {metrics['predict_time']:.6f}s")
+            print(
+                f"Training Time: {metrics['train_time']:.1f}s | Predicting Time: {metrics['predict_time']:.6f}s"
+            )
             print(classification_report(y_test, y_pred))
 
             fpr, tpr, _ = roc_curve(y_test, y_proba)
@@ -291,7 +306,7 @@ def run_classification(
     for model, name in models:
         evaluate_model(model, name)
         # if name in ["LightGBM", "XGBoost", "HistGB", "CatBoost"]:
-            # evaluate_model(model, name)
+        # evaluate_model(model, name)
 
     # Results analysis
     results_df = pd.DataFrame(model_results).sort_values("roc_auc", ascending=False)
@@ -312,15 +327,19 @@ def run_classification(
         results_df = pd.concat(
             [results_df, pd.DataFrame([ensemble_metrics])], ignore_index=True
         ).sort_values("roc_auc", ascending=False)
-    ensemble_clf_report = classification_report(y_test, y_pred_ensemble, output_dict=True)
+    ensemble_clf_report = classification_report(
+        y_test, y_pred_ensemble, output_dict=True
+    )
 
     # Convert the classification report metrics into the ensemble_metrics dictionary
-    ensemble_metrics.update({
-        "accuracy": accuracy_score(y_test, y_pred_ensemble),
-        "precision": ensemble_clf_report["weighted avg"]["precision"],
-        "recall": ensemble_clf_report["weighted avg"]["recall"],
-        "f1-score": ensemble_clf_report["weighted avg"]["f1-score"],
-    })
+    ensemble_metrics.update(
+        {
+            "accuracy": accuracy_score(y_test, y_pred_ensemble),
+            "precision": ensemble_clf_report["weighted avg"]["precision"],
+            "recall": ensemble_clf_report["weighted avg"]["recall"],
+            "f1-score": ensemble_clf_report["weighted avg"]["f1-score"],
+        }
+    )
 
     # Add ensemble results to dataframe
     results_df = pd.concat(
@@ -329,8 +348,12 @@ def run_classification(
 
     # Print classification report for ensemble
     print(f"\n\033[1mEnsemble Model Results\033[0m")
-    print(f"ROC-AUC: {ensemble_metrics['roc_auc']:.3f} | Accuracy: {ensemble_metrics['accuracy']:.3f}")
-    print(f"Precision: {ensemble_metrics['precision']:.3f} | Recall: {ensemble_metrics['recall']:.3f} | F1-score: {ensemble_metrics['f1-score']:.3f}")
+    print(
+        f"ROC-AUC: {ensemble_metrics['roc_auc']:.3f} | Accuracy: {ensemble_metrics['accuracy']:.3f}"
+    )
+    print(
+        f"Precision: {ensemble_metrics['precision']:.3f} | Recall: {ensemble_metrics['recall']:.3f} | F1-score: {ensemble_metrics['f1-score']:.3f}"
+    )
     print(classification_report(y_test, y_pred_ensemble))
 
     print("\n\033[1m" + "=" * 40 + " FINAL RESULTS " + "=" * 40 + "\033[0m")
@@ -344,7 +367,7 @@ def run_classification(
                 "recall",
                 "f1-score",
                 "train_time",
-                "predict_time"
+                "predict_time",
             ]
         ]
         .sort_values("roc_auc", ascending=False)
@@ -385,7 +408,7 @@ def run_classification(
     # plt.title("AUC-ROC Curve for All Models")
     # plt.legend()
     # plt.show()
-    #return user_data
+    # return user_data
 
 
 def get_best_features(
@@ -409,14 +432,16 @@ def get_best_features(
         )  # Or use mean, or a specific strategy
 
         return dataset
-    
+
     # Define features and target
     X = dataset[feature_column]
     X = preprocess(X)
     y = dataset[target_column]
 
     # Train-test split
-    X_train, X_test, y_train, y_test, train_id, test_id = preprocess_features(feature_column, target_column, dataset)
+    X_train, X_test, y_train, y_test, train_id, test_id = preprocess_features(
+        feature_column, target_column, dataset
+    )
 
     # Feature analysis
     feature_correlations = X.corrwith(y)
@@ -622,7 +647,7 @@ def run_classification_plotly(feature_column, target_column, dataset, random_sta
     def plot_classification_report(clf_report, model_name):
         """Create heatmap visualization of classification report"""
         # Extract class-specific scores (excluding 'accuracy' and averages)
-        classes = ['0.0', '1.0']  # For binary classification
+        classes = ["0.0", "1.0"]  # For binary classification
         metrics = ["precision", "recall", "f1-score"]
 
         z = []
@@ -814,23 +839,128 @@ def run_classification_plotly(feature_column, target_column, dataset, random_sta
         .to_string(index=False)
     )
 
+
+# class WeightedEnsembleModel:
+#     def __init__(self, models, weights):
+#         self.models = models
+#         self.weights = weights
+
+#     def predict(self, X):
+#         probas = self.predict_proba(X)
+#         return (probas > 0.5).astype(int)
+
+#     def predict_proba(self, X):
+#         ensemble_proba = np.zeros((X.shape[0]))
+#         for name, weight in self.weights.items():
+#             model = self.models[name]
+#             proba = model.predict_proba(X)[:, 1]
+#             ensemble_proba += weight * proba
+#         return np.vstack((1 - ensemble_proba, ensemble_proba)).T
+
+
 class WeightedEnsembleModel:
     def __init__(self, models, weights):
+        """
+        Initialize the Weighted Ensemble Model
+
+        Parameters:
+        - models (dict): Dictionary of trained models
+        - weights (dict): Dictionary of weights for each model
+        """
         self.models = models
         self.weights = weights
 
     def predict(self, X):
+        """
+        Predict class labels
+
+        Parameters:
+        - X (array-like): Input features
+
+        Returns:
+        - Predicted class labels (0 or 1)
+        """
         probas = self.predict_proba(X)
         return (probas > 0.5).astype(int)
 
     def predict_proba(self, X):
+        """
+        Predict probabilities for each class
+
+        Parameters:
+        - X (array-like): Input features
+
+        Returns:
+        - Probabilities for each class
+        """
         ensemble_proba = np.zeros((X.shape[0]))
         for name, weight in self.weights.items():
             model = self.models[name]
             proba = model.predict_proba(X)[:, 1]
             ensemble_proba += weight * proba
         return np.vstack((1 - ensemble_proba, ensemble_proba)).T
-    
+
+    def shap_values(self, X, feature_column):
+        """
+        Calculate SHAP values for the ensemble model
+
+        Parameters:
+        - X (array-like): Input features
+        - feature_column (list): Names of features
+
+        Returns:
+        - Tuple of top SHAP features and their values for each sample
+        """
+        # Initialize list to store SHAP values from each model
+        all_shap_values = []
+
+        # Calculate SHAP values for each model
+        for name, weight in self.weights.items():
+            model = self.models[name]
+            explainer = shap.TreeExplainer(model)
+
+            # Get SHAP values for this model
+            model_shap_values = explainer.shap_values(X)
+
+            # Ensure we're working with a 2D array of SHAP values
+            if isinstance(model_shap_values, list):
+                model_shap_values = model_shap_values[
+                    1
+                ]  # Use the positive class SHAP values
+
+            # Weight the SHAP values by the model's weight
+            weighted_shap_values = model_shap_values * self.weights[name]
+            all_shap_values.append(weighted_shap_values)
+
+        # Aggregate SHAP values across all models
+        aggregated_shap_values = np.sum(all_shap_values, axis=0)
+
+        # Find top 3 features for each sample
+        top_3_indices = np.argsort(np.abs(aggregated_shap_values), axis=1)[:, -3:]
+        top_3_values = np.take_along_axis(aggregated_shap_values, top_3_indices, axis=1)
+
+        # Get feature names for top 3 features per sample
+        max_shap_feature_per_user = [
+            [feature_column[i] for i in user_indices] for user_indices in top_3_indices
+        ]
+
+        # Plot overall feature importance
+        shap_value_means = np.mean(np.abs(aggregated_shap_values), axis=0)
+        top_x_indices_mean = np.argsort(shap_value_means)[-5:]
+        top_x_features_mean = [feature_column[i] for i in top_x_indices_mean]
+        top_x_values_mean = shap_value_means[top_x_indices_mean]
+
+        plt.figure(figsize=(8, 5))
+        plt.bar(np.flip(top_x_features_mean), np.flip(top_x_values_mean))
+        plt.xlabel("Feature")
+        plt.ylabel("Absolute Mean SHAP Value")
+        plt.title(f"Top {5} Features by Absolute Mean SHAP Value")
+        plt.xticks(rotation=45, ha="right")
+        plt.show()
+
+        return (max_shap_feature_per_user, top_3_values)
+
+
 def run_classification2(feature_column, target_column, dataset, random_state=42):
     """
     Enhanced classification analysis with multiple models and comprehensive reporting.
@@ -977,7 +1107,7 @@ def run_classification2(feature_column, target_column, dataset, random_state=42)
     # Execute all models
     for model, name in models:
         # evaluate_model(model, name)
-        if name in ["LightGBM", "XGBoost", "CatBoost"]:
+        if name in ["LightGBM", "XGBoost", "CatBoost", "Balanced RF"]:
             evaluate_model(model, name)
 
     # Results analysis
@@ -985,6 +1115,7 @@ def run_classification2(feature_column, target_column, dataset, random_state=42)
 
     # Create and save the ensemble model
     if model_predictions:
+        start = time.time()
         # Create a more sophisticated ensemble - weighted average based on individual model performance
         weights = {
             name: score
@@ -996,7 +1127,7 @@ def run_classification2(feature_column, target_column, dataset, random_state=42)
                 ],
             )
         }
-
+        end = time.time()
         total_weight = sum(weights.values())
         normalized_weights = {k: v / total_weight for k, v in weights.items()}
 
@@ -1012,6 +1143,8 @@ def run_classification2(feature_column, target_column, dataset, random_state=42)
             "model": "Weighted Ensemble",
             "roc_auc": roc_auc_score(y_test, y_proba_ensemble),
             "accuracy": accuracy_score(y_test, y_pred_ensemble),
+            "train_time": end - start,
+            "predict_time": (time.time() - end) / X_test.shape[0],
         }
 
         # Create the ensemble model

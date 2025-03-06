@@ -204,6 +204,104 @@
                 <!-- Models and Results -->
                 <section id="models-results">
                     <h4 class="feature-title"><strong>Models and Results</strong></h4>
+                
+                    <!-- TF-IDF Vectorization -->
+                    <details class="expandable-section">
+                        <summary><strong>TF-IDF Vectorization</strong></summary>
+                        <p>We transformed text data into numerical features using a TF-IDF vectorizer, allowing the model to analyze term frequency patterns.</p>
+                        <ul class="highlight-list">
+                            <li><strong>Max Features = 5000:</strong> Limited to the top 5,000 most important terms.</li>
+                            <li><strong>Max DF = 0.95:</strong> Ignored terms appearing in more than 95% of documents.</li>
+                            <li><strong>Min DF = 5:</strong> Ignored terms appearing in fewer than 5 documents.</li>
+                        </ul>
+                        <figure>
+                            <img src="figure/tfidf_visual.png" alt="TF-IDF Process Visualization">
+                            <figcaption>Figure: How TF-IDF converts raw text into numerical features.</figcaption>
+                        </figure>
+                    </details>
+                
+                    <!-- Logistic Regression -->
+                    <details class="expandable-section">
+                        <summary><strong>Logistic Regression Model</strong></summary>
+                        <p>The Logistic Regression model was trained using the transformed TF-IDF features.</p>
+                        <ul class="highlight-list">
+                            <li><strong>Solver = 'saga':</strong> Optimized for large datasets with L2 regularization.</li>
+                            <li><strong>Max Iterations = 200:</strong> Ensured convergence during training.</li>
+                            <li><strong>Parallel Processing:</strong> Used all available CPU cores for efficient computation.</li>
+                        </ul>
+                        <div class="accuracy-box">
+                            <p><strong>Model Accuracy:</strong> 96.15% on the test set.</p>
+                        </div>
+                        <figure>
+                            <img src="figure/log_reg_confusion.png" alt="Logistic Regression Confusion Matrix">
+                            <figcaption>Figure: Confusion Matrix for Logistic Regression Model.</figcaption>
+                        </figure>
+                    </details>
+                
+                    <!-- Random Forest -->
+                    <details class="expandable-section">
+                        <summary><strong>Random Forest Model</strong></summary>
+                        <p>To improve classification performance, we implemented a Random Forest model.</p>
+                        <ul class="highlight-list">
+                            <li><strong>n_estimators = 100:</strong> Used 100 decision trees.</li>
+                            <li><strong>max_depth = 60:</strong> Restricted tree depth to prevent overfitting.</li>
+                            <li><strong>Parallel Processing:</strong> Used all available CPU cores for efficient computation.</li>
+                        </ul>
+                        <div class="accuracy-box">
+                            <p><strong>Model Accuracy:</strong> 84.28% on the test set.</p>
+                        </div>
+                        <figure>
+                            <img src="figure/random_forest_confusion.png" alt="Random Forest Confusion Matrix">
+                            <figcaption>Figure: Confusion Matrix for Random Forest Model.</figcaption>
+                        </figure>
+                    </details>
+                
+                    <!-- FastText -->
+                    <details class="expandable-section">
+                        <summary><strong>FastText Model</strong></summary>
+                        <p>FastText is a lightweight and efficient text classification model developed by Facebook AI.</p>
+                        <ul class="highlight-list">
+                            <li><strong>Epochs:</strong> 25</li>
+                            <li><strong>Learning Rate:</strong> 1.0</li>
+                            <li><strong>Word N-Grams:</strong> 2</li>
+                            <li><strong>Embedding Dimension:</strong> 50</li>
+                            <li><strong>Bucket Size:</strong> 200,000</li>
+                        </ul>
+                        <div class="accuracy-box">
+                            <p><strong>Model Accuracy:</strong> 98.9% on the test set.</p>
+                        </div>
+                        <figure>
+                            <img src="figure/fasttext_classification_report.png" alt="FastText Classification Report">
+                            <figcaption>Figure: Classification Report for FastText Model.</figcaption>
+                        </figure>
+                    </details>
+                
+                    <!-- Transformer LLM -->
+                    <details class="expandable-section">
+                        <summary><strong>Transformer-Based Model (DistilBERT)</strong></summary>
+                        <p>We implemented a Transformer-based model using <code>distilbert-base-uncased</code> to classify transaction memos.</p>
+                        <ul class="highlight-list">
+                            <li><strong>Model Type:</strong> DistilBERT</li>
+                            <li><strong>Maximum Length:</strong> 128 tokens</li>
+                            <li><strong>Batch Size:</strong> 16</li>
+                            <li><strong>Learning Rate:</strong> 2e-5</li>
+                            <li><strong>Optimizer:</strong> AdamW</li>
+                            <li><strong>Scheduler:</strong> Linear schedule with a warmup ratio of 0.1</li>
+                            <li><strong>Epochs:</strong> 3</li>
+                        </ul>
+                        <div class="accuracy-box">
+                            <p><strong>Validation Accuracy:</strong> 98.56%</p>
+                        </div>
+                        <figure>
+                            <img src="figure/transformer_results.png" alt="Transformer Model Performance">
+                            <figcaption>Figure: Performance of Transformer Model.</figcaption>
+                        </figure>
+                    </details>
+                </section>
+
+                
+<!--                 <section id="models-results">
+                    <h4 class="feature-title"><strong>Models and Results</strong></h4>
 
 
                     <!-- TF-IDF Vectorization and Logistic Regression -->
@@ -245,7 +343,7 @@
                             </div>
                         </div>
                     </details>
-
+ -->
 <!--                     original log reg -->
 <!--                     <!-- Logistic Regression Section -->
                     <details class="expandable-section">

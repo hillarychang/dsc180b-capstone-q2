@@ -468,17 +468,6 @@ figcaption {
     color: var(--primary-color);
 }
 
-
-/* Card Container */
-.card-container {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 20px 0;
-}
-
-/* Card Styling */
 /* Card Styling */
 .card {
     background: var(--background-color);
@@ -564,6 +553,102 @@ figcaption {
     }
 }
 
+
+/* Card Container */
+.card-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+/* /* Card Styling */
+/* Card Styling */
+.card {
+    background: var(--background-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px 0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%; /* Ensure the card spans the full width */
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Card Header */
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.card-header i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.card-header h4 {
+    font-size: 1.4rem;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+/* Card Body */
+.card-body {
+    font-size: 1rem;
+    color: var(--text-color);
+}
+
+/* Feature List */
+.feature-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.feature-list li {
+    margin-bottom: 10px;
+    padding-left: 25px;
+    position: relative;
+}
+
+.feature-list li::before {
+    content: "•";
+    position: absolute;
+    left: 10px;
+    color: var(--secondary-color);
+    font-size: 1.2rem;
+}
+
+/* Math Equation Styling */
+.math-equation {
+    font-family: "Courier New", monospace;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-align: center;
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background: #f4f4f4;
+    border-radius: 8px;
+    width: fit-content;
+    border-left: 5px solid #007BFF;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .card {
+        width: 100%; /* Ensure cards span full width on smaller screens */
+    }
+}
+ */
 /* 
 /* Card Container */
 .card-container {

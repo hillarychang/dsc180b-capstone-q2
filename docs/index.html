@@ -202,7 +202,96 @@
                 </section>
 
                 <!-- Models and Results -->
+
                 <section id="models-results">
+                    <h4 class="feature-title"><strong>Models and Results</strong></h4>
+                
+                    <!-- TF-IDF Vectorization -->
+                    <details class="expandable-section">
+                        <summary><strong>TF-IDF Vectorization</strong></summary>
+                        <p>We transformed text data into numerical features using a TF-IDF vectorizer, allowing the model to analyze term frequency patterns.</p>
+                        <div class="model-box">
+                            <ul class="highlight-list">
+                                <li><code>Max Features = 5000</code>: Limited to the top 5,000 most important terms.</li>
+                                <li><code>Max DF = 0.95</code>: Ignored terms appearing in more than 95% of documents.</li>
+                                <li><code>Min DF = 5</code>: Ignored terms appearing in fewer than 5 documents.</li>
+                            </ul>
+                        </div>
+                        <figure>
+                            <img src="figure/tfidf_visual.png" alt="TF-IDF Process Visualization">
+                            <figcaption>Figure: How TF-IDF converts raw text into numerical features.</figcaption>
+                        </figure>
+                    </details>
+                
+                    <!-- Logistic Regression -->
+                    <details class="expandable-section">
+                        <summary><strong>Logistic Regression Model</strong></summary>
+                        <div class="model-container">
+                            <div class="model-box">
+                                <h4>Hyperparameters</h4>
+                                <ul class="highlight-list">
+                                    <li><code>Solver = 'saga'</code>: Optimized for large datasets with L2 regularization.</li>
+                                    <li><code>Max Iterations = 200</code>: Ensured convergence during training.</li>
+                                    <li><code>Parallel Processing</code>: Used all available CPU cores for efficiency.</li>
+                                </ul>
+                            </div>
+                            <div class="accuracy-box">
+                                <p><strong>Model Accuracy:</strong> 96.15% on the test set.</p>
+                            </div>
+                        </div>
+                        <figure>
+                            <img src="figure/log_reg_confusion.png" alt="Logistic Regression Confusion Matrix">
+                            <figcaption>Figure: Confusion Matrix for Logistic Regression Model.</figcaption>
+                        </figure>
+                    </details>
+                
+                    <!-- Random Forest -->
+                    <details class="expandable-section">
+                        <summary><strong>Random Forest Model</strong></summary>
+                        <div class="model-container">
+                            <div class="model-box">
+                                <h4>Hyperparameters</h4>
+                                <ul class="highlight-list">
+                                    <li><code>n_estimators = 100</code>: Used 100 decision trees.</li>
+                                    <li><code>max_depth = 60</code>: Restricted tree depth to prevent overfitting.</li>
+                                    <li><code>Parallel Processing</code>: Used all available CPU cores.</li>
+                                </ul>
+                            </div>
+                            <div class="accuracy-box">
+                                <p><strong>Model Accuracy:</strong> 84.28% on the test set.</p>
+                            </div>
+                        </div>
+                        <figure>
+                            <img src="figure/random_forest_confusion.png" alt="Random Forest Confusion Matrix">
+                            <figcaption>Figure: Confusion Matrix for Random Forest Model.</figcaption>
+                        </figure>
+                    </details>
+                
+                    <!-- FastText -->
+                    <details class="expandable-section">
+                        <summary><strong>FastText Model</strong></summary>
+                        <div class="model-container">
+                            <div class="model-box">
+                                <h4>Hyperparameters</h4>
+                                <ul class="highlight-list">
+                                    <li><code>Epochs = 25</code></li>
+                                    <li><code>Learning Rate = 1.0</code></li>
+                                    <li><code>Word N-Grams = 2</code></li>
+                                    <li><code>Embedding Dimension = 50</code></li>
+                                </ul>
+                            </div>
+                            <div class="accuracy-box">
+                                <p><strong>Model Accuracy:</strong> 98.9% on the test set.</p>
+                            </div>
+                        </div>
+                        <figure>
+                            <img src="figure/fasttext_classification_report.png" alt="FastText Classification Report">
+                            <figcaption>Figure: Classification Report for FastText Model.</figcaption>
+                        </figure>
+                    </details>
+                </section>
+
+<!--                 <section id="models-results">
                     <h4 class="feature-title"><strong>Models and Results</strong></h4>
                 
                     <!-- TF-IDF Vectorization -->
@@ -297,7 +386,7 @@
                             <figcaption>Figure: Performance of Transformer Model.</figcaption>
                         </figure>
                     </details>
-                </section>
+                </section> -->
 
                 
 <!--                 <section id="models-results">

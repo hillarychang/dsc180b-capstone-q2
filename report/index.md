@@ -21,7 +21,7 @@ The process of capturing what makes a creditor trustworthy is especially vital w
 - [Introduction](#introduction)
 - [Data Description](#data-description)
 - [Methodology](#methodology)
-- [Results](#results)
+- [Model Training & Evaluation](#model-training--evaluation)
 - [Conclusion](#conclusion)
 - [Literature Review](#literature-review)
 - [References](#references)
@@ -44,10 +44,10 @@ We utilized multiple datasets providing **consumer transaction details, account 
 
 ### Sample Data
 **Consumer Data Sample:**  
-![Consumer Data](report/figure/consumer_df.jpeg)
+![Consumer Data](figure/consumer_df.jpeg)
 
 **Transactions Sample:**  
-![Transactions](report/figure/transactions_df.jpeg)
+![Transactions](figure/transactions_df.jpeg)
 
 ---
 
@@ -61,10 +61,10 @@ We utilized multiple datasets providing **consumer transaction details, account 
 
 ### Balance Trends Analysis
 #### **Delinquent Consumers**
-![Balance Trends (Delinquent)](report/figure/balance_delinquent.png)
+![Balance Trends (Delinquent)](figure/balance_delinquent.png)
 
 #### **Non-Delinquent Consumers**
-![Balance Trends (Non-Delinquent)](report/figure/balance_non_delinquent.png)
+![Balance Trends (Non-Delinquent)](figure/balance_non_delinquent.png)
 
 ---
 
@@ -75,7 +75,7 @@ Key engineered features for predicting delinquency:
 - **Transaction-Based Features**: Credit vs. debit transaction volume.
 - **Account Types**: Presence of savings accounts, overdraft count.
 - **Spending Balance Ratio**: 
-  ![Spending Balance Ratio](report/figure/spending_balance_ratio.png)
+  ![Spending Balance Ratio](figure/spending_balance_ratio.png)
 
 ---
 
@@ -98,7 +98,7 @@ Key engineered features for predicting delinquency:
 | Balanced RF | 0.8144 | 0.8982 | 0.8703 | 0.8982 | 0.8797 | 26.2355 | 0.000064 |
 
 ### ROC-AUC Curve
-![AUC-ROC Comparison](report/figure/auc_roc_all_models.png)
+![AUC-ROC Comparison](figure/auc_roc_all_models.png)
 
 ---
 

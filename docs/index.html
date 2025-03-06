@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Cash Score: Alternative Credit Scoring</title>
+        <meta name="description"
+            content="2024 UC San Diego Data Science Capstone Project, written by Section B18 Group X.">
+        <meta name="author" content="Jevan Chahal, Hillary Chang, Kurumi Kaneko, Kevin Wong">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Tilt+Warp&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+        <link type="text/css" href="style.css" rel="stylesheet">
+        <link href="media/ucsd-icon.png" rel="icon">
+    </head>
+    <body>
+        <header>
+            <h1>Cash Score: Alternative Credit Scoring</h1>
+            <h2>Using Banking Transaction Data for Fairer Credit Assessment</h2>
+            <div class="authors">
+                <p>By:
+                    <a href="mailto:j2chahal@ucsd.edu">Jevan Chahal</a>,
+                    <a href="mailto:hic001@ucsd.edu">Hillary Chang</a>,
+                    <a href="mailto:kskaneko@ucsd.edu">Kurumi Kaneko</a>, and
+                    <a href="mailto:kew024@ucsd.edu">Kevin Wong</a>.
+                </p>
+                <p>Mentors:
+                    <a href="mailto:brian.duke@prismdata.com">Brian Duke (Prism Data, Inc.)</a>
+                    <a href="mailto:kyle.nero@prismdata.com">Kyle Nero (Prism Data, Inc.)</a> and
+                    <a href="mailto:berk.ustun@prismdata.com">Berk Ustun (Prism Data, Inc.)</a>.
+                </p>
+            </div>
+            <div class="links">
+                <a href="https://github.com/hillarychang/dsc180b-capstone-q2"
+                    class="resource-links" target="_blank" rel="noopener noreferrer">View Code</a>
+                <a href="https://github.com/hillarychang/dsc180b-capstone-q2/tree/main/poster" class="resource-links" target="_blank" rel="noopener noreferrer">View
+                    Poster</a>
+                <a href="https://github.com/hillarychang/dsc180b-capstone-q2/tree/main/report" class="resource-links" target="_blank" rel="noopener noreferrer">View
+                    Report</a>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#abstract">Abstract</a></li>
+                    <li><a href="#introduction">Introduction</a></li>
+                    <li><a href="#methods">Methods</a></li>
+                    <li><a href="#categorizing-transactions">Categorizing Transactions</a></li>
+                    <li><a href="#cash-score">Cash Score</a></li>
+                    <li><a href="#discussion">Discussion</a></li>
+                    <li><a href="#future-work">Future Work</a></li>
+                    <li><a href="#contact">Contacts</a></li>
+                </ul>
+            </nav>
+        </header>
+        <hr />
+        <main>
+            <section id="abstract">
+                <h3>Abstract</h3>
+                <p>The process of determining a creditor's trustworthiness is crucial within the context of bank data, given the ethical and regulatory constraints surrounding its use. Despite the vast quantity of available data, only a limited number of features are explicitly useful for machine learning applications, raising the question of how best to assess a customer's financial reliability. Our methodology involves refining bank data into meaningful categories using Natural Language Processing, estimating individual income based on transaction data alone, and evaluating creditworthiness with both accuracy and efficiency.</p>
+            </section>
+            
+            <section id="introduction">
+                <h3>Introduction</h3>
+                <p>Determining a customer’s creditworthiness is essential for banks, influencing decisions about loans, credit cards, and other financial services. While traditional credit scores are widely used, they often fail to capture the full financial picture, especially for individuals with little to no credit history. Our project aims to bridge this gap by leveraging transaction data to assess financial behavior rather than relying solely on past credit activity. By analyzing spending habits, income consistency, and transaction types, we seek to create a scoring model that provides a more accurate and equitable reflection of financial reliability. As part of our project, we have implemented a data pipeline to support this model, including a categorization system that classifies transaction memos from vendors with high accuracy and low latency—ensuring that entries like "Amazon.com" are correctly categorized under "General Merchandise." This categorization plays a key role in our broader goal of developing the Cash Score, a numerical value ranging from 1 to 999 that predicts a consumer’s likelihood of defaulting on debt or credit. By equipping financial institutions with this tool, we aim to enhance risk assessment while ensuring that credit access is extended to those with strong banking histories, making lending practices more inclusive and effective.</p>
+            </section>
+            
+            <section id="methods">
+                <h3>Methods</h3>
+                <p>Our methodology consists of feature engineering from transaction data, model training using various machine learning algorithms, and performance evaluation based on key metrics. The figure below shows our overall methodology:</p>
+    
+                <figure>
+                    <img src="figure/methodology.png" alt="Overall Methodology Diagram">
+                    <figcaption>Figure: Overview of our methodology.</figcaption>
+                </figure>
+            </section>
+
+<!--        <p>Our project is structured around two primary objectives: categorizing transactions based on memos and developing the <strong>Cash Score</strong>, a predictive model for assessing a consumer’s likelihood of defaulting on credit.</p> -->
+
+            <!-- Categorizing Transactions based on Memos -->
+<!-- Categorizing Transactions based on Memos -->
+<section id="categorizing-transactions">
+    <h3>Categorizing Transactions Based on Memos</h3>
+
+    <!-- Feature Creation and Selection -->
+    <section id="feature-creation">
+        <h4 class="feature-title">Feature Creation and Selection</h4>
+    
+        <!-- Token Augmentation -->
+        <details class="expandable-section">
+            <summary>Token Augmentation</summary>
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-tags"></i> <!-- FontAwesome icon -->
+                    <h4>Token Augmentation</h4>
+                </div>
+                <div class="card-body">
+                    <p>
+                        To prepare the transaction data for further analysis and modeling, we enhanced the <code>memo</code> field by adding specific tokens based on transaction characteristics. 
+                        This token augmentation adds additional context about transaction amounts and dates, helping the model learn more meaningful patterns.
+                    </p>
+            
+                    <div class="image-container">
+                        <figure>
+                            <img src="figure/pre_token.png" alt="Pre-token augmentation transaction data">
+                            <figcaption>Figure: This is the transaction data cleaned but not token augmented yet. The <code>memo</code> field contains raw text descriptions without any added tokens.</figcaption>
+                        </figure>
+                    </div>
+            
+                    <p class="process-intro">The following steps outline the transformation process:</p>
+            
+                    <ul>
+                        <li>
+                            <strong>Whole Dollar Amount Identification:</strong> We added a token <code>&lt;W_D&gt;</code> to the <code>memo</code> field for transactions with whole dollar amounts.
+                            This token helps identify transactions that might involve cash withdrawals or ATM transactions, as these are typically in round amounts (e.g., $20, $50).
+                        </li>
+            
+                        <li>
+                            <strong>Day of Transaction:</strong> For each transaction's posting date, we generated a day token in the format <code>&lt;D_day&gt;</code>, where <code>day</code> represents the specific 
+                            day of the month. This token helps analyze patterns such as end-of-month or beginning-of-month spending habits.
+                        </li>
+            
+                        <li>
+                            <strong>Month of Transaction:</strong> Similarly, we generated a month token in the format <code>&lt;M_month&gt;</code> (where <code>month</code> is the numerical month) 
+                            to capture seasonal or monthly spending trends.
+                        </li>
+            
+                        <li>
+                            <strong>Token Augmentation Process:</strong> For each row in the dataset, these tokens were concatenated to the <code>memo</code> field using the following transformation:
+                            <p class="math-equation">memo = memo + whole_dollar_amount_token + day_token + month_token</p>
+                        </li>
+                    </ul>
+            
+                    <div class="image-container">
+                        <figure>
+                            <img src="figure/post_token.png" alt="Post-token augmentation transaction data">
+                            <figcaption>Figure: Transaction data after token augmentation. The <code>memo</code> field now includes additional tokens: <code>&lt;D_day&gt;</code> for the day of the transaction, <code>&lt;M_month&gt;</code> for the month, and <code>&lt;W_D&gt;</code> for whole dollar amounts.</figcaption>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <!-- Cleaning the Memo Fields -->
+        <details class="expandable-section">
+            <summary>Cleaning the Memo Fields</summary>
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-broom"></i> <!-- FontAwesome icon -->
+                    <h4>Cleaning the Memo Fields</h4>
+                </div>
+                <div class="card-body">
+                    <p>
+                        To prepare the memo field for analysis, we first applied a series of cleaning steps to standardize the text. 
+                        We transformed all text to lowercase for uniformity, removed any extraneous punctuation and symbols, 
+                        and stripped out dates, state abbreviations, and recurring text that didn’t contribute to transaction categorization 
+                        (e.g., “POS withdrawal”). Placeholder values such as multiple X’s were also removed.
+                    </p>
+            
+                    <p>
+                        To prepare the dataset for modeling, we began by reviewing a sample of unique transaction memos from each category. 
+                        This step provided insights into common patterns and inconsistencies, helping us determine the scope and focus of our cleaning tasks.
+                    </p>
+            
+                    <div class="image-container">
+                        <figure>
+                            <img src="figure/nonclean_df.png" alt="Uncleaned Memo Dataframe">
+                            <figcaption>
+                                Figure: This table shows the memo dataframe before cleaning. Variations in text format, inconsistent capitalization, and extraneous characters 
+                                can be observed, which motivated the cleaning process to improve uniformity in transaction descriptions.
+                            </figcaption>
+                        </figure>
+            
+                        <figure>
+                            <img src="figure/clean_df.png" alt="Cleaned Memo Dataframe">
+                            <figcaption>
+                                Figure: This table represents the cleaned memo dataframe, where we applied text preprocessing to ensure consistency across transaction descriptions. 
+                                By converting to lowercase, removing punctuation, and standardizing certain tokens, we prepared the data for more accurate feature extraction and analysis.
+                            </figcaption>
+                        </figure>
+                    </div>
+            
+                    <p class="transformation-intro">
+                        We then applied several transformations to standardize the data and improve its interpretability:
+                    </p>
+            
+                    <ul>
+                        <li class="cleaning-step">
+                            <strong>Date Removal:</strong> We used regular expressions (RegEx) to locate and remove dates across entries in the memo column, 
+                            as they did not contribute to the model's predictive goals and added unnecessary complexity. Placeholder patterns such as "XXXX" were also removed.
+                        </li>
+            
+                        <li class="cleaning-step">
+                            <strong>Pattern Recognition:</strong> Specific patterns and keywords were identified as indicators of certain transaction categories. 
+                            For example, "TST" was reliably associated with "Food and Beverages," while "APPLE.COM/BILL" was linked to "General Merchandise." 
+                            These patterns were flagged to automate future classifications and reduce manual intervention.
+                        </li>
+            
+                        <li class="cleaning-step">
+                            <strong>Selective Character Retention:</strong> To preserve potentially valuable information, certain characters such as dots ('.') were retained 
+                            to keep URLs or email addresses intact within the memo field, which could provide clues to transaction categories.
+                        </li>
+            
+                        <li class="cleaning-step">
+                            <strong>Transaction Labels:</strong> We identified recurring phrases such as "POS Withdrawal," location-specific markers 
+                            (e.g., “CA 10/27” for state and date), and labels indicating recurring payments. These were removed as they did not contribute 
+                            to the model’s predictive goals and added unnecessary complexity.
+                        </li>
+            
+                        <li class="cleaning-step">
+                            <strong>Text Normalization:</strong> All text was converted to lowercase to reduce variability due to case differences.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </details>
+    </section>
+
+    <!-- Models and Results -->
+    <section id="models-results">
+        <h4 class="feature-title"><strong>Models and Results</strong></h4>
+
+        <!-- TF-IDF Vectorization -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-chart-bar"></i> <!-- FontAwesome icon -->
+                <h4>TF-IDF Vectorization</h4>
+            </div>
+            <div class="card-body">
+                <p>We transformed text data into numerical features using a TF-IDF vectorizer, allowing the model to analyze term frequency patterns.</p>
+                <ul class="highlight-list">
+                    <li><strong>Max Features = 5000:</strong> Limited to the top 5,000 most important terms.</li>
+                    <li><strong>Max DF = 0.95:</strong> Ignored terms appearing in more than 95% of documents.</li>
+                    <li><strong>Min DF = 5:</strong> Ignored terms appearing in fewer than 5 documents.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Logistic Regression Section -->
+        <details class="expandable-section">
+            <summary><strong>Logistic Regression with TF-IDF Vectorization</strong></summary>
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-project-diagram"></i> <!-- FontAwesome icon -->
+                    <h4>Logistic Regression Model</h4>
+                </div>
+                <div class="card-body">
+                    <p>
+                        To classify transaction categories based on the <code>memo</code> text field, we first used a Logistic Regression model with TF-IDF vectorization. 
+                        This method converts raw text data into numerical features, allowing the model to utilize term frequency patterns for classification.
+                    </p>
+            
+                    <h4 class="process-intro">TF-IDF Vectorization</h4>
+                    <p class="process-intro">We employed a TF-IDF vectorizer to transform text data into a matrix of features with the following parameters:</p>
+                    <ul>
+                        <li><strong>max_features=5000:</strong> Limited to the top 5,000 most important terms.</li>
+                        <li><strong>max_df=0.95:</strong> Ignored terms appearing in more than 95% of documents.</li>
+                        <li><strong>min_df=5:</strong> Ignored terms appearing in fewer than 5 documents.</li>
+                    </ul>
+            
+                    <h4>Logistic Regression Model</h4>
+                    <p class="process-intro">For classification, we configured the Logistic Regression model with:</p>
+                    <ul>
+                        <li><strong>solver='saga':</strong> Efficient for large datasets and supports L2 regularization.</li>
+                        <li><strong>max_iter=200:</strong> Ensured convergence.</li>
+                        <li><strong>n_jobs=-1:</strong> Utilized all available CPU cores for parallel training.</li>
+                    </ul>
+            
+                    <p><strong>Accuracy:</strong> The model achieved 96.15% accuracy on the test set.</p>
+            
+                    <h4 class="process-intro">Confusion Matrix</h4>
+                    <figure>
+                        <img src="figure/log_reg_confusion.png" alt="Logistic Regression Confusion Matrix">
+                        <figcaption>Figure: Confusion Matrix for Logistic Regression Model.</figcaption>
+                    </figure>
+                </div>
+            </div>
+        </details>
+    </section>
+</section>
+                
+                    <!-- Random Forest -->
+                    <details class="expandable-section">
+                        <summary><strong>Random Forest Model</strong></summary>
+                        <div class="model-container">
+                            <div class="model-box">
+                                <h4>Hyperparameters</h4>
+                                <ul class="highlight-list">
+                                    <li><code>n_estimators = 100</code>: Used 100 decision trees.</li>
+                                    <li><code>max_depth = 60</code>: Restricted tree depth to prevent overfitting.</li>
+                                    <li><code>Parallel Processing</code>: Used all available CPU cores.</li>
+                                </ul>
+                            </div>
+                            <div class="accuracy-box">
+                                <p><strong>Model Accuracy:</strong> 84.28% on the test set.</p>
+                            </div>
+                        </div>
+                        <figure>
+                            <img src="figure/random_forest_confusion.png" alt="Random Forest Confusion Matrix">
+                            <figcaption>Figure: Confusion Matrix for Random Forest Model.</figcaption>
+                        </figure>
+                    </details>
+                
+                    <!-- FastText -->
+                    <details class="expandable-section">
+                        <summary><strong>FastText Model</strong></summary>
+                        <div class="model-container">
+                            <div class="model-box">
+                                <h4>Hyperparameters</h4>
+                                <ul class="highlight-list">
+                                    <li><code>Epochs = 25</code></li>
+                                    <li><code>Learning Rate = 1.0</code></li>
+                                    <li><code>Word N-Grams = 2</code></li>
+                                    <li><code>Embedding Dimension = 50</code></li>
+                                </ul>
+                            </div>
+                            <div class="accuracy-box">
+                                <p><strong>Model Accuracy:</strong> 98.9% on the test set.</p>
+                            </div>
+                        </div>
+                        <figure>
+                            <img src="figure/fasttext_classification_report.png" alt="FastText Classification Report">
+                            <figcaption>Figure: Classification Report for FastText Model.</figcaption>
+                        </figure>
+                    </details>
+                </section>
+
+<!--                 <section id="models-results">
+                    <h4 class="feature-title"><strong>Models and Results</strong></h4>
+                
+                    <!-- TF-IDF Vectorization -->
+                    <details class="expandable-section">
+                        <summary><strong>TF-IDF Vectorization</strong></summary>
+                        <p>We transformed text data into numerical features using a TF-IDF vectorizer, allowing the model to analyze term frequency patterns.</p>
+                        <ul class="highlight-list">
+                            <li><strong>Max Features = 5000:</strong> Limited to the top 5,000 most important terms.</li>
+                            <li><strong>Max DF = 0.95:</strong> Ignored terms appearing in more than 95% of documents.</li>
+                            <li><strong>Min DF = 5:</strong> Ignored terms appearing in fewer than 5 documents.</li>
+                        </ul>
+                        <figure>
+                            <img src="figure/tfidf_visual.png" alt="TF-IDF Process Visualization">
+                            <figcaption>Figure: How TF-IDF converts raw text into numerical features.</figcaption>
+                        </figure>
+                    </details>
+                
+                    <!-- Logistic Regression -->
+                    <details class="expandable-section">
+                        <summary><strong>Logistic Regression Model</strong></summary>
+                        <p>The Logistic Regression model was trained using the transformed TF-IDF features.</p>
+                        <ul class="highlight-list">
+                            <li><strong>Solver = 'saga':</strong> Optimized for large datasets with L2 regularization.</li>
+                            <li><strong>Max Iterations = 200:</strong> Ensured convergence during training.</li>
+                            <li><strong>Parallel Processing:</strong> Used all available CPU cores for efficient computation.</li>
+                        </ul>
+                        <div class="accuracy-box">
+                            <p><strong>Model Accuracy:</strong> 96.15% on the test set.</p>
+                        </div>
+                        <figure>
+                            <img src="figure/log_reg_confusion.png" alt="Logistic Regression Confusion Matrix">
+                            <figcaption>Figure: Confusion Matrix for Logistic Regression Model.</figcaption>
+                        </figure>
+                    </details>
+                
+                    <!-- Random Forest -->
+                    <details class="expandable-section">
+                        <summary><strong>Random Forest Model</strong></summary>
+                        <p>To improve classification performance, we implemented a Random Forest model.</p>
+                        <ul class="highlight-list">
+                            <li><strong>n_estimators = 100:</strong> Used 100 decision trees.</li>
+                            <li><strong>max_depth = 60:</strong> Restricted tree depth to prevent overfitting.</li>
+                            <li><strong>Parallel Processing:</strong> Used all available CPU cores for efficient computation.</li>
+                        </ul>
+                        <div class="accuracy-box">
+                            <p><strong>Model Accuracy:</strong> 84.28% on the test set.</p>
+                        </div>
+                        <figure>
+                            <img src="figure/random_forest_confusion.png" alt="Random Forest Confusion Matrix">
+                            <figcaption>Figure: Confusion Matrix for Random Forest Model.</figcaption>
+                        </figure>
+                    </details>
+                
+                    <!-- FastText -->
+                    <details class="expandable-section">
+                        <summary><strong>FastText Model</strong></summary>
+                        <p>FastText is a lightweight and efficient text classification model developed by Facebook AI.</p>
+                        <ul class="highlight-list">
+                            <li><strong>Epochs:</strong> 25</li>
+                            <li><strong>Learning Rate:</strong> 1.0</li>
+                            <li><strong>Word N-Grams:</strong> 2</li>
+                            <li><strong>Embedding Dimension:</strong> 50</li>
+                            <li><strong>Bucket Size:</strong> 200,000</li>
+                        </ul>
+                        <div class="accuracy-box">
+                            <p><strong>Model Accuracy:</strong> 98.9% on the test set.</p>
+                        </div>
+                        <figure>
+                            <img src="figure/fasttext_classification_report.png" alt="FastText Classification Report">
+                            <figcaption>Figure: Classification Report for FastText Model.</figcaption>
+                        </figure>
+                    </details>
+                
+                    <!-- Transformer LLM -->
+                    <details class="expandable-section">
+                        <summary><strong>Transformer-Based Model (DistilBERT)</strong></summary>
+                        <p>We implemented a Transformer-based model using <code>distilbert-base-uncased</code> to classify transaction memos.</p>
+                        <ul class="highlight-list">
+                            <li><strong>Model Type:</strong> DistilBERT</li>
+                            <li><strong>Maximum Length:</strong> 128 tokens</li>
+                            <li><strong>Batch Size:</strong> 16</li>
+                            <li><strong>Learning Rate:</strong> 2e-5</li>
+                            <li><strong>Optimizer:</strong> AdamW</li>
+                            <li><strong>Scheduler:</strong> Linear schedule with a warmup ratio of 0.1</li>
+                            <li><strong>Epochs:</strong> 3</li>
+                        </ul>
+                        <div class="accuracy-box">
+                            <p><strong>Validation Accuracy:</strong> 98.56%</p>
+                        </div>
+                        <figure>
+                            <img src="figure/transformer_results.png" alt="Transformer Model Performance">
+                            <figcaption>Figure: Performance of Transformer Model.</figcaption>
+                        </figure>
+                    </details>
+                </section> -->
+
+                
+<!--                 <section id="models-results">
+                    <h4 class="feature-title"><strong>Models and Results</strong></h4>
+
+
+                    <!-- TF-IDF Vectorization and Logistic Regression -->
+                    <details class="expandable-section">
+                        <summary><strong>TF-IDF Vectorization & Logistic Regression Model</strong></summary>
+                    
+                        <div class="model-container">
+                            <!-- TF-IDF Vectorization -->
+                            <div class="tfidf-section">
+                                <h4>TF-IDF Vectorization</h4>
+                                <p>We transformed text data into numerical features using a TF-IDF vectorizer, allowing the model to analyze term frequency patterns.</p>
+                                <ul class="highlight-list">
+                                    <li><strong>Max Features = 5000:</strong> Limited to the top 5,000 most important terms.</li>
+                                    <li><strong>Max DF = 0.95:</strong> Ignored terms appearing in more than 95% of documents.</li>
+                                    <li><strong>Min DF = 5:</strong> Ignored terms appearing in fewer than 5 documents.</li>
+                                </ul>
+                                <figure>
+                                    <img src="figure/tfidf_visual.png" alt="TF-IDF Process Visualization">
+                                    <figcaption>Figure: How TF-IDF converts raw text into numerical features.</figcaption>
+                                </figure>
+                            </div>
+                    
+                            <!-- Logistic Regression Model -->
+                            <div class="logreg-section">
+                                <h4>Logistic Regression Model</h4>
+                                <p>The model was trained with the following hyperparameters:</p>
+                                <ul class="highlight-list">
+                                    <li><strong>Solver = 'saga':</strong> Optimized for large datasets with L2 regularization.</li>
+                                    <li><strong>Max Iterations = 200:</strong> Ensured convergence during training.</li>
+                                    <li><strong>Parallel Processing:</strong> Used all available CPU cores for efficient computation.</li>
+                                </ul>
+                                <div class="accuracy-box">
+                                    <p><strong>Model Accuracy:</strong> 96.15% on the test set.</p>
+                                </div>
+                                <figure>
+                                    <img src="figure/log_reg_confusion.png" alt="Logistic Regression Confusion Matrix">
+                                    <figcaption>Figure: Confusion Matrix for Logistic Regression Model.</figcaption>
+                                </figure>
+                            </div>
+                        </div>
+                    </details>
+ -->
+<!--                     original log reg -->
+<!--                     <!-- Logistic Regression Section -->
+                    <details class="expandable-section">
+                        <summary><strong>Logistic Regression with TF-IDF Vectorization</strong></summary>
+                        <p>
+                            To classify transaction categories based on the <code>memo</code> text field, we first used a Logistic Regression model with TF-IDF vectorization. 
+                            This method converts raw text data into numerical features, allowing the model to utilize term frequency patterns for classification.
+                        </p>
+                
+                        <h4 class="process-intro">TF-IDF Vectorization</h4>
+                        <p class="process-intro">We employed a TF-IDF vectorizer to transform text data into a matrix of features with the following parameters:</p>
+                        <ul>
+                            <li><strong>max_features=5000:</strong> Limited to the top 5,000 most important terms.</li>
+                            <li><strong>max_df=0.95:</strong> Ignored terms appearing in more than 95% of documents.</li>
+                            <li><strong>min_df=5:</strong> Ignored terms appearing in fewer than 5 documents.</li>
+                        </ul>
+                
+                        <h4>Logistic Regression Model</h4>
+                        <p class="process-intro">For classification, we configured the Logistic Regression model with:</p>
+                        <ul>
+                            <li><strong>solver='saga':</strong> Efficient for large datasets and supports L2 regularization.</li>
+                            <li><strong>max_iter=200:</strong> Ensured convergence.</li>
+                            <li><strong>n_jobs=-1:</strong> Utilized all available CPU cores for parallel training.</li>
+                        </ul>
+                
+                        <p><strong>Accuracy:</strong> The model achieved 96.15% accuracy on the test set.</p>
+                
+                        <h4 class="process-intro">Confusion Matrix</h4>
+                        <figure>
+                            <img src="figure/log_reg_confusion.png" alt="Logistic Regression Confusion Matrix">
+                            <figcaption>Figure: Confusion Matrix for Logistic Regression Model.</figcaption>
+                        </figure>
+                    </details> -->
+                
+                    <!-- Random Forest Section -->
+                    <details class="expandable-section">
+                        <summary><strong>Random Forest with TF-IDF Vectorization</strong></summary>
+                        <p>
+                            To improve classification performance, we implemented a Random Forest model. 
+                            While this model introduces greater complexity, its performance was slightly lower than Logistic Regression.
+                        </p>
+                
+                        <h4 class="process-intro">TF-IDF Vectorization</h4>
+                        <p class="process-intro">We employed a TF-IDF vectorizer to transform text data into a matrix of features with the following parameters:</p>
+                        <ul>
+                            <li><strong>max_features=2000:</strong> Limited the number of features to 2,000.</li>
+                            <li><strong>max_df=0.95:</strong> Ignored terms appearing in more than 95% of documents.</li>
+                            <li><strong>min_df=5:</strong> Excluded terms appearing in fewer than 5 documents.</li>
+                        </ul>
+                
+                        <h4>Random Forest Model</h4>
+                        <p class="process-intro">For classification, we configured the Random Forest model with:</p>
+                        <ul>
+                            <li><strong>n_estimators=100:</strong> Used 100 decision trees.</li>
+                            <li><strong>max_depth=60:</strong> Restricted tree depth to prevent overfitting.</li>
+                            <li><strong>n_jobs=-1:</strong> Utilized all available CPU cores for parallel training.</li>
+                        </ul>
+                
+                        <p><strong>Accuracy:</strong> The Random Forest model achieved 84.28% accuracy on the test set.</p>
+                
+                        <h4 class="process-intro">Confusion Matrix</h4>
+                        <figure>
+                            <img src="figure/random_forest_confusion.png" alt="Random Forest Confusion Matrix">
+                            <figcaption>Figure: Confusion Matrix for Random Forest Model.</figcaption>
+                        </figure>
+                    </details>
+                
+                    <!-- FastText Section -->
+                    <details class="expandable-section">
+                        <summary><strong>FastText for Text Classification</strong></summary>
+                        <p>
+                            FastText is a lightweight and efficient text classification model developed by Facebook AI. 
+                            We trained this model to categorize transaction memos with high speed and accuracy.
+                        </p>
+                    
+                        <h4 class="process-intro">Model Training</h4>
+                        <p class="process-intro">The FastText model was trained using the following hyperparameters:</p>
+                        <ul>
+                            <li><strong>Epochs:</strong> 25</li>
+                            <li><strong>Learning Rate:</strong> 1.0</li>
+                            <li><strong>Word N-Grams:</strong> 2</li>
+                            <li><strong>Embedding Dimension:</strong> 50</li>
+                            <li><strong>Bucket Size:</strong> 200,000</li>
+                        </ul>
+                    
+                        <p class="process-intro"><strong>Accuracy:</strong> The FastText model achieved an impressive 98.9% accuracy.</p>
+                    
+                        <h4 class="process-intro">Classification Report</h4>
+                        <p class="process-intro">The classification report below presents precision, recall, and F1-scores for different transaction categories.</p>
+                    
+                        <figure>
+                            <img src="figure/fasttext_classification_report.png" alt="FastText Classification Report">
+                            <figcaption>Figure: Classification Report for FastText Model.</figcaption>
+                        </figure>
+                    </details>
+                
+                    <!-- Transformer LLM Section -->
+                    <details class="expandable-section">
+                        <summary><strong>LLM with Transformer Model</strong></summary>
+                        <p>
+                            We implemented a Transformer-based model using <code>distilbert-base-uncased</code> to leverage deep learning for text classification. 
+                            This model was trained to classify transaction memos with contextual embeddings.
+                        </p>
+                    
+                        <h4 class="process-intro">Training Configuration</h4>
+                        <p class="process-intro">The model was configured with the following hyperparameters:</p>
+                        <ul>
+                            <li><strong>Model Type:</strong> DistilBERT</li>
+                            <li><strong>Maximum Length:</strong> 128 tokens</li>
+                            <li><strong>Batch Size:</strong> 16</li>
+                            <li><strong>Learning Rate:</strong> 2e-5</li>
+                            <li><strong>Optimizer:</strong> AdamW</li>
+                            <li><strong>Scheduler:</strong> Linear schedule with a warmup ratio of 0.1</li>
+                            <li><strong>Gradient Clipping:</strong> Maximum value of 1.0</li>
+                            <li><strong>Epochs:</strong> 3</li>
+                        </ul>
+                    
+                        <h4 class="process-intro">Model Performance</h4>
+                        <p class="process-intro">
+                            The Transformer model was evaluated on 9 transaction categories. After one epoch, it achieved:
+                        </p>
+                        <ul>
+                            <li><strong>Training Loss:</strong> 0.1361</li>
+                            <li><strong>Validation Loss:</strong> 0.0603</li>
+                            <li><strong>Validation Accuracy:</strong> 98.56%</li>
+                            <li><strong>Evaluation Time:</strong> 2 minutes and 43 seconds</li>
+                        </ul>
+                    
+                        <p>
+                            While the Transformer model achieved high accuracy, it exhibited higher latency compared to simpler models, 
+                            requiring longer processing times for both training and evaluation.
+                        </p>
+                    </details>
+
+                </section>
+            </section>
+
+            <!-- Cash Score Section -->
+            <section id="cash-score">
+                <h3>Predicting Cash Score</h3>
+            
+                <!-- Methodology -->
+                <section id="methodology">
+                    <h4 class="feature-title"><strong>Methodology</strong></h4>
+            
+                    <!-- Exploratory Data Analysis -->
+                    <details class="expandable-section">
+                        <summary>Exploratory Data Analysis</summary>
+                        <p>We conducted an exploratory data analysis (EDA) to understand patterns in consumer spending, overdrafts, and transaction distributions. This helped us identify meaningful features for predicting credit risk.</p>
+                    
+                        <ul>
+                            <li><strong>Transaction Patterns:</strong> Identified differences in transaction behaviors between delinquent and non-delinquent consumers, such as frequency and types of purchases.</li>
+                            <li><strong>Seasonal Trends & Payday Effects:</strong> Examined how consumer spending fluctuates with seasonal trends, including holiday expenses and end-of-month payday spikes.</li>
+                            <li><strong>Income Estimation:</strong> Estimated consumer income based on recurring transactions such as payroll deposits, rent, and utility payments.</li>
+                            <li><strong>Impact of Fees & Overdrafts:</strong> Analyzed the effects of account fees, buy-now-pay-later (BNPL) transactions, and overdraft occurrences on overall financial stability.</li>
+                        </ul>
+                    
+                        <figure style="text-align: center;">
+                            <img src="figure/feature_plot_credit_score-2.png" alt="Delinquency Percentage vs Credit Score" style="max-width: 100%; height: auto;">
+                            <figcaption>Figure: Delinquency Percentage vs Credit Score.</figcaption>
+                        </figure>
+                    
+                    </details>
+
+                    <!-- Balance Trends for Delinquent vs. Non-Delinquent Consumers -->
+                    <details class="expandable-section">
+                        <summary>Comparing Delinquent and Non-Delinquent Consumers</summary>
+                        
+                        <p>We analyzed balance trends over time to observe how cash flow differs between individuals who are delinquent and those who are not. Our key findings highlight financial stability differences based on account balance trends.</p>
+                    
+                        <ul>
+                            <li><strong>Delinquent Consumers:</strong> Frequently experience negative balances, indicating financial instability and a higher risk of missing payments.</li>
+                            <li><strong>Non-Delinquent Consumers:</strong> Maintain relatively stable balances with fewer occurrences of overdrafts, suggesting better financial health.</li>
+                            <li><strong>Periodic Fluctuations:</strong> Balance trends exhibit cyclical patterns influenced by income deposits and spending habits.</li>
+                        </ul>
+                    
+                        <figure>
+                            <img src="figure/balance_delinquent-2.png" alt="Balance Trends for Delinquent Consumers">
+                            <figcaption>Figure: Balance trends over time for five randomly selected delinquent consumers. The plot illustrates fluctuations and frequent occurrences of negative balances, highlighting financial instability.</figcaption>
+                        </figure>
+                    
+                        <figure>
+                            <img src="figure/balance_single_delinquent-2.png" alt="Balance for a Single Delinquent Consumer">
+                            <figcaption>Figure: Balance over time for a single delinquent consumer. This consumer frequently experiences negative balances, indicating financial distress and an increased risk of missing payments.</figcaption>
+                        </figure>
+                    </details>
+            
+                    <!-- Feature Engineering -->
+                    <details class="expandable-section">
+                        <summary>Feature Engineering</summary>
+                    
+                        <p>We engineered multiple features relevant to the prediction of delinquency, focusing on balance trends, transaction behaviors, and account types. These features help in assessing financial stability and predicting default risk.</p>
+                    
+                        <ul>
+                            <li><strong>Balance Features:</strong> Negative balance ratio, balance trends, payday effects.</li>
+                            <li><strong>Transaction-Based Features:</strong> Credit vs. debit transaction volume, category-based spending breakdown.</li>
+                            <li><strong>Temporal Features:</strong> Spending frequency over time, accounting for longevity effects.</li>
+                            <li><strong>Account Types:</strong> Features based on the types of accounts a consumer has.</li>
+                            <li><strong>Overdraft Frequency:</strong> The number of times a consumer overdrafted in the past 6 months.</li>
+                            <li><strong>Spending Volatility:</strong> Standard deviation of monthly expenditures.</li>
+                            <li><strong>Recurring Payments:</strong> Identifying transactions like rent, utilities, and subscriptions.</li>
+                        </ul>
+                    
+                        <figure>
+                            <img src="figure/spending_balance_ratio.png" alt="Spending Balance Ratio">
+                            <figcaption>Figure: Spending balance ratio feature created to measure how much consumers spend relative to their balance. This helps assess financial stability and risk of delinquency.</figcaption>
+                        </figure>
+                    
+                        <figure>
+                            <img src="figure/standardized_credit_balance.png" alt="Standardized Credit and Balance">
+                            <figcaption>Figure: Feature engineering step where credit and balance were standardized to allow for easier model interpretability and comparisons across different financial profiles.</figcaption>
+                        </figure>
+                    
+                    </details>
+
+                    <!-- Feature Importance for Different Models -->
+                    <details class="expandable-section">
+                        <summary>Feature Importance</summary>
+                        <p>Top predictive features for different models:</p>
+                        
+                        <figure style="text-align: center;">
+                            <img src="figure/shap_values.png" alt="Feature Importance using Shap Values" style="max-width: 100%; height: auto;">
+                            <figcaption>Figure: Feature Importance using SHAP Values.</figcaption>
+                        </figure>
+                    
+                        <p>The following are the top 10 most important features influencing delinquency prediction, as identified by SHAP values:</p>
+                        
+                        <ul>
+                            <li><strong>account_type_SAVINGS:</strong> Indicates whether a user has a savings account. A savings account is often associated with financial stability, reducing the risk of delinquency.</li>
+                            <li><strong>balance:</strong> Represents the consumer's total account balance. Lower balances correlate with higher delinquency risk, while higher balances suggest financial security.</li>
+                            <li><strong>ACCOUNT_FEES_median:</strong> Measures the median account fees incurred. Frequent fees may indicate financial strain or poor account management.</li>
+                            <li><strong>LOAN_std (Loan Standard Deviation):</strong> Represents the variability in loan-related transactions. High fluctuations may indicate inconsistent repayments and financial instability.</li>
+                            <li><strong>OVERDRAFT_count:</strong> Tracks the number of overdraft occurrences. A higher count strongly correlates with financial distress and increased risk of delinquency.</li>
+                            <li><strong>REFUND_skewness:</strong> Measures the asymmetry in refund transactions. Unusual refund patterns may suggest erratic cash flow or financial instability.</li>
+                            <li><strong>ACCOUNT_FEES_count:</strong> The total number of account fees charged. Higher counts may indicate insufficient funds or excessive financial penalties.</li>
+                            <li><strong>INVESTMENT_INCOME_std (Investment Income Standard Deviation):</strong> Measures fluctuations in investment income. High variation could indicate unreliable financial inflows.</li>
+                            <li><strong>SELF_TRANSFER_iqr (Interquartile Range of Self-Transfers):</strong> Measures variability in self-transfers between accounts. A high IQR may indicate inconsistent cash flow management.</li>
+                            <li><strong>ATM_CASH_median:</strong> The median amount of cash withdrawn from ATMs. Frequent and high cash withdrawals may suggest reliance on liquid cash, which could relate to financial instability.</li>
+                        </ul>
+                    
+                        <p>These features provide critical insights into financial behavior and help the model better assess delinquency risk.</p>
+                    </details>
+                </section>
+            
+                <!-- Models and Results -->
+                <section id="models-results">
+                    <h4 class="feature-title"><strong>Models and Results</strong></h4>
+                    <details class="expandable-section">
+                        <summary>Model Training</summary>
+                    
+                        <p>We trained multiple machine learning models to predict delinquency risk, focusing on maximizing performance while maintaining interpretability and efficiency.</p>
+                    
+                        <ul>
+                            <li><strong>Feature Selection:</strong> Used only the <b>top 75 most important features</b> to improve model interpretability and predictive power.</li>
+                            <li><strong>Scoring Exclusions:</strong> Consumers with <b>fewer than two transactions</b> were excluded to ensure meaningful behavioral patterns.</li>
+                        </ul>
+                    
+                        <p>To address the class imbalance issue (delinquent consumers make up only <b>8.4%</b> of the dataset), we applied:</p>
+                    
+                        <ul>
+                            <li><strong>SMOTE & SMOTEENN:</strong> Synthetic oversampling techniques to balance the dataset.</li>
+                            <li><strong>Feature Normalization:</strong> Standardization of key numerical variables to improve model performance.</li>
+                        </ul>
+                    
+                        <p>To optimize the <b>ROC-AUC score</b>, we trained five primary models:</p>
+                        
+                        <ul>
+                            <li><strong>XGBoost:</strong> High-performance gradient boosting model with extensive hyperparameter tuning.</li>
+                            <li><strong>LightGBM:</strong> Fast and efficient for large datasets, especially with categorical features.</li>
+                            <li><strong>CatBoost:</strong> Optimized for categorical data, reducing the need for preprocessing.</li>
+                            <li><strong>Balanced Random Forest:</strong> Addresses class imbalance by appropriately weighting samples.</li>
+                            <li><strong>Weighted Ensemble:</strong> Combines top models for an optimal balance of accuracy, interpretability, and efficiency.</li>
+                        </ul>
+                    
+                    </details>
+                    
+                    <!-- Model Evaluation -->
+                    <details class="expandable-section">
+                        <summary>Model Evaluation</summary>
+                        
+                        <p>We evaluated model performance using several key classification metrics:</p>
+                        
+                        <ul>
+                            <li><strong>ROC-AUC:</strong> Measures the model’s ability to differentiate between delinquent and non-delinquent users.</li>
+                            <li><strong>Precision and Recall:</strong> Precision measures the percentage of correctly predicted delinquents, while recall captures the proportion of actual delinquents that were correctly identified.</li>
+                            <li><strong>F1-Score:</strong> Provides a balance between precision and recall, ensuring both false positives and false negatives are considered.</li>
+                            <li><strong>Training Time:</strong> Evaluates how long each model takes to train, an essential factor for scalability.</li>
+                            <li><strong>Prediction Time:</strong> Measures how efficiently models generate predictions for new consumers.</li>
+                        </ul>
+                    
+                    </details>
+                    
+                    <details class="expandable-section">                        
+                        <h4>Confusion Matrices</h4>
+                        <div class="confusion-matrix-grid">
+                            <figure>
+                                <img src="figure/conf_matrix_logreg.png" alt="Logistic Regression Confusion Matrix">
+                                <figcaption>Figure: Logistic Regression Confusion Matrix.</figcaption>
+                            </figure>
+                            <figure>
+                                <img src="figure/conf_matrix_rf.png" alt="Random Forest Confusion Matrix">
+                                <figcaption>Figure: Random Forest Confusion Matrix.</figcaption>
+                            </figure>
+                            <figure>
+                                <img src="figure/conf_matrix_lightgbm.png" alt="LightGBM Confusion Matrix">
+                                <figcaption>Figure: LightGBM Confusion Matrix.</figcaption>
+                            </figure>
+                            <figure>
+                                <img src="figure/conf_matrix_balanced_rf.png" alt="Balanced RF Confusion Matrix">
+                                <figcaption>Figure: Balanced Random Forest Confusion Matrix.</figcaption>
+                            </figure>
+                            <figure>
+                                <img src="figure/conf_matrix_xgb.png" alt="XGBoost Confusion Matrix">
+                                <figcaption>Figure: XGBoost Confusion Matrix.</figcaption>
+                            </figure>
+                            <figure>
+                                <img src="figure/conf_matrix_catboost.png" alt="CatBoost Confusion Matrix">
+                                <figcaption>Figure: CatBoost Confusion Matrix.</figcaption>
+                            </figure>
+                            <figure>
+                                <img src="figure/conf_matrix_rusboost.png" alt="RUSBoost Confusion Matrix">
+                                <figcaption>Figure: RUSBoost Confusion Matrix.</figcaption>
+                            </figure>
+                        </div>
+                    
+                        <summary>Model Performance</summary>
+                        <table class="center-table">
+                            <tr>
+                                <th>Model</th>
+                                <th>ROC-AUC</th>
+                                <th>Accuracy</th>
+                                <th>Precision</th>
+                                <th>Recall</th>
+                                <th>F1-Score</th>
+                                <th>Train Time (s)</th>
+                                <th>Predict Time (s)</th>
+                            </tr>
+                            <tr>
+                                <td>LightGBM</td>
+                                <td>0.8221</td>
+                                <td>0.9031</td>
+                                <td>0.8739</td>
+                                <td>0.9031</td>
+                                <td>0.8814</td>
+                                <td>2.5050</td>
+                                <td>0.000019</td>
+                            </tr>
+                            <tr>
+                                <td>Weighted Ensemble</td>
+                                <td>0.8301</td>
+                                <td>0.9006</td>
+                                <td>0.8728</td>
+                                <td>0.9006</td>
+                                <td>0.8813</td>
+                                <td>0.0010</td>
+                                <td>0.000001</td>
+                            </tr>
+                            <tr>
+                                <td>XGBoost</td>
+                                <td>0.8232</td>
+                                <td>0.8962</td>
+                                <td>0.8677</td>
+                                <td>0.8962</td>
+                                <td>0.8778</td>
+                                <td>2.0606</td>
+                                <td>0.000006</td>
+                            </tr>
+                            <tr>
+                                <td>CatBoost</td>
+                                <td>0.8212</td>
+                                <td>0.8892</td>
+                                <td>0.8707</td>
+                                <td>0.8892</td>
+                                <td>0.8785</td>
+                                <td>3.0342</td>
+                                <td>0.000004</td>
+                            </tr>
+                            <tr>
+                                <td>Balanced RF</td>
+                                <td>0.8144</td>
+                                <td>0.8982</td>
+                                <td>0.8703</td>
+                                <td>0.8982</td>
+                                <td>0.8797</td>
+                                <td>26.2355</td>
+                                <td>0.000064</td>
+                            </tr>
+                            <tr>
+                                <td>HistGB</td>
+                                <td>0.823</td>
+                                <td>0.913</td>
+                                <td>0.892</td>
+                                <td>0.913</td>
+                                <td>0.901</td>
+                                <td>3.196</td>
+                                <td>0.000021</td>
+                            </tr>
+                            <tr>
+                                <td>RUSBoost</td>
+                                <td>0.802</td>
+                                <td>0.829</td>
+                                <td>0.903</td>
+                                <td>0.829</td>
+                                <td>0.859</td>
+                                <td>6.954</td>
+                                <td>0.000012</td>
+                            </tr>
+                            <tr>
+                                <td>Random Forest</td>
+                                <td>0.800</td>
+                                <td>0.915</td>
+                                <td>0.893</td>
+                                <td>0.915</td>
+                                <td>0.902</td>
+                                <td>14.364</td>
+                                <td>0.000088</td>
+                            </tr>
+                            <tr>
+                                <td>Logistic Regression</td>
+                                <td>0.777</td>
+                                <td>0.743</td>
+                                <td>0.911</td>
+                                <td>0.743</td>
+                                <td>0.803</td>
+                                <td>0.348</td>
+                                <td>0.000003</td>
+                            </tr>
+                        </table>
+                    </details>
+                    
+                    <details class="expandable-section">
+                        <summary>Conclusion</summary>
+                    
+                        <p>Our analysis highlights the effectiveness of different machine learning models in predicting delinquency risk. Among them, weighted ensemble demonstrated the highest ROC-AUC score, making it the most effective model for our use case.</p>
+                        <figure>
+                            <img src="figure/auc_roc_curve.png" alt="AUC-ROC Scores">
+                            <figcaption>Figure: ROC-AUC curve comparison for all models.</figcaption>
+                        </figure>
+                    
+<!--                         <h4>Cash Score Results</h4> -->
+                        <ul>
+                            <li><strong>Best Model:</strong> Weighted ensemble achieved the best overall performance.</li>
+                            <li><strong>Cash Scores outperform Credit Scores:</strong> Our analysis shows that transaction-based Cash Scores provide better delinquency predictions than traditional Credit Scores.</li>
+                        </ul>
+                    
+                        <figure>
+                            <img src="figure/heatmap.png" alt="Heatmap of Delinquency Rates by Cash Score and Credit Score">
+                            <figcaption>Figure: Heatmap showing delinquency rates across Cash Scores and Credit Scores, highlighting the effectiveness of our model.</figcaption>
+                        </figure>
+                    
+                    </details>
+
+                </section>
+            </section>
+
+            <section id="discussion">
+                <h3>Discussion</h3>
+                
+                <p>
+                    Our project aims to create a <strong>fairer credit assessment system</strong> while maintaining accuracy and transparency. 
+                    The <strong>Cash Score</strong> model reduces reliance on traditional credit history and promotes <strong>financial inclusivity</strong>. 
+                    By leveraging transactional data, we provide a more equitable method of assessing credit risk, particularly for those with 
+                    limited or no credit history.
+                </p>
+            
+                <p>
+                    Our model demonstrates the potential for alternative credit scoring methods but faces challenges such as 
+                    <strong>data bias</strong> and <strong>class imbalance</strong>. Future work will focus on refining the fairness and 
+                    interpretability of the Cash Score while ensuring regulatory compliance.
+                </p>
+            
+                <h4>Ensuring Compliance with the Equal Credit Opportunity Act (ECOA)</h4>
+                <p>
+                    To make sure our model is <strong>fair and unbiased</strong>, we carefully removed features that could introduce 
+                    discrimination, aligning with the <strong>Equal Credit Opportunity Act (ECOA)</strong>. ECOA prevents creditors from making 
+                    lending decisions based on race, gender, age, marital status, and reliance on public assistance, among other 
+                    protected characteristics. Since some spending and income categories could act as indirect indicators of these 
+                    attributes, we excluded them from our feature set to avoid potential bias.
+                </p>
+            
+                <h4>Categories Removed for ECOA Compliance</h4>
+                <p>After reviewing our data, we decided to remove certain features that could disproportionately impact protected groups:</p>
+                
+                <ul>
+                    <li><strong>Unemployment Benefits:</strong> Could unfairly penalize people experiencing temporary job loss.</li>
+                    <li><strong>Education:</strong> Spending on tuition or student loans could indirectly reveal age or socioeconomic status.</li>
+                    <li><strong>Home Improvement:</strong> Homeownership status could create an unintended bias against renters.</li>
+                    <li><strong>Healthcare/Medical Expenses:</strong> High medical spending might reflect age or disability, which are protected attributes.</li>
+                    <li><strong>Child Dependence:</strong> Child-related expenses could be linked to marital status or family structure.</li>
+                    <li><strong>Pension & Retirement Benefits:</strong> Income from pensions or Social Security might unfairly disadvantage older consumers.</li>
+                </ul>
+            
+                <p>
+                    By removing these features, we made sure our <strong>Cash Score</strong> model stays focused on financial behavior rather than personal demographics. 
+                    Our goal is to create a <strong>fair and transparent</strong> way to assess credit risk without reinforcing systemic biases.
+                </p>
+            </section>
+            
+            <section id="future-work">
+                <h3>Future Work</h3>
+                <p>Moving forward, we plan to enhance the Cash Score model with the following improvements:</p>
+                
+                <ul>
+                    <li><strong>Integrate Q1 Project:</strong> Leverage our categorization model to create a category column, enabling additional feature generation for the Cash Score model. The model categorizes transactions based on the memos column in our Q1 dataset.</li>
+                    <li><strong>Expand Dataset:</strong> Train and test a full-size dataset to improve model generalizability and robustness.</li>
+                </ul>
+            </section>
+        
+            <a href="#" aria-label="Go to top of the page" id="top-btn">Go To Top &uarr;</a>
+        </main>
+        <footer>
+            <div class="footer-container">
+                <h3 id="contact">Contacts: </h3>
+                <div class="contact">
+                    <div class="contact-links">
+                        <p>Jevan Chahal</p>
+                        <a href="mailto:j2chahal@ucsd.edu"><i>j2chahal@ucsd.edu</i></a>
+                    </div>
+                    <div class="contact-links">
+                        <p>Hillary Chang</p>
+                        <a href="mailto:hic001@ucsd.edu"><i>hic001@ucsd.edu</i></a>
+                    </div>
+                    <div class="contact-links">
+                        <p>Kurumi Kaneko</p>
+                        <a href="mailto:kskaneko@ucsd.edu"><i>kskaneko@ucsd.edu</i></a>
+                    </div>
+                    <div class="contact-links">
+                        <p>Kevin Wong</p>
+                        <a href="mailto:kew024@ucsd.edu"><i>kew024@ucsd.edu</i></a>
+                    </div>
+                </div>
+                <p>&copy; 2025 Jevan, Hillary, Kurumi, and Kevin. All
+                    rights reserved.</p>
+            </div>
+        </footer>
+    </body>
+</html>

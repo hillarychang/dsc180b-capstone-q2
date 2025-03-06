@@ -78,77 +78,90 @@
 <!--        <p>Our project is structured around two primary objectives: categorizing transactions based on memos and developing the <strong>Cash Score</strong>, a predictive model for assessing a consumer’s likelihood of defaulting on credit.</p> -->
 
             <!-- Categorizing Transactions based on Memos -->
-            <section id="categorizing-transactions">
-                <h3>Categorizing Transactions Based on Memos</h3>
+<!-- Categorizing Transactions based on Memos -->
+<section id="categorizing-transactions">
+    <h3>Categorizing Transactions Based on Memos</h3>
 
-                <!-- Feature Creation and Selection -->
-                <section id="feature-creation">
-                    <h4 class="feature-title">Feature Creation and Selection</h4>
-                
-                    <!-- Token Augmentation -->
-                    <details class="expandable-section">
-                        <summary>Token Augmentation</summary>
-                
-                        <p>
-                            To prepare the transaction data for further analysis and modeling, we enhanced the <code>memo</code> field by adding specific tokens based on transaction characteristics. 
-                            This token augmentation adds additional context about transaction amounts and dates, helping the model learn more meaningful patterns.
-                        </p>
-                
-                        <div class="image-container">
-                            <figure>
-                                <img src="figure/pre_token.png" alt="Pre-token augmentation transaction data">
-                                <figcaption>Figure: This is the transaction data cleaned but not token augmented yet. The <code>memo</code> field contains raw text descriptions without any added tokens.</figcaption>
-                            </figure>
-                        </div>
-                
-                        <p class="process-intro">The following steps outline the transformation process:</p>
-                
-                        <ul>
-                            <li>
-                                <strong>Whole Dollar Amount Identification:</strong> We added a token <code>&lt;W_D&gt;</code> to the <code>memo</code> field for transactions with whole dollar amounts.
-                                This token helps identify transactions that might involve cash withdrawals or ATM transactions, as these are typically in round amounts (e.g., $20, $50).
-                            </li>
-                
-                            <li>
-                                <strong>Day of Transaction:</strong> For each transaction's posting date, we generated a day token in the format <code>&lt;D_day&gt;</code>, where <code>day</code> represents the specific 
-                                day of the month. This token helps analyze patterns such as end-of-month or beginning-of-month spending habits.
-                            </li>
-                
-                            <li>
-                                <strong>Month of Transaction:</strong> Similarly, we generated a month token in the format <code>&lt;M_month&gt;</code> (where <code>month</code> is the numerical month) 
-                                to capture seasonal or monthly spending trends.
-                            </li>
-                
-                            <li>
-                                <strong>Token Augmentation Process:</strong> For each row in the dataset, these tokens were concatenated to the <code>memo</code> field using the following transformation:
-                                <p class="math-equation">memo = memo + whole_dollar_amount_token + day_token + month_token</p>
-                            </li>
-                        </ul>
-                
-                        <div class="image-container">
-                            <figure>
-                                <img src="figure/post_token.png" alt="Post-token augmentation transaction data">
-                                <figcaption>Figure: Transaction data after token augmentation. The <code>memo</code> field now includes additional tokens: <code>&lt;D_day&gt;</code> for the day of the transaction, <code>&lt;M_month&gt;</code> for the month, and <code>&lt;W_D&gt;</code> for whole dollar amounts.</figcaption>
-                            </figure>
-                        </div>
-                    </details>
+    <!-- Feature Creation and Selection -->
+    <section id="feature-creation">
+        <h4 class="feature-title">Feature Creation and Selection</h4>
+    
+        <!-- Token Augmentation -->
+        <details class="expandable-section">
+            <summary>Token Augmentation</summary>
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-tags"></i> <!-- FontAwesome icon -->
+                    <h4>Token Augmentation</h4>
+                </div>
+                <div class="card-body">
+                    <p>
+                        To prepare the transaction data for further analysis and modeling, we enhanced the <code>memo</code> field by adding specific tokens based on transaction characteristics. 
+                        This token augmentation adds additional context about transaction amounts and dates, helping the model learn more meaningful patterns.
+                    </p>
+            
+                    <div class="image-container">
+                        <figure>
+                            <img src="figure/pre_token.png" alt="Pre-token augmentation transaction data">
+                            <figcaption>Figure: This is the transaction data cleaned but not token augmented yet. The <code>memo</code> field contains raw text descriptions without any added tokens.</figcaption>
+                        </figure>
+                    </div>
+            
+                    <p class="process-intro">The following steps outline the transformation process:</p>
+            
+                    <ul>
+                        <li>
+                            <strong>Whole Dollar Amount Identification:</strong> We added a token <code>&lt;W_D&gt;</code> to the <code>memo</code> field for transactions with whole dollar amounts.
+                            This token helps identify transactions that might involve cash withdrawals or ATM transactions, as these are typically in round amounts (e.g., $20, $50).
+                        </li>
+            
+                        <li>
+                            <strong>Day of Transaction:</strong> For each transaction's posting date, we generated a day token in the format <code>&lt;D_day&gt;</code>, where <code>day</code> represents the specific 
+                            day of the month. This token helps analyze patterns such as end-of-month or beginning-of-month spending habits.
+                        </li>
+            
+                        <li>
+                            <strong>Month of Transaction:</strong> Similarly, we generated a month token in the format <code>&lt;M_month&gt;</code> (where <code>month</code> is the numerical month) 
+                            to capture seasonal or monthly spending trends.
+                        </li>
+            
+                        <li>
+                            <strong>Token Augmentation Process:</strong> For each row in the dataset, these tokens were concatenated to the <code>memo</code> field using the following transformation:
+                            <p class="math-equation">memo = memo + whole_dollar_amount_token + day_token + month_token</p>
+                        </li>
+                    </ul>
+            
+                    <div class="image-container">
+                        <figure>
+                            <img src="figure/post_token.png" alt="Post-token augmentation transaction data">
+                            <figcaption>Figure: Transaction data after token augmentation. The <code>memo</code> field now includes additional tokens: <code>&lt;D_day&gt;</code> for the day of the transaction, <code>&lt;M_month&gt;</code> for the month, and <code>&lt;W_D&gt;</code> for whole dollar amounts.</figcaption>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </details>
 
-
-                    <details class="expandable-section">
-                    <summary>Cleaning the Memo Fields</summary>
-                
+        <!-- Cleaning the Memo Fields -->
+        <details class="expandable-section">
+            <summary>Cleaning the Memo Fields</summary>
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-broom"></i> <!-- FontAwesome icon -->
+                    <h4>Cleaning the Memo Fields</h4>
+                </div>
+                <div class="card-body">
                     <p>
                         To prepare the memo field for analysis, we first applied a series of cleaning steps to standardize the text. 
                         We transformed all text to lowercase for uniformity, removed any extraneous punctuation and symbols, 
                         and stripped out dates, state abbreviations, and recurring text that didn’t contribute to transaction categorization 
                         (e.g., “POS withdrawal”). Placeholder values such as multiple X’s were also removed.
                     </p>
-                
+            
                     <p>
                         To prepare the dataset for modeling, we began by reviewing a sample of unique transaction memos from each category. 
                         This step provided insights into common patterns and inconsistencies, helping us determine the scope and focus of our cleaning tasks.
                     </p>
-                
+            
                     <div class="image-container">
                         <figure>
                             <img src="figure/nonclean_df.png" alt="Uncleaned Memo Dataframe">
@@ -157,7 +170,7 @@
                                 can be observed, which motivated the cleaning process to improve uniformity in transaction descriptions.
                             </figcaption>
                         </figure>
-                
+            
                         <figure>
                             <img src="figure/clean_df.png" alt="Cleaned Memo Dataframe">
                             <figcaption>
@@ -166,172 +179,105 @@
                             </figcaption>
                         </figure>
                     </div>
-                
+            
                     <p class="transformation-intro">
                         We then applied several transformations to standardize the data and improve its interpretability:
                     </p>
-                
+            
                     <ul>
                         <li class="cleaning-step">
                             <strong>Date Removal:</strong> We used regular expressions (RegEx) to locate and remove dates across entries in the memo column, 
                             as they did not contribute to the model's predictive goals and added unnecessary complexity. Placeholder patterns such as "XXXX" were also removed.
                         </li>
-                
+            
                         <li class="cleaning-step">
                             <strong>Pattern Recognition:</strong> Specific patterns and keywords were identified as indicators of certain transaction categories. 
                             For example, "TST" was reliably associated with "Food and Beverages," while "APPLE.COM/BILL" was linked to "General Merchandise." 
                             These patterns were flagged to automate future classifications and reduce manual intervention.
                         </li>
-                
+            
                         <li class="cleaning-step">
                             <strong>Selective Character Retention:</strong> To preserve potentially valuable information, certain characters such as dots ('.') were retained 
                             to keep URLs or email addresses intact within the memo field, which could provide clues to transaction categories.
                         </li>
-                
+            
                         <li class="cleaning-step">
                             <strong>Transaction Labels:</strong> We identified recurring phrases such as "POS Withdrawal," location-specific markers 
                             (e.g., “CA 10/27” for state and date), and labels indicating recurring payments. These were removed as they did not contribute 
                             to the model’s predictive goals and added unnecessary complexity.
                         </li>
-                
+            
                         <li class="cleaning-step">
                             <strong>Text Normalization:</strong> All text was converted to lowercase to reduce variability due to case differences.
                         </li>
                     </ul>
-                </details>
-                </section>
+                </div>
+            </div>
+        </details>
+    </section>
 
+    <!-- Models and Results -->
+    <section id="models-results">
+        <h4 class="feature-title"><strong>Models and Results</strong></h4>
 
-                <!-- TF-IDF Vectorization Section -->
-                <details class="expandable-section">
-                    <summary><strong>Logistic Regression with TF-IDF Vectorization</strong></summary>
-                    <div class="card-container">
-                        <!-- TF-IDF Card -->
-                        <div class="card">
-                            <div class="card-header">
-                                <i class="fas fa-chart-bar"></i> <!-- FontAwesome icon -->
-                                <h4>TF-IDF Vectorizer</h4>
-                            </div>
-                            <div class="card-body">
-                                <p>We transformed text data into a matrix of features using the following parameters:</p>
-                                <ul class="feature-list">
-                                    <li><strong>max_features=5000:</strong> Limited to the top 5,000 most important terms.</li>
-                                    <li><strong>max_df=0.95:</strong> Ignored terms appearing in more than 95% of documents.</li>
-                                    <li><strong>min_df=5:</strong> Ignored terms appearing in fewer than 5 documents.</li>
-                                </ul>
-                            </div>
-                        </div>
-                
-                        <!-- Logistic Regression Card -->
-                        <div class="card">
-                            <div class="card-header">
-                                <i class="fas fa-project-diagram"></i> <!-- FontAwesome icon -->
-                                <h4>Logistic Regression Model</h4>
-                            </div>
-                            <div class="card-body">
-                                <p>For classification, we configured the Logistic Regression model with:</p>
-                                <ul class="feature-list">
-                                    <li><strong>solver='saga':</strong> Efficient for large datasets and supports L2 regularization.</li>
-                                    <li><strong>max_iter=200:</strong> Ensured convergence.</li>
-                                    <li><strong>n_jobs=-1:</strong> Utilized all available CPU cores for parallel training.</li>
-                                </ul>
-                                <div class="accuracy-box">
-                                    <i class="fas fa-tachometer-alt"></i> <!-- FontAwesome icon -->
-                                    <p><strong>Accuracy:</strong> 96.15% on the test set.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                
-                    <!-- Confusion Matrix -->
+        <!-- TF-IDF Vectorization -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-chart-bar"></i> <!-- FontAwesome icon -->
+                <h4>TF-IDF Vectorization</h4>
+            </div>
+            <div class="card-body">
+                <p>We transformed text data into numerical features using a TF-IDF vectorizer, allowing the model to analyze term frequency patterns.</p>
+                <ul class="highlight-list">
+                    <li><strong>Max Features = 5000:</strong> Limited to the top 5,000 most important terms.</li>
+                    <li><strong>Max DF = 0.95:</strong> Ignored terms appearing in more than 95% of documents.</li>
+                    <li><strong>Min DF = 5:</strong> Ignored terms appearing in fewer than 5 documents.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Logistic Regression Section -->
+        <details class="expandable-section">
+            <summary><strong>Logistic Regression with TF-IDF Vectorization</strong></summary>
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-project-diagram"></i> <!-- FontAwesome icon -->
+                    <h4>Logistic Regression Model</h4>
+                </div>
+                <div class="card-body">
+                    <p>
+                        To classify transaction categories based on the <code>memo</code> text field, we first used a Logistic Regression model with TF-IDF vectorization. 
+                        This method converts raw text data into numerical features, allowing the model to utilize term frequency patterns for classification.
+                    </p>
+            
+                    <h4 class="process-intro">TF-IDF Vectorization</h4>
+                    <p class="process-intro">We employed a TF-IDF vectorizer to transform text data into a matrix of features with the following parameters:</p>
+                    <ul>
+                        <li><strong>max_features=5000:</strong> Limited to the top 5,000 most important terms.</li>
+                        <li><strong>max_df=0.95:</strong> Ignored terms appearing in more than 95% of documents.</li>
+                        <li><strong>min_df=5:</strong> Ignored terms appearing in fewer than 5 documents.</li>
+                    </ul>
+            
+                    <h4>Logistic Regression Model</h4>
+                    <p class="process-intro">For classification, we configured the Logistic Regression model with:</p>
+                    <ul>
+                        <li><strong>solver='saga':</strong> Efficient for large datasets and supports L2 regularization.</li>
+                        <li><strong>max_iter=200:</strong> Ensured convergence.</li>
+                        <li><strong>n_jobs=-1:</strong> Utilized all available CPU cores for parallel training.</li>
+                    </ul>
+            
+                    <p><strong>Accuracy:</strong> The model achieved 96.15% accuracy on the test set.</p>
+            
                     <h4 class="process-intro">Confusion Matrix</h4>
                     <figure>
                         <img src="figure/log_reg_confusion.png" alt="Logistic Regression Confusion Matrix">
                         <figcaption>Figure: Confusion Matrix for Logistic Regression Model.</figcaption>
                     </figure>
-                </details>
-                <!-- Models and Results -->
-                <section id="tf-idf-vectorization">
-                    <h3>TF-IDF Vectorization</h3>
-                    <div class="card-container">
-                        <!-- TF-IDF Card -->
-                        <div class="card">
-                            <div class="card-header">
-                                <i class="fas fa-chart-bar"></i> <!-- FontAwesome icon -->
-                                <h4>TF-IDF Vectorizer</h4>
-                            </div>
-                            <div class="card-body">
-                                <p>We transformed text data into a matrix of features using the following parameters:</p>
-                                <ul class="feature-list">
-                                    <li><strong>max_features=5000:</strong> Limited to the top 5,000 most important terms.</li>
-                                    <li><strong>max_df=0.95:</strong> Ignored terms appearing in more than 95% of documents.</li>
-                                    <li><strong>min_df=5:</strong> Ignored terms appearing in fewer than 5 documents.</li>
-                                </ul>
-                            </div>
-                        </div>
-                
-                        <!-- Logistic Regression Card -->
-                        <div class="card">
-                            <div class="card-header">
-                                <i class="fas fa-project-diagram"></i> <!-- FontAwesome icon -->
-                                <h4>Logistic Regression Model</h4>
-                            </div>
-                            <div class="card-body">
-                                <p>For classification, we configured the Logistic Regression model with:</p>
-                                <ul class="feature-list">
-                                    <li><strong>solver='saga':</strong> Efficient for large datasets and supports L2 regularization.</li>
-                                    <li><strong>max_iter=200:</strong> Ensured convergence.</li>
-                                    <li><strong>n_jobs=-1:</strong> Utilized all available CPU cores for parallel training.</li>
-                                </ul>
-                                <div class="accuracy-box">
-                                    <i class="fas fa-tachometer-alt"></i> <!-- FontAwesome icon -->
-                                    <p><strong>Accuracy:</strong> 96.15% on the test set.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <section id="models-results">
-                    <h4 class="feature-title"><strong>Models and Results</strong></h4>
-                
-                    <!-- TF-IDF Vectorization -->
-                    <details class="expandable-section">
-                        <summary><strong>TF-IDF Vectorization</strong></summary>
-                        <p>We transformed text data into numerical features using a TF-IDF vectorizer, allowing the model to analyze term frequency patterns.</p>
-                        <div class="model-box">
-                            <ul class="highlight-list">
-                                <li><code>Max Features = 5000</code>: Limited to the top 5,000 most important terms.</li>
-                                <li><code>Max DF = 0.95</code>: Ignored terms appearing in more than 95% of documents.</li>
-                                <li><code>Min DF = 5</code>: Ignored terms appearing in fewer than 5 documents.</li>
-                            </ul>
-                        </div>
-                        <figure>
-                            <img src="figure/tfidf_visual.png" alt="TF-IDF Process Visualization">
-                            <figcaption>Figure: How TF-IDF converts raw text into numerical features.</figcaption>
-                        </figure>
-                    </details>
-                
-                    <!-- Logistic Regression -->
-                    <details class="expandable-section">
-                        <summary><strong>Logistic Regression Model</strong></summary>
-                        <div class="model-container">
-                            <div class="model-box">
-                                <h4>Hyperparameters</h4>
-                                <ul class="highlight-list">
-                                    <li><code>Solver = 'saga'</code>: Optimized for large datasets with L2 regularization.</li>
-                                    <li><code>Max Iterations = 200</code>: Ensured convergence during training.</li>
-                                    <li><code>Parallel Processing</code>: Used all available CPU cores for efficiency.</li>
-                                </ul>
-                            </div>
-                            <div class="accuracy-box">
-                                <p><strong>Model Accuracy:</strong> 96.15% on the test set.</p>
-                            </div>
-                        </div>
-                        <figure>
-                            <img src="figure/log_reg_confusion.png" alt="Logistic Regression Confusion Matrix">
-                            <figcaption>Figure: Confusion Matrix for Logistic Regression Model.</figcaption>
-                        </figure>
-                    </details>
+                </div>
+            </div>
+        </details>
+    </section>
+</section>
                 
                     <!-- Random Forest -->
                     <details class="expandable-section">

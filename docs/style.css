@@ -24,12 +24,18 @@
     height: auto;
 }
 
+.center-last {
+    grid-column: 2 / 3; /* Center the last matrix */
+}
+
 @media (max-width: 768px) {
     .confusion-matrix-grid {
         grid-template-columns: repeat(2, 1fr); /* Adjust for smaller screens */
     }
+    .center-last {
+        grid-column: 1 / -1; /* Center the last matrix on smaller screens */
+    }
 }
-
 
 footer {
     background-color: var(--primary-color);
@@ -49,7 +55,6 @@ footer {
 #contact {
     color: white; /* Ensure the "Contacts" heading is white */
 }
-
 
 main {
     max-width: none; /* Remove max-width constraint */

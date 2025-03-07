@@ -75,11 +75,10 @@
                 </figure>
             </section>
 
-
             <!-- Categorizing Transactions based on Memos -->
             <section id="categorizing-transactions">
                 <h3>Categorizing Transactions Based on Memos</h3>
-            
+
                 <!-- Feature Creation and Selection -->
                 <section id="feature-creation">
                     <h4 class="feature-title">Feature Creation and Selection</h4>
@@ -138,7 +137,7 @@
                             </div>
                         </div>
                     </details>
-            
+
                     <!-- Cleaning the Memo Fields -->
                     <details class="expandable-section">
                         <summary>Cleaning the Memo Fields</summary>
@@ -213,7 +212,7 @@
                         </div>
                     </details>
                 </section>
-            
+
                 <!-- Models and Results -->
                 <section id="models-results">
                     <h4 class="feature-title"><strong>Models and Results</strong></h4>
@@ -271,96 +270,119 @@
                     <!-- Random Forest Section -->
                     <details class="expandable-section">
                         <summary><strong>Random Forest with TF-IDF Vectorization</strong></summary>
-                        <p>
-                            To improve classification performance, we implemented a Random Forest model. 
-                            While this model introduces greater complexity, its performance was slightly lower than Logistic Regression.
-                        </p>
-                        <p class="process-intro">For classification, we configured the Random Forest model with:</p>
-                        <ul>
-                            <li><strong>n_estimators=100:</strong> Used 100 decision trees.</li>
-                            <li><strong>max_depth=60:</strong> Restricted tree depth to prevent overfitting.</li>
-                            <li><strong>n_jobs=-1:</strong> Utilized all available CPU cores for parallel training.</li>
-                        </ul>
-                
-                        <p><strong>Accuracy:</strong> The Random Forest model achieved 84.28% accuracy on the test set.</p>
-                
-                        <h4 class="process-intro">Confusion Matrix</h4>
-                        <figure>
-                            <img src="figure/random_forest_confusion.png" alt="Random Forest Confusion Matrix">
-                            <figcaption>Figure: Confusion Matrix for Random Forest Model.</figcaption>
-                        </figure>
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-tree"></i> <!-- FontAwesome icon -->
+                                <h4>Random Forest Model</h4>
+                            </div>
+                            <div class="card-body">
+                                <p>
+                                    To improve classification performance, we implemented a Random Forest model. 
+                                    While this model introduces greater complexity, its performance was slightly lower than Logistic Regression.
+                                </p>
+                                <p class="process-intro">For classification, we configured the Random Forest model with:</p>
+                                <ul>
+                                    <li><strong>n_estimators=100:</strong> Used 100 decision trees.</li>
+                                    <li><strong>max_depth=60:</strong> Restricted tree depth to prevent overfitting.</li>
+                                    <li><strong>n_jobs=-1:</strong> Utilized all available CPU cores for parallel training.</li>
+                                </ul>
+                        
+                                <p><strong>Accuracy:</strong> The Random Forest model achieved 84.28% accuracy on the test set.</p>
+                        
+                                <h4 class="process-intro">Confusion Matrix</h4>
+                                <figure>
+                                    <img src="figure/random_forest_confusion.png" alt="Random Forest Confusion Matrix">
+                                    <figcaption>Figure: Confusion Matrix for Random Forest Model.</figcaption>
+                                </figure>
+                            </div>
+                        </div>
                     </details>
                 
                     <!-- FastText Section -->
                     <details class="expandable-section">
                         <summary><strong>FastText for Text Classification</strong></summary>
-                        <p>
-                            FastText is a lightweight and efficient text classification model developed by Facebook AI. 
-                            We trained this model to categorize transaction memos with high speed and accuracy.
-                        </p>
-                    
-                        <h4 class="process-intro">Model Training</h4>
-                        <p class="process-intro">The FastText model was trained using the following hyperparameters:</p>
-                        <ul>
-                            <li><strong>Epochs:</strong> 25</li>
-                            <li><strong>Learning Rate:</strong> 1.0</li>
-                            <li><strong>Word N-Grams:</strong> 2</li>
-                            <li><strong>Embedding Dimension:</strong> 50</li>
-                            <li><strong>Bucket Size:</strong> 200,000</li>
-                        </ul>
-                    
-                        <p class="process-intro"><strong>Accuracy:</strong> The FastText model achieved an impressive 98.9% accuracy.</p>
-                    
-                        <h4 class="process-intro">Classification Report</h4>
-                        <p class="process-intro">The classification report below presents precision, recall, and F1-scores for different transaction categories.</p>
-                    
-                        <figure>
-                            <img src="figure/fasttext_classification_report.png" alt="FastText Classification Report">
-                            <figcaption>Figure: Classification Report for FastText Model.</figcaption>
-                        </figure>
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-rocket"></i> <!-- FontAwesome icon -->
+                                <h4>FastText Model</h4>
+                            </div>
+                            <div class="card-body">
+                                <p>
+                                    FastText is a lightweight and efficient text classification model developed by Facebook AI. 
+                                    We trained this model to categorize transaction memos with high speed and accuracy.
+                                </p>
+                            
+                                <h4 class="process-intro">Model Training</h4>
+                                <p class="process-intro">The FastText model was trained using the following hyperparameters:</p>
+                                <ul>
+                                    <li><strong>Epochs:</strong> 25</li>
+                                    <li><strong>Learning Rate:</strong> 1.0</li>
+                                    <li><strong>Word N-Grams:</strong> 2</li>
+                                    <li><strong>Embedding Dimension:</strong> 50</li>
+                                    <li><strong>Bucket Size:</strong> 200,000</li>
+                                </ul>
+                            
+                                <p class="process-intro"><strong>Accuracy:</strong> The FastText model achieved an impressive 98.9% accuracy.</p>
+                            
+                                <h4 class="process-intro">Classification Report</h4>
+                                <p class="process-intro">The classification report below presents precision, recall, and F1-scores for different transaction categories.</p>
+                            
+                                <figure>
+                                    <img src="figure/fasttext_classification_report.png" alt="FastText Classification Report">
+                                    <figcaption>Figure: Classification Report for FastText Model.</figcaption>
+                                </figure>
+                            </div>
+                        </div>
                     </details>
                 
                     <!-- Transformer LLM Section -->
                     <details class="expandable-section">
                         <summary><strong>LLM with Transformer Model</strong></summary>
-                        <p>
-                            We implemented a Transformer-based model using <code>distilbert-base-uncased</code> to leverage deep learning for text classification. 
-                            This model was trained to classify transaction memos with contextual embeddings.
-                        </p>
-                    
-                        <h4 class="process-intro">Training Configuration</h4>
-                        <p class="process-intro">The model was configured with the following hyperparameters:</p>
-                        <ul>
-                            <li><strong>Model Type:</strong> DistilBERT</li>
-                            <li><strong>Maximum Length:</strong> 128 tokens</li>
-                            <li><strong>Batch Size:</strong> 16</li>
-                            <li><strong>Learning Rate:</strong> 2e-5</li>
-                            <li><strong>Optimizer:</strong> AdamW</li>
-                            <li><strong>Scheduler:</strong> Linear schedule with a warmup ratio of 0.1</li>
-                            <li><strong>Gradient Clipping:</strong> Maximum value of 1.0</li>
-                            <li><strong>Epochs:</strong> 3</li>
-                        </ul>
-                    
-                        <h4 class="process-intro">Model Performance</h4>
-                        <p class="process-intro">
-                            The Transformer model was evaluated on 9 transaction categories. After one epoch, it achieved:
-                        </p>
-                        <ul>
-                            <li><strong>Training Loss:</strong> 0.1361</li>
-                            <li><strong>Validation Loss:</strong> 0.0603</li>
-                            <li><strong>Validation Accuracy:</strong> 98.56%</li>
-                            <li><strong>Evaluation Time:</strong> 2 minutes and 43 seconds</li>
-                        </ul>
-                    
-                        <p>
-                            While the Transformer model achieved high accuracy, it exhibited higher latency compared to simpler models, 
-                            requiring longer processing times for both training and evaluation.
-                        </p>
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-brain"></i> <!-- FontAwesome icon -->
+                                <h4>Transformer Model</h4>
+                            </div>
+                            <div class="card-body">
+                                <p>
+                                    We implemented a Transformer-based model using <code>distilbert-base-uncased</code> to leverage deep learning for text classification. 
+                                    This model was trained to classify transaction memos with contextual embeddings.
+                                </p>
+                            
+                                <h4 class="process-intro">Training Configuration</h4>
+                                <p class="process-intro">The model was configured with the following hyperparameters:</p>
+                                <ul>
+                                    <li><strong>Model Type:</strong> DistilBERT</li>
+                                    <li><strong>Maximum Length:</strong> 128 tokens</li>
+                                    <li><strong>Batch Size:</strong> 16</li>
+                                    <li><strong>Learning Rate:</strong> 2e-5</li>
+                                    <li><strong>Optimizer:</strong> AdamW</li>
+                                    <li><strong>Scheduler:</strong> Linear schedule with a warmup ratio of 0.1</li>
+                                    <li><strong>Gradient Clipping:</strong> Maximum value of 1.0</li>
+                                    <li><strong>Epochs:</strong> 3</li>
+                                </ul>
+                            
+                                <h4 class="process-intro">Model Performance</h4>
+                                <p class="process-intro">
+                                    The Transformer model was evaluated on 9 transaction categories. After one epoch, it achieved:
+                                </p>
+                                <ul>
+                                    <li><strong>Training Loss:</strong> 0.1361</li>
+                                    <li><strong>Validation Loss:</strong> 0.0603</li>
+                                    <li><strong>Validation Accuracy:</strong> 98.56%</li>
+                                    <li><strong>Evaluation Time:</strong> 2 minutes and 43 seconds</li>
+                                </ul>
+                            
+                                <p>
+                                    While the Transformer model achieved high accuracy, it exhibited higher latency compared to simpler models, 
+                                    requiring longer processing times for both training and evaluation.
+                                </p>
+                            </div>
+                        </div>
                     </details>
                     
                 </section>
             </section>
-
 
             <!-- Cash Score Section -->
             <section id="cash-score">
@@ -373,99 +395,127 @@
                     <!-- Exploratory Data Analysis -->
                     <details class="expandable-section">
                         <summary>Exploratory Data Analysis</summary>
-                        <p>We conducted an exploratory data analysis (EDA) to understand patterns in consumer spending, overdrafts, and transaction distributions. This helped us identify meaningful features for predicting credit risk.</p>
-                    
-                        <ul>
-                            <li><strong>Transaction Patterns:</strong> Identified differences in transaction behaviors between delinquent and non-delinquent consumers, such as frequency and types of purchases.</li>
-                            <li><strong>Seasonal Trends & Payday Effects:</strong> Examined how consumer spending fluctuates with seasonal trends, including holiday expenses and end-of-month payday spikes.</li>
-                            <li><strong>Income Estimation:</strong> Estimated consumer income based on recurring transactions such as payroll deposits, rent, and utility payments.</li>
-                            <li><strong>Impact of Fees & Overdrafts:</strong> Analyzed the effects of account fees, buy-now-pay-later (BNPL) transactions, and overdraft occurrences on overall financial stability.</li>
-                        </ul>
-                    
-                        <figure style="text-align: center;">
-                            <img src="figure/feature_plot_credit_score-2.png" alt="Delinquency Percentage vs Credit Score" style="max-width: 100%; height: auto;">
-                            <figcaption>Figure: Delinquency Percentage vs Credit Score.</figcaption>
-                        </figure>
-                    
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-chart-line"></i> <!-- FontAwesome icon -->
+                                <h4>Exploratory Data Analysis</h4>
+                            </div>
+                            <div class="card-body">
+                                <p>We conducted an exploratory data analysis (EDA) to understand patterns in consumer spending, overdrafts, and transaction distributions. This helped us identify meaningful features for predicting credit risk.</p>
+                            
+                                <ul>
+                                    <li><strong>Transaction Patterns:</strong> Identified differences in transaction behaviors between delinquent and non-delinquent consumers, such as frequency and types of purchases.</li>
+                                    <li><strong>Seasonal Trends & Payday Effects:</strong> Examined how consumer spending fluctuates with seasonal trends, including holiday expenses and end-of-month payday spikes.</li>
+                                    <li><strong>Income Estimation:</strong> Estimated consumer income based on recurring transactions such as payroll deposits, rent, and utility payments.</li>
+                                    <li><strong>Impact of Fees & Overdrafts:</strong> Analyzed the effects of account fees, buy-now-pay-later (BNPL) transactions, and overdraft occurrences on overall financial stability.</li>
+                                </ul>
+                            
+                                <figure style="text-align: center;">
+                                    <img src="figure/feature_plot_credit_score-2.png" alt="Delinquency Percentage vs Credit Score" style="max-width: 100%; height: auto;">
+                                    <figcaption>Figure: Delinquency Percentage vs Credit Score.</figcaption>
+                                </figure>
+                            </div>
+                        </div>
                     </details>
 
                     <!-- Balance Trends for Delinquent vs. Non-Delinquent Consumers -->
                     <details class="expandable-section">
                         <summary>Comparing Delinquent and Non-Delinquent Consumers</summary>
-                        
-                        <p>We analyzed balance trends over time to observe how cash flow differs between individuals who are delinquent and those who are not. Our key findings highlight financial stability differences based on account balance trends.</p>
-                    
-                        <ul>
-                            <li><strong>Delinquent Consumers:</strong> Frequently experience negative balances, indicating financial instability and a higher risk of missing payments.</li>
-                            <li><strong>Non-Delinquent Consumers:</strong> Maintain relatively stable balances with fewer occurrences of overdrafts, suggesting better financial health.</li>
-                            <li><strong>Periodic Fluctuations:</strong> Balance trends exhibit cyclical patterns influenced by income deposits and spending habits.</li>
-                        </ul>
-                    
-                        <figure>
-                            <img src="figure/balance_delinquent-2.png" alt="Balance Trends for Delinquent Consumers">
-                            <figcaption>Figure: Balance trends over time for five randomly selected delinquent consumers. The plot illustrates fluctuations and frequent occurrences of negative balances, highlighting financial instability.</figcaption>
-                        </figure>
-                    
-                        <figure>
-                            <img src="figure/balance_single_delinquent-2.png" alt="Balance for a Single Delinquent Consumer">
-                            <figcaption>Figure: Balance over time for a single delinquent consumer. This consumer frequently experiences negative balances, indicating financial distress and an increased risk of missing payments.</figcaption>
-                        </figure>
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-balance-scale"></i> <!-- FontAwesome icon -->
+                                <h4>Comparing Delinquent and Non-Delinquent Consumers</h4>
+                            </div>
+                            <div class="card-body">
+                                <p>We analyzed balance trends over time to observe how cash flow differs between individuals who are delinquent and those who are not. Our key findings highlight financial stability differences based on account balance trends.</p>
+                            
+                                <ul>
+                                    <li><strong>Delinquent Consumers:</strong> Frequently experience negative balances, indicating financial instability and a higher risk of missing payments.</li>
+                                    <li><strong>Non-Delinquent Consumers:</strong> Maintain relatively stable balances with fewer occurrences of overdrafts, suggesting better financial health.</li>
+                                    <li><strong>Periodic Fluctuations:</strong> Balance trends exhibit cyclical patterns influenced by income deposits and spending habits.</li>
+                                </ul>
+                            
+                                <figure>
+                                    <img src="figure/balance_delinquent-2.png" alt="Balance Trends for Delinquent Consumers">
+                                    <figcaption>Figure: Balance trends over time for five randomly selected delinquent consumers. The plot illustrates fluctuations and frequent occurrences of negative balances, highlighting financial instability.</figcaption>
+                                </figure>
+                            
+                                <figure>
+                                    <img src="figure/balance_single_delinquent-2.png" alt="Balance for a Single Delinquent Consumer">
+                                    <figcaption>Figure: Balance over time for a single delinquent consumer. This consumer frequently experiences negative balances, indicating financial distress and an increased risk of missing payments.</figcaption>
+                                </figure>
+                            </div>
+                        </div>
                     </details>
             
                     <!-- Feature Engineering -->
                     <details class="expandable-section">
                         <summary>Feature Engineering</summary>
-                    
-                        <p>We engineered multiple features relevant to the prediction of delinquency, focusing on balance trends, transaction behaviors, and account types. These features help in assessing financial stability and predicting default risk.</p>
-                    
-                        <ul>
-                            <li><strong>Balance Features:</strong> Negative balance ratio, balance trends, payday effects.</li>
-                            <li><strong>Transaction-Based Features:</strong> Credit vs. debit transaction volume, category-based spending breakdown.</li>
-                            <li><strong>Temporal Features:</strong> Spending frequency over time, accounting for longevity effects.</li>
-                            <li><strong>Account Types:</strong> Features based on the types of accounts a consumer has.</li>
-                            <li><strong>Overdraft Frequency:</strong> The number of times a consumer overdrafted in the past 6 months.</li>
-                            <li><strong>Spending Volatility:</strong> Standard deviation of monthly expenditures.</li>
-                            <li><strong>Recurring Payments:</strong> Identifying transactions like rent, utilities, and subscriptions.</li>
-                        </ul>
-                    
-                        <figure>
-                            <img src="figure/spending_balance_ratio.png" alt="Spending Balance Ratio">
-                            <figcaption>Figure: Spending balance ratio feature created to measure how much consumers spend relative to their balance. This helps assess financial stability and risk of delinquency.</figcaption>
-                        </figure>
-                    
-                        <figure>
-                            <img src="figure/standardized_credit_balance.png" alt="Standardized Credit and Balance">
-                            <figcaption>Figure: Feature engineering step where credit and balance were standardized to allow for easier model interpretability and comparisons across different financial profiles.</figcaption>
-                        </figure>
-                    
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-cogs"></i> <!-- FontAwesome icon -->
+                                <h4>Feature Engineering</h4>
+                            </div>
+                            <div class="card-body">
+                                <p>We engineered multiple features relevant to the prediction of delinquency, focusing on balance trends, transaction behaviors, and account types. These features help in assessing financial stability and predicting default risk.</p>
+                            
+                                <ul>
+                                    <li><strong>Balance Features:</strong> Negative balance ratio, balance trends, payday effects.</li>
+                                    <li><strong>Transaction-Based Features:</strong> Credit vs. debit transaction volume, category-based spending breakdown.</li>
+                                    <li><strong>Temporal Features:</strong> Spending frequency over time, accounting for longevity effects.</li>
+                                    <li><strong>Account Types:</strong> Features based on the types of accounts a consumer has.</li>
+                                    <li><strong>Overdraft Frequency:</strong> The number of times a consumer overdrafted in the past 6 months.</li>
+                                    <li><strong>Spending Volatility:</strong> Standard deviation of monthly expenditures.</li>
+                                    <li><strong>Recurring Payments:</strong> Identifying transactions like rent, utilities, and subscriptions.</li>
+                                </ul>
+                            
+                                <figure>
+                                    <img src="figure/spending_balance_ratio.png" alt="Spending Balance Ratio">
+                                    <figcaption>Figure: Spending balance ratio feature created to measure how much consumers spend relative to their balance. This helps assess financial stability and risk of delinquency.</figcaption>
+                                </figure>
+                            
+                                <figure>
+                                    <img src="figure/standardized_credit_balance.png" alt="Standardized Credit and Balance">
+                                    <figcaption>Figure: Feature engineering step where credit and balance were standardized to allow for easier model interpretability and comparisons across different financial profiles.</figcaption>
+                                </figure>
+                            </div>
+                        </div>
                     </details>
 
                     <!-- Feature Importance for Different Models -->
                     <details class="expandable-section">
                         <summary>Feature Importance</summary>
-                        <p>Top predictive features for different models:</p>
-                        
-                        <figure style="text-align: center;">
-                            <img src="figure/shap_values.png" alt="Feature Importance using Shap Values" style="max-width: 100%; height: auto;">
-                            <figcaption>Figure: Feature Importance using SHAP Values.</figcaption>
-                        </figure>
-                    
-                        <p>The following are the top 10 most important features influencing delinquency prediction, as identified by SHAP values:</p>
-                        
-                        <ul>
-                            <li><strong>account_type_SAVINGS:</strong> Indicates whether a user has a savings account. A savings account is often associated with financial stability, reducing the risk of delinquency.</li>
-                            <li><strong>balance:</strong> Represents the consumer's total account balance. Lower balances correlate with higher delinquency risk, while higher balances suggest financial security.</li>
-                            <li><strong>ACCOUNT_FEES_median:</strong> Measures the median account fees incurred. Frequent fees may indicate financial strain or poor account management.</li>
-                            <li><strong>LOAN_std (Loan Standard Deviation):</strong> Represents the variability in loan-related transactions. High fluctuations may indicate inconsistent repayments and financial instability.</li>
-                            <li><strong>OVERDRAFT_count:</strong> Tracks the number of overdraft occurrences. A higher count strongly correlates with financial distress and increased risk of delinquency.</li>
-                            <li><strong>REFUND_skewness:</strong> Measures the asymmetry in refund transactions. Unusual refund patterns may suggest erratic cash flow or financial instability.</li>
-                            <li><strong>ACCOUNT_FEES_count:</strong> The total number of account fees charged. Higher counts may indicate insufficient funds or excessive financial penalties.</li>
-                            <li><strong>INVESTMENT_INCOME_std (Investment Income Standard Deviation):</strong> Measures fluctuations in investment income. High variation could indicate unreliable financial inflows.</li>
-                            <li><strong>SELF_TRANSFER_iqr (Interquartile Range of Self-Transfers):</strong> Measures variability in self-transfers between accounts. A high IQR may indicate inconsistent cash flow management.</li>
-                            <li><strong>ATM_CASH_median:</strong> The median amount of cash withdrawn from ATMs. Frequent and high cash withdrawals may suggest reliance on liquid cash, which could relate to financial instability.</li>
-                        </ul>
-                    
-                        <p>These features provide critical insights into financial behavior and help the model better assess delinquency risk.</p>
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-star"></i> <!-- FontAwesome icon -->
+                                <h4>Feature Importance</h4>
+                            </div>
+                            <div class="card-body">
+                                <p>Top predictive features for different models:</p>
+                                
+                                <figure style="text-align: center;">
+                                    <img src="figure/shap_values.png" alt="Feature Importance using Shap Values" style="max-width: 100%; height: auto;">
+                                    <figcaption>Figure: Feature Importance using SHAP Values.</figcaption>
+                                </figure>
+                            
+                                <p>The following are the top 10 most important features influencing delinquency prediction, as identified by SHAP values:</p>
+                                
+                                <ul>
+                                    <li><strong>account_type_SAVINGS:</strong> Indicates whether a user has a savings account. A savings account is often associated with financial stability, reducing the risk of delinquency.</li>
+                                    <li><strong>balance:</strong> Represents the consumer's total account balance. Lower balances correlate with higher delinquency risk, while higher balances suggest financial security.</li>
+                                    <li><strong>ACCOUNT_FEES_median:</strong> Measures the median account fees incurred. Frequent fees may indicate financial strain or poor account management.</li>
+                                    <li><strong>LOAN_std (Loan Standard Deviation):</strong> Represents the variability in loan-related transactions. High fluctuations may indicate inconsistent repayments and financial instability.</li>
+                                    <li><strong>OVERDRAFT_count:</strong> Tracks the number of overdraft occurrences. A higher count strongly correlates with financial distress and increased risk of delinquency.</li>
+                                    <li><strong>REFUND_skewness:</strong> Measures the asymmetry in refund transactions. Unusual refund patterns may suggest erratic cash flow or financial instability.</li>
+                                    <li><strong>ACCOUNT_FEES_count:</strong> The total number of account fees charged. Higher counts may indicate insufficient funds or excessive financial penalties.</li>
+                                    <li><strong>INVESTMENT_INCOME_std (Investment Income Standard Deviation):</strong> Measures fluctuations in investment income. High variation could indicate unreliable financial inflows.</li>
+                                    <li><strong>SELF_TRANSFER_iqr (Interquartile Range of Self-Transfers):</strong> Measures variability in self-transfers between accounts. A high IQR may indicate inconsistent cash flow management.</li>
+                                    <li><strong>ATM_CASH_median:</strong> The median amount of cash withdrawn from ATMs. Frequent and high cash withdrawals may suggest reliance on liquid cash, which could relate to financial instability.</li>
+                                </ul>
+                            
+                                <p>These features provide critical insights into financial behavior and help the model better assess delinquency risk.</p>
+                            </div>
+                        </div>
                     </details>
                 </section>
             
@@ -474,47 +524,59 @@
                     <h4 class="feature-title"><strong>Models and Results</strong></h4>
                     <details class="expandable-section">
                         <summary>Model Training</summary>
-                    
-                        <p>We trained multiple machine learning models to predict delinquency risk, focusing on maximizing performance while maintaining interpretability and efficiency.</p>
-                    
-                        <ul>
-                            <li><strong>Feature Selection:</strong> Used only the <b>top 75 most important features</b> to improve model interpretability and predictive power.</li>
-                            <li><strong>Scoring Exclusions:</strong> Consumers with <b>fewer than two transactions</b> were excluded to ensure meaningful behavioral patterns.</li>
-                        </ul>
-                    
-                        <p>To address the class imbalance issue (delinquent consumers make up only <b>8.4%</b> of the dataset), we applied:</p>
-                    
-                        <ul>
-                            <li><strong>SMOTE & SMOTEENN:</strong> Synthetic oversampling techniques to balance the dataset.</li>
-                            <li><strong>Feature Normalization:</strong> Standardization of key numerical variables to improve model performance.</li>
-                        </ul>
-                    
-                        <p>To optimize the <b>ROC-AUC score</b>, we trained five primary models:</p>
-                        
-                        <ul>
-                            <li><strong>XGBoost:</strong> High-performance gradient boosting model with extensive hyperparameter tuning.</li>
-                            <li><strong>LightGBM:</strong> Fast and efficient for large datasets, especially with categorical features.</li>
-                            <li><strong>CatBoost:</strong> Optimized for categorical data, reducing the need for preprocessing.</li>
-                            <li><strong>Balanced Random Forest:</strong> Addresses class imbalance by appropriately weighting samples.</li>
-                            <li><strong>Weighted Ensemble:</strong> Combines top models for an optimal balance of accuracy, interpretability, and efficiency.</li>
-                        </ul>
-                    
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-cogs"></i> <!-- FontAwesome icon -->
+                                <h4>Model Training</h4>
+                            </div>
+                            <div class="card-body">
+                                <p>We trained multiple machine learning models to predict delinquency risk, focusing on maximizing performance while maintaining interpretability and efficiency.</p>
+                            
+                                <ul>
+                                    <li><strong>Feature Selection:</strong> Used only the <b>top 75 most important features</b> to improve model interpretability and predictive power.</li>
+                                    <li><strong>Scoring Exclusions:</strong> Consumers with <b>fewer than two transactions</b> were excluded to ensure meaningful behavioral patterns.</li>
+                                </ul>
+                            
+                                <p>To address the class imbalance issue (delinquent consumers make up only <b>8.4%</b> of the dataset), we applied:</p>
+                            
+                                <ul>
+                                    <li><strong>SMOTE & SMOTEENN:</strong> Synthetic oversampling techniques to balance the dataset.</li>
+                                    <li><strong>Feature Normalization:</strong> Standardization of key numerical variables to improve model performance.</li>
+                                </ul>
+                            
+                                <p>To optimize the <b>ROC-AUC score</b>, we trained five primary models:</p>
+                                
+                                <ul>
+                                    <li><strong>XGBoost:</strong> High-performance gradient boosting model with extensive hyperparameter tuning.</li>
+                                    <li><strong>LightGBM:</strong> Fast and efficient for large datasets, especially with categorical features.</li>
+                                    <li><strong>CatBoost:</strong> Optimized for categorical data, reducing the need for preprocessing.</li>
+                                    <li><strong>Balanced Random Forest:</strong> Addresses class imbalance by appropriately weighting samples.</li>
+                                    <li><strong>Weighted Ensemble:</strong> Combines top models for an optimal balance of accuracy, interpretability, and efficiency.</li>
+                                </ul>
+                            </div>
+                        </div>
                     </details>
                     
                     <!-- Model Evaluation -->
                     <details class="expandable-section">
                         <summary>Model Evaluation</summary>
-                        
-                        <p>We evaluated model performance using several key classification metrics:</p>
-                        
-                        <ul>
-                            <li><strong>ROC-AUC:</strong> Measures the model’s ability to differentiate between delinquent and non-delinquent users.</li>
-                            <li><strong>Precision and Recall:</strong> Precision measures the percentage of correctly predicted delinquents, while recall captures the proportion of actual delinquents that were correctly identified.</li>
-                            <li><strong>F1-Score:</strong> Provides a balance between precision and recall, ensuring both false positives and false negatives are considered.</li>
-                            <li><strong>Training Time:</strong> Evaluates how long each model takes to train, an essential factor for scalability.</li>
-                            <li><strong>Prediction Time:</strong> Measures how efficiently models generate predictions for new consumers.</li>
-                        </ul>
-                    
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-chart-bar"></i> <!-- FontAwesome icon -->
+                                <h4>Model Evaluation</h4>
+                            </div>
+                            <div class="card-body">
+                                <p>We evaluated model performance using several key classification metrics:</p>
+                                
+                                <ul>
+                                    <li><strong>ROC-AUC:</strong> Measures the model’s ability to differentiate between delinquent and non-delinquent users.</li>
+                                    <li><strong>Precision and Recall:</strong> Precision measures the percentage of correctly predicted delinquents, while recall captures the proportion of actual delinquents that were correctly identified.</li>
+                                    <li><strong>F1-Score:</strong> Provides a balance between precision and recall, ensuring both false positives and false negatives are considered.</li>
+                                    <li><strong>Training Time:</strong> Evaluates how long each model takes to train, an essential factor for scalability.</li>
+                                    <li><strong>Prediction Time:</strong> Measures how efficiently models generate predictions for new consumers.</li>
+                                </ul>
+                            </div>
+                        </div>
                     </details>
                     
                     <details class="expandable-section">                        
@@ -551,130 +613,143 @@
                         </div>
                     
                         <summary>Model Performance</summary>
-                        <table class="center-table">
-                            <tr>
-                                <th>Model</th>
-                                <th>ROC-AUC</th>
-                                <th>Accuracy</th>
-                                <th>Precision</th>
-                                <th>Recall</th>
-                                <th>F1-Score</th>
-                                <th>Train Time (s)</th>
-                                <th>Predict Time (s)</th>
-                            </tr>
-                            <tr>
-                                <td>LightGBM</td>
-                                <td>0.8221</td>
-                                <td>0.9031</td>
-                                <td>0.8739</td>
-                                <td>0.9031</td>
-                                <td>0.8814</td>
-                                <td>2.5050</td>
-                                <td>0.000019</td>
-                            </tr>
-                            <tr>
-                                <td>Weighted Ensemble</td>
-                                <td>0.8301</td>
-                                <td>0.9006</td>
-                                <td>0.8728</td>
-                                <td>0.9006</td>
-                                <td>0.8813</td>
-                                <td>0.0010</td>
-                                <td>0.000001</td>
-                            </tr>
-                            <tr>
-                                <td>XGBoost</td>
-                                <td>0.8232</td>
-                                <td>0.8962</td>
-                                <td>0.8677</td>
-                                <td>0.8962</td>
-                                <td>0.8778</td>
-                                <td>2.0606</td>
-                                <td>0.000006</td>
-                            </tr>
-                            <tr>
-                                <td>CatBoost</td>
-                                <td>0.8212</td>
-                                <td>0.8892</td>
-                                <td>0.8707</td>
-                                <td>0.8892</td>
-                                <td>0.8785</td>
-                                <td>3.0342</td>
-                                <td>0.000004</td>
-                            </tr>
-                            <tr>
-                                <td>Balanced RF</td>
-                                <td>0.8144</td>
-                                <td>0.8982</td>
-                                <td>0.8703</td>
-                                <td>0.8982</td>
-                                <td>0.8797</td>
-                                <td>26.2355</td>
-                                <td>0.000064</td>
-                            </tr>
-                            <tr>
-                                <td>HistGB</td>
-                                <td>0.823</td>
-                                <td>0.913</td>
-                                <td>0.892</td>
-                                <td>0.913</td>
-                                <td>0.901</td>
-                                <td>3.196</td>
-                                <td>0.000021</td>
-                            </tr>
-                            <tr>
-                                <td>RUSBoost</td>
-                                <td>0.802</td>
-                                <td>0.829</td>
-                                <td>0.903</td>
-                                <td>0.829</td>
-                                <td>0.859</td>
-                                <td>6.954</td>
-                                <td>0.000012</td>
-                            </tr>
-                            <tr>
-                                <td>Random Forest</td>
-                                <td>0.800</td>
-                                <td>0.915</td>
-                                <td>0.893</td>
-                                <td>0.915</td>
-                                <td>0.902</td>
-                                <td>14.364</td>
-                                <td>0.000088</td>
-                            </tr>
-                            <tr>
-                                <td>Logistic Regression</td>
-                                <td>0.777</td>
-                                <td>0.743</td>
-                                <td>0.911</td>
-                                <td>0.743</td>
-                                <td>0.803</td>
-                                <td>0.348</td>
-                                <td>0.000003</td>
-                            </tr>
-                        </table>
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-tachometer-alt"></i> <!-- FontAwesome icon -->
+                                <h4>Model Performance</h4>
+                            </div>
+                            <div class="card-body">
+                                <table class="center-table">
+                                    <tr>
+                                        <th>Model</th>
+                                        <th>ROC-AUC</th>
+                                        <th>Accuracy</th>
+                                        <th>Precision</th>
+                                        <th>Recall</th>
+                                        <th>F1-Score</th>
+                                        <th>Train Time (s)</th>
+                                        <th>Predict Time (s)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>LightGBM</td>
+                                        <td>0.8221</td>
+                                        <td>0.9031</td>
+                                        <td>0.8739</td>
+                                        <td>0.9031</td>
+                                        <td>0.8814</td>
+                                        <td>2.5050</td>
+                                        <td>0.000019</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Weighted Ensemble</td>
+                                        <td>0.8301</td>
+                                        <td>0.9006</td>
+                                        <td>0.8728</td>
+                                        <td>0.9006</td>
+                                        <td>0.8813</td>
+                                        <td>0.0010</td>
+                                        <td>0.000001</td>
+                                    </tr>
+                                    <tr>
+                                        <td>XGBoost</td>
+                                        <td>0.8232</td>
+                                        <td>0.8962</td>
+                                        <td>0.8677</td>
+                                        <td>0.8962</td>
+                                        <td>0.8778</td>
+                                        <td>2.0606</td>
+                                        <td>0.000006</td>
+                                    </tr>
+                                    <tr>
+                                        <td>CatBoost</td>
+                                        <td>0.8212</td>
+                                        <td>0.8892</td>
+                                        <td>0.8707</td>
+                                        <td>0.8892</td>
+                                        <td>0.8785</td>
+                                        <td>3.0342</td>
+                                        <td>0.000004</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Balanced RF</td>
+                                        <td>0.8144</td>
+                                        <td>0.8982</td>
+                                        <td>0.8703</td>
+                                        <td>0.8982</td>
+                                        <td>0.8797</td>
+                                        <td>26.2355</td>
+                                        <td>0.000064</td>
+                                    </tr>
+                                    <tr>
+                                        <td>HistGB</td>
+                                        <td>0.823</td>
+                                        <td>0.913</td>
+                                        <td>0.892</td>
+                                        <td>0.913</td>
+                                        <td>0.901</td>
+                                        <td>3.196</td>
+                                        <td>0.000021</td>
+                                    </tr>
+                                    <tr>
+                                        <td>RUSBoost</td>
+                                        <td>0.802</td>
+                                        <td>0.829</td>
+                                        <td>0.903</td>
+                                        <td>0.829</td>
+                                        <td>0.859</td>
+                                        <td>6.954</td>
+                                        <td>0.000012</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Random Forest</td>
+                                        <td>0.800</td>
+                                        <td>0.915</td>
+                                        <td>0.893</td>
+                                        <td>0.915</td>
+                                        <td>0.902</td>
+                                        <td>14.364</td>
+                                        <td>0.000088</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Logistic Regression</td>
+                                        <td>0.777</td>
+                                        <td>0.743</td>
+                                        <td>0.911</td>
+                                        <td>0.743</td>
+                                        <td>0.803</td>
+                                        <td>0.348</td>
+                                        <td>0.000003</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
                     </details>
                     
                     <details class="expandable-section">
                         <summary>Conclusion</summary>
-                    
-                        <p>Our analysis highlights the effectiveness of different machine learning models in predicting delinquency risk. Among them, weighted ensemble demonstrated the highest ROC-AUC score, making it the most effective model for our use case.</p>
-                        <figure>
-                            <img src="figure/auc_roc_curve.png" alt="AUC-ROC Scores">
-                            <figcaption>Figure: ROC-AUC curve comparison for all models.</figcaption>
-                        </figure>
-                    
-<!--                         <h4>Cash Score Results</h4> -->
-                        <ul>
-                            <li><strong>Best Model:</strong> Weighted ensemble achieved the best overall performance.</li>
-                            <li><strong>Cash Scores outperform Credit Scores:</strong> Our analysis shows that transaction-based Cash Scores provide better delinquency predictions than traditional Credit Scores.</li>
-                        </ul>
-                    
-                        <figure>
-                            <img src="figure/heatmap.png" alt="Heatmap of Delinquency Rates by Cash Score and Credit Score">
-                            <figcaption>Figure: Heatmap showing delinquency rates across Cash Scores and Credit Scores, highlighting the effectiveness of our model.</figcaption>
-                        </figure>
-                    
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-check-circle"></i> <!-- FontAwesome icon -->
+                                <h4>Conclusion</h4>
+                            </div>
+                            <div class="card-body">
+                                <p>Our analysis highlights the effectiveness of different machine learning models in predicting delinquency risk. Among them, weighted ensemble demonstrated the highest ROC-AUC score, making it the most effective model for our use case.</p>
+                                <figure>
+                                    <img src="figure/auc_roc_curve.png" alt="AUC-ROC Scores">
+                                    <figcaption>Figure: ROC-AUC curve comparison for all models.</figcaption>
+                                </figure>
+                            
+                                <ul>
+                                    <li><strong>Best Model:</strong> Weighted ensemble achieved the best overall performance.</li>
+                                    <li><strong>Cash Scores outperform Credit Scores:</strong> Our analysis shows that transaction-based Cash Scores provide better delinquency predictions than traditional Credit Scores.</li>
+                                </ul>
+                            
+                                <figure>
+                                    <img src="figure/heatmap.png" alt="Heatmap of Delinquency Rates by Cash Score and Credit Score">
+                                    <figcaption>Figure: Heatmap showing delinquency rates across Cash Scores and Credit Scores, highlighting the effectiveness of our model.</figcaption>
+                                </figure>
+                            </div>
+                        </div>
                     </details>
 
                 </section>

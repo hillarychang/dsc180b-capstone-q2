@@ -37,6 +37,9 @@ header {
     align-items: center;
     text-align: center;
     margin-top: 60px;
+    max-width: 1000px; /* Keep the header centered */
+    margin: 0 auto; /* Center the header */
+    padding: 20px; /* Add padding for better spacing */
 }
 
 header h1 {
@@ -123,14 +126,17 @@ header nav ul li a:hover {
 
 /* Main Content */
 main {
-    max-width: 1000px;
-    margin: 2rem auto;
-    padding: 0 20px;
+    max-width: none; /* Remove max-width constraint */
+    width: 100%; /* Span the full width */
+    padding: 0 20px; /* Add padding for better spacing */
 }
 
 /* Sections */
 section {
-    margin-bottom: 2rem;
+    width: 100%; /* Ensure sections span the full width */
+    max-width: 1200px; /* Optional: Add a max-width for readability */
+    margin: 0 auto; /* Center the sections */
+    padding: 20px; /* Add padding for better spacing */
 }
 
 /* Titles */
@@ -162,6 +168,8 @@ footer {
     color: white;
     text-align: center;
     padding: 1.5rem 0;
+    max-width: 1000px; /* Keep the footer centered */
+    margin: 0 auto; /* Center the footer */
 }
 
 .contact {
@@ -279,195 +287,6 @@ figcaption {
     padding-bottom: 20px;
 }
 
-
-.confusion-matrix-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* First row: 3 columns */
-    gap: 20px; /* Space between figures */
-    justify-content: center;
-    align-items: center;
-}
-
-.confusion-matrix-grid figure {
-    text-align: center;
-}
-
-/* Target the last four figures and make them fit in a four-column row */
-.confusion-matrix-grid figure:nth-child(n+4) {
-    grid-column: span 1; /* Ensures four figures on the second row */
-}
-
-@media (max-width: 768px) {
-    .confusion-matrix-grid {
-        grid-template-columns: repeat(2, 1fr); /* Switch to 2 columns on smaller screens */
-    }
-}
-
-
-/* 
-/* Confusion Matrix Grid */
-.confusion-matrix-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    justify-content: center;
-    align-items: center;
-}
-
-.confusion-matrix-grid figure {
-    text-align: center;
-}
-
-/* Increase font size for Feature Creation and Selection */
-.feature-title {
-    font-size: 1.8rem; 
-    font-weight: bold; 
-    margin-top: 1.5rem;
-}
-
-/* Center Last Figure */
-.confusion-matrix-grid figure:last-child {
-    margin: 20px auto;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Center Image Inside Figure */
-.confusion-matrix-grid figure:last-child img {
-    display: block;
-    margin: 0 auto;
-}
- */
-
-
-/* Space Between Table and Last Figure */
-.center-table {
-    margin-bottom: 40px;
-}
-
-/* 
-/* Container for TF-IDF and Logistic Regression */
-.model-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin-top: 15px;
-}
-
-/* TF-IDF and Logistic Regression Sections */
-.tfidf-section, .logreg-section {
-    flex: 1;
-    min-width: 300px;
-    background: #f4f4f4;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-}
-
-.tfidf-section:hover, .logreg-section:hover {
-    transform: scale(1.02);
-}
-
-/* Section Titles */
-.tfidf-section h4, .logreg-section h4 {
-    font-size: 1.4rem;
-    color: var(--primary-color);
-    border-bottom: 2px solid var(--primary-color);
-    padding-bottom: 5px;
-    margin-bottom: 10px;
-}
-
-/* Highlighted List */
-.highlight-list {
-    list-style: none;
-    padding: 0;
-}
-
-.highlight-list li {
-    background: #e6f7ff;
-    padding: 8px;
-    margin-bottom: 5px;
-    border-radius: 5px;
-    font-weight: bold;
-}
-
-*/
-
-/* --- Styling Enhancements --- */
-
-/* Style for Model Sections */
-.model-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-    padding: 15px;
-}
-
-/* Style for Model Hyperparameters Box */
-.model-box {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    border-left: 5px solid var(--primary-color);
-    width: 50%;
-}
-
-/* Styling for Accuracy Box */
-.accuracy-box {
-    background: var(--secondary-color);
-    padding: 15px;
-    border-radius: 8px;
-    text-align: center;
-    font-weight: bold;
-    width: 50%;
-    color: white;
-}
-
-/* Styling for Highlighted Lists (Hyperparameters) */
-.highlight-list {
-    list-style: none;
-    padding-left: 0;
-}
-
-.highlight-list li {
-    background: #eaf2ff;
-    padding: 8px 12px;
-    margin-bottom: 5px;
-    border-radius: 5px;
-    font-weight: bold;
-    font-family: monospace;
-}
-
-
-/* Accuracy Box */
-.accuracy-box {
-    background: #d4edda;
-    padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    text-align: center;
-    color: #155724;
-    border: 2px solid #c3e6cb;
-    margin-top: 10px;
-}
-
-/* Figures */
-figure {
-    text-align: center;
-    margin-top: 10px;
-}
-
-figcaption {
-    font-style: italic;
-    font-size: 0.9rem;
-    color: var(--primary-color);
-}
-
 /* Card Styling */
 .card {
     background: var(--background-color);
@@ -477,7 +296,7 @@ figcaption {
     padding: 20px;
     margin: 20px 0;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    width: 95%; /* Ensure the card spans the full width of its container */
+    width: 100%; /* Ensure the card spans the full width of its container */
     max-width: 100%; /* Prevent any max-width constraints */
 }
 
@@ -531,37 +350,9 @@ figcaption {
     font-size: 1.2rem;
 }
 
-/* Math Equation Styling */
-.math-equation {
-    font-family: "Courier New", monospace;
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: var(--primary-color);
-    text-align: center;
-    display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
-    background: #f4f4f4;
-    border-radius: 8px;
-    width: fit-content;
-    border-left: 5px solid #007BFF;
-}
-
-/* Ensure the main container centers content */
-main {
-    max-width: 1000px; /* Keep the max-width for the main container */
-    margin: 0 auto; /* Center the main container */
-    padding: 0 20px; /* Add padding for better spacing */
-}
-
-/* Ensure sections span the full width of the main container */
-section {
-    width: 80%; /* Ensure sections span the full width of the main container */
-}
-
-/* Responsive Design */
+/* Responsive Design for Cards */
 @media (max-width: 768px) {
     .card {
-        width: 95%; /* Ensure cards span full width on smaller screens */
+        width: 100%; /* Ensure cards span full width on smaller screens */
     }
 }

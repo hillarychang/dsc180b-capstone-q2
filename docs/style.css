@@ -477,7 +477,7 @@ figcaption {
     padding: 20px;
     margin: 20px 0;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    width: 100%; /* Ensure the card spans the full width */
+    width: 100%; /* Ensure the card spans the full width of its container */
     max-width: 100%; /* Prevent any max-width constraints */
 }
 
@@ -547,10 +547,16 @@ figcaption {
     border-left: 5px solid #007BFF;
 }
 
-/* Ensure the main container doesn't restrict width */
+/* Ensure the main container centers content */
 main {
-    max-width: none; /* Remove max-width constraint */
+    max-width: 1000px; /* Keep the max-width for the main container */
+    margin: 0 auto; /* Center the main container */
     padding: 0 20px; /* Add padding for better spacing */
+}
+
+/* Ensure sections span the full width of the main container */
+section {
+    width: 100%; /* Ensure sections span the full width of the main container */
 }
 
 /* Responsive Design */

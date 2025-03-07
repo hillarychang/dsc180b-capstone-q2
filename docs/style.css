@@ -477,8 +477,8 @@ figcaption {
     padding: 20px;
     margin: 20px 0;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    width: 100%; /* Ensure the card spans the full width of its container */
-    max-width: 100%; /* Prevent any max-width constraints */
+    width: 80%; /* Ensure the card spans the full width of its container */
+    max-width: 80%; /* Prevent any max-width constraints */
 }
 
 .card:hover {
@@ -556,12 +556,12 @@ main {
 
 /* Ensure sections span the full width of the main container */
 section {
-    width: 100%; /* Ensure sections span the full width of the main container */
+    width: 80%; /* Ensure sections span the full width of the main container */
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
     .card {
-        width: 100%; /* Ensure cards span full width on smaller screens */
+        width: 80%; /* Ensure cards span full width on smaller screens */
     }
 }

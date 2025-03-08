@@ -8,6 +8,30 @@
     --font-accent: "Tilt Warp", sans-serif;
 }
 
+
+body, main {
+    width: 100%;
+    margin: 0; /* Remove default margins */
+    padding: 0; /* Remove default padding */
+}
+
+footer {
+    background-color: var(--primary-color);
+    color: white;
+    text-align: center;
+    padding: 1.5rem 0;
+    width: 100%; /* Ensure the footer spans the full width */
+    margin: 0; /* Remove auto margins to avoid centering */
+}
+
+footer {
+    border: 2px solid red; /* Debugging: Check if the footer spans the full width */
+}
+
+.parent-container {
+    width: 100%;
+}
+
 .confusion-matrix-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* First row with 3 matrices */

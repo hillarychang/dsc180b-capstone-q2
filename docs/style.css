@@ -241,6 +241,7 @@ footer {
     padding: 1.5rem 0;
     max-width: 1000px; /* Keep the footer centered */
     margin: 0 auto; /* Center the footer */
+    width: 100%;
 }
 
 .contact {

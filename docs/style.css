@@ -15,17 +15,23 @@ body, main {
     padding: 0; /* Remove default padding */
 }
 
+/* Footer */
 footer {
-    background-color: var(--primary-color);
+    background-color: var(--primary-color); /* Ensure this variable is defined */
     color: white;
     text-align: center;
     padding: 1.5rem 0;
+    max-width: 1000px; /* Match the header's max-width */
+    margin: 0 auto; /* Center the footer like the header */
     width: 100%; /* Ensure the footer spans the full width */
-    margin: 0; /* Remove auto margins to avoid centering */
+    border: 2px solid red; /* Debugging: Check footer width */
 }
 
-footer {
-    border: 2px solid red; /* Debugging: Check if the footer spans the full width */
+/* Container inside the footer */
+.footer-container {
+    max-width: 1000px; /* Match the header's max-width */
+    margin: 0 auto; /* Center the content inside the footer */
+    padding: 0 20px; /* Add padding for better spacing */
 }
 
 .parent-container {
@@ -61,7 +67,7 @@ footer {
     }
 }
 
-footer {
+/* footer {
     background-color: var(--primary-color);
     color: white;
     text-align: center;
@@ -74,7 +80,7 @@ footer {
     max-width: 1200px; /* Optional: Add a max-width for readability */
     margin: 0 auto; /* Center the container */
     padding: 0 20px; /* Add padding for better spacing */
-}
+} */
 
 #contact {
     color: white; /* Ensure the "Contacts" heading is white */
@@ -255,17 +261,6 @@ img {
     display: block;
     margin: 10px auto;
     border-radius: 5px;
-}
-
-/* Footer */
-footer {
-    background-color: var(--primary-color);
-    color: white;
-    text-align: center;
-    padding: 1.5rem 0;
-    max-width: 1000px; /* Keep the footer centered */
-    margin: 0 auto; /* Center the footer */
-    width: 100%;
 }
 
 .contact {

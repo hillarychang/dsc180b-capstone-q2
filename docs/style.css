@@ -15,7 +15,19 @@ body, main {
     padding: 0; /* Remove default padding */
 }
 
-/* Footer */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Ensure the body and html take up the full width */
+html, body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 footer {
     background-color: var(--primary-color); /* Ensure this variable is defined */
     color: white;

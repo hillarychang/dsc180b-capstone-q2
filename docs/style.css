@@ -36,8 +36,8 @@ footer {
     max-width: 1000px; /* Match the header's max-width */
     margin: 0 auto; /* Center the footer like the header */
     width: 100%; /* Ensure the footer spans the full width */
-    border: 2px solid red; /* Debugging: Check footer width */
-}
+/*     border: 2px solid red; /* Debugging: Check footer width */
+} */
 
 /* Container inside the footer */
 .footer-container {
